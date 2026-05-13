@@ -1,235 +1,178 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
-import { ArrowRight, Shield, Clock, Award, ChevronDown } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowRight, CheckCircle2 } from 'lucide-react'
 import Button from '@/components/ui/Button'
 
-const trustBadges = [
-  { icon: Shield, label: 'Documentação Regularizada' },
-  { icon: Clock, label: 'Atendimento 24/7' },
-  { icon: Award, label: '+15 Anos de Experiência' },
+const trust = [
+  'SICAF Regularizado',
+  'RNTRC / ANTT',
+  'CNH categoria E',
+  'Seguro de Passageiros',
 ]
 
 const stats = [
-  { value: 500, suffix: '+', label: 'Viagens Realizadas' },
-  { value: 6, suffix: '', label: 'Veículos na Frota' },
-  { value: 4, suffix: '', label: 'Contratos Públicos' },
-]
-
-const marqueeItems = [
-  '500+ Viagens Realizadas',
-  'Frota Certificada',
-  'Contratos Governamentais',
-  'Documentação Regularizada',
-  '+15 Anos de Experiência',
-  'Motoristas Habilitados',
-  'Rastreamento GPS',
-  'Atendimento 24/7',
+  { value: '500+', label: 'Viagens' },
+  { value: '15+', label: 'Anos' },
+  { value: '4', label: 'Contratos Gov.' },
+  { value: '6', label: 'Veículos' },
 ]
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-navy-200">
-      {/* Noise texture overlay */}
+    <section className="relative min-h-screen flex items-center bg-[#0a0a0a] overflow-hidden">
+      {/* Subtle gold glow behind visual side */}
       <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        className="absolute right-0 top-1/2 -translate-y-1/2 w-[50vw] h-[70vh] pointer-events-none"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '200px 200px',
+          background: 'radial-gradient(ellipse at 70% 50%, rgba(212,175,55,0.07) 0%, transparent 60%)',
         }}
       />
 
-      {/* Subtle animated grid */}
-      <div className="absolute inset-0 bg-grid opacity-25" />
+      <div className="relative z-10 w-full container mx-auto px-4 md:px-8 pt-24 pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-[calc(100vh-6rem)]">
 
-      {/* Gradient blob — top right */}
-      <div
-        className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(circle at center, rgba(212,175,55,0.07) 0%, rgba(212,175,55,0.03) 40%, transparent 70%)',
-          filter: 'blur(60px)',
-        }}
-      />
-
-      {/* Gradient blob — bottom left */}
-      <div
-        className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(circle at center, rgba(212,175,55,0.05) 0%, transparent 65%)',
-          filter: 'blur(80px)',
-        }}
-      />
-
-      {/* Radial glow center */}
-      <div className="absolute inset-0 bg-gradient-radial-gold opacity-40" />
-
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-navy-200 to-transparent" />
-
-      <div className="relative z-10 container mx-auto px-4 md:px-6 pt-28 pb-6 flex-1 flex items-center">
-        <div className="max-w-4xl mx-auto text-center w-full">
-          {/* Eyebrow badge */}
+          {/* ── Left: Text ─────────────────────────────── */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 glass rounded-full px-4 py-2 mb-8"
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="flex flex-col justify-center"
           >
-            <span className="w-2 h-2 rounded-full bg-gold animate-pulse-gold" />
-            <span className="text-gold text-sm font-semibold tracking-wide">
-              Fretamento Profissional em Brasília
-            </span>
-          </motion.div>
+            {/* Eyebrow */}
+            <div className="flex items-center gap-2 mb-6">
+              <span className="w-8 h-px bg-gold" />
+              <span className="text-gold text-xs font-semibold tracking-[0.2em] uppercase">
+                Brasília · Distrito Federal
+              </span>
+            </div>
 
-          {/* Main headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.1 }}
-            className="font-heading font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-6 tracking-tight"
-          >
-            <span className="text-white">Transporte </span>
-            <span className="text-gradient-gold">Premium</span>
-            <br />
-            <span className="text-white">Para Sua </span>
-            <span className="text-gradient-gold">Empresa</span>
-          </motion.h1>
+            {/* Headline */}
+            <h1 className="font-heading font-black leading-[0.92] tracking-tight mb-6">
+              <span className="block text-white text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem]">
+                A Frota Certa
+              </span>
+              <span className="block text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem]"
+                style={{
+                  background: 'linear-gradient(135deg, #D4AF37 0%, #F5D97A 50%, #D4AF37 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Para Cada
+              </span>
+              <span className="block text-white text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem]">
+                Viagem.
+              </span>
+            </h1>
 
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-gray-400 text-lg md:text-xl leading-relaxed mb-10 max-w-2xl mx-auto"
-          >
-            Ônibus, micro-ônibus e vans para contratos governamentais, eventos corporativos e
-            excursões. Frota moderna, motoristas habilitados e documentação em dia.
-          </motion.p>
+            {/* Subtext */}
+            <p className="text-gray-400 text-lg leading-relaxed mb-8 max-w-lg">
+              Ônibus, micro-ônibus e vans com documentação regularizada, motoristas habilitados e
+              15 anos de experiência em contratos públicos e privados.
+            </p>
 
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10"
-          >
-            <Button
-              as="a"
-              href="/orcamento"
-              variant="gold"
-              size="lg"
-              rightIcon={<ArrowRight size={18} />}
-            >
-              Solicitar Orçamento Grátis
-            </Button>
-            <Button as="a" href="/frota" variant="outline" size="lg">
-              Ver Nossa Frota
-            </Button>
-          </motion.div>
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-8">
+              <Button as="a" href="/orcamento" variant="gold" size="lg" rightIcon={<ArrowRight size={18} />}>
+                Solicitar Orçamento Grátis
+              </Button>
+              <Button as="a" href="/frota" variant="outline" size="lg">
+                Conhecer a Frota
+              </Button>
+            </div>
 
-          {/* Trust badges */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-14"
-          >
-            {trustBadges.map(({ icon: Icon, label }) => (
-              <div key={label} className="flex items-center gap-2 text-gray-400 text-sm">
-                <Icon size={15} className="text-gold shrink-0" />
-                <span>{label}</span>
-              </div>
-            ))}
-          </motion.div>
+            {/* Trust strip */}
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              {trust.map((t) => (
+                <span key={t} className="flex items-center gap-1.5 text-gray-500 text-xs">
+                  <CheckCircle2 size={13} className="text-gold flex-shrink-0" />
+                  {t}
+                </span>
+              ))}
+            </div>
 
-          {/* Stat cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.5 }}
-            className="max-w-md mx-auto"
-          >
-            <div className="glass rounded-2xl overflow-hidden">
-              <div className="grid grid-cols-3">
-                {stats.map((stat, i) => (
-                  <div
-                    key={stat.label}
-                    className={`text-center px-4 py-5 ${
-                      i < stats.length - 1 ? 'border-r border-white/10' : ''
-                    }`}
-                    style={{ borderTop: '2px solid #D4AF37' }}
-                  >
-                    <div className="font-heading font-black text-2xl text-gold mb-1">
-                      <StatCounter target={stat.value} suffix={stat.suffix} />
-                    </div>
-                    <div className="text-gray-400 text-xs leading-tight">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
+            {/* Stats row */}
+            <div className="flex gap-8 mt-10 pt-8 border-t border-white/10">
+              {stats.map((s) => (
+                <div key={s.label}>
+                  <div className="font-heading font-black text-2xl text-gold">{s.value}</div>
+                  <div className="text-gray-600 text-xs mt-0.5">{s.label}</div>
+                </div>
+              ))}
             </div>
           </motion.div>
-        </div>
-      </div>
 
-      {/* Marquee trust signals */}
-      <div className="relative z-10 w-full overflow-hidden border-t border-white/5 bg-navy-100/40 backdrop-blur-sm py-4">
-        <div className="flex animate-marquee whitespace-nowrap gap-0">
-          {[...marqueeItems, ...marqueeItems].map((item, i) => (
-            <span
-              key={i}
-              className="inline-flex items-center gap-2 text-gray-500 text-sm px-8 shrink-0"
+          {/* ── Right: Visual ──────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.1 }}
+            className="relative hidden lg:flex items-center justify-center"
+          >
+            {/* Main visual container */}
+            <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-[#0d0d0d] border border-white/[0.06]">
+              {/* Gold accent bar */}
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent opacity-60" />
+
+              {/* Bus SVG */}
+              <div className="absolute inset-0 flex items-center justify-center p-8">
+                <svg viewBox="0 0 520 240" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                  {/* Bus body */}
+                  <rect x="10" y="40" width="480" height="150" rx="12" fill="#1a1a1a" stroke="#D4AF37" strokeWidth="1.5" strokeOpacity="0.5" />
+                  {/* Roof */}
+                  <rect x="20" y="22" width="460" height="22" rx="6" fill="#1a1a1a" stroke="#D4AF37" strokeWidth="1" strokeOpacity="0.3" />
+                  {/* Gold stripe */}
+                  <rect x="10" y="90" width="480" height="4" fill="#D4AF37" opacity="0.7" />
+                  {/* Windows */}
+                  {[40, 100, 160, 220, 280, 340, 400].map((x, i) => (
+                    <rect key={i} x={x} y="52" width="48" height="30" rx="4" fill="#111" stroke="#D4AF37" strokeWidth="0.8" strokeOpacity="0.4" />
+                  ))}
+                  {/* Front windshield */}
+                  <rect x="440" y="48" width="40" height="36" rx="4" fill="#0d1117" stroke="#D4AF37" strokeWidth="1" strokeOpacity="0.6" />
+                  {/* Door */}
+                  <rect x="62" y="130" width="30" height="58" rx="3" fill="#0d0d0d" stroke="#D4AF37" strokeWidth="0.8" strokeOpacity="0.4" />
+                  {/* Wheels */}
+                  <circle cx="100" cy="195" r="28" fill="#0d0d0d" stroke="#D4AF37" strokeWidth="2" strokeOpacity="0.7" />
+                  <circle cx="100" cy="195" r="14" fill="#1a1a1a" stroke="#D4AF37" strokeWidth="1.5" strokeOpacity="0.9" />
+                  <circle cx="400" cy="195" r="28" fill="#0d0d0d" stroke="#D4AF37" strokeWidth="2" strokeOpacity="0.7" />
+                  <circle cx="400" cy="195" r="14" fill="#1a1a1a" stroke="#D4AF37" strokeWidth="1.5" strokeOpacity="0.9" />
+                  {/* Headlights */}
+                  <rect x="470" y="130" width="18" height="12" rx="3" fill="#D4AF37" opacity="0.6" />
+                  <rect x="470" y="148" width="18" height="8" rx="2" fill="#D4AF37" opacity="0.3" />
+                  {/* AMAV'S text on bus */}
+                  <text x="180" y="135" fontFamily="sans-serif" fontSize="22" fontWeight="bold" fill="#D4AF37" opacity="0.5" letterSpacing="4">AMAV'S</text>
+                  <text x="200" y="158" fontFamily="sans-serif" fontSize="11" fill="#888" letterSpacing="8">TURISMO</text>
+                </svg>
+              </div>
+
+              {/* Bottom tag */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex items-center justify-between bg-black/60 backdrop-blur-sm border border-white/10 rounded-xl px-4 py-2.5">
+                  <span className="text-xs text-gray-400">Frota Regularizada</span>
+                  <div className="flex gap-2">
+                    {['ANTT', 'DETRAN', 'RNTRC'].map((tag) => (
+                      <span key={tag} className="text-[10px] bg-gold/10 border border-gold/20 text-gold px-2 py-0.5 rounded-full">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating badge */}
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -top-4 -right-4 bg-[#0d0d0d] border border-gold/30 rounded-xl px-4 py-2.5 shadow-lg"
             >
-              <span className="w-1 h-1 rounded-full bg-gold/50 inline-block" />
-              {item}
-            </span>
-          ))}
+              <div className="text-xs text-gray-400">Contratos Gov.</div>
+              <div className="font-heading font-black text-xl text-gold">4 Ativos</div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.4 }}
-        className="absolute bottom-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-gray-600"
-      >
-        <span className="text-xs tracking-widest uppercase">Rolar</span>
-        <ChevronDown size={16} className="animate-bounce" />
-      </motion.div>
     </section>
-  )
-}
-
-function StatCounter({ target, suffix }: { target: number; suffix: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref as React.RefObject<Element>, { once: true })
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    if (!isInView) return
-    const duration = 2200
-    const steps = 60
-    const increment = target / steps
-    let current = 0
-    const interval = setInterval(() => {
-      current += increment
-      if (current >= target) {
-        setCount(target)
-        clearInterval(interval)
-      } else {
-        setCount(Math.floor(current))
-      }
-    }, duration / steps)
-    return () => clearInterval(interval)
-  }, [isInView, target])
-
-  return (
-    <div ref={ref}>
-      {count}{suffix}
-    </div>
   )
 }

@@ -1,162 +1,97 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ArrowRight, MessageCircle, Instagram, Star, Clock, Shield } from 'lucide-react'
+import { ArrowRight, MessageCircle, Instagram, Phone } from 'lucide-react'
 import Button from '@/components/ui/Button'
-
-const socialProof = [
-  { icon: Star, text: '5.0 no Google' },
-  { icon: Clock, text: 'Resposta em 30 min' },
-  { icon: Shield, text: 'ANTT Regularizada' },
-]
 
 export default function CTASection() {
   return (
-    <section className="py-24 bg-navy-100 relative overflow-hidden">
-      {/* Dramatic gradient background */}
+    <section className="py-28 bg-[#0a0a0a] relative overflow-hidden">
+      {/* Gold gradient at bottom */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] pointer-events-none"
         style={{
-          background:
-            'radial-gradient(ellipse 80% 60% at 50% 120%, rgba(212,175,55,0.12) 0%, transparent 65%)',
+          background: 'radial-gradient(ellipse at 50% 100%, rgba(212,175,55,0.1) 0%, transparent 60%)',
+          filter: 'blur(60px)',
         }}
       />
-      {/* Top border glow */}
-      <div
-        className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-        style={{
-          background:
-            'linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.4) 30%, rgba(212,175,55,0.6) 50%, rgba(212,175,55,0.4) 70%, transparent 100%)',
-        }}
-      />
-      {/* Noise overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.025] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-          backgroundRepeat: 'repeat',
-          backgroundSize: '200px 200px',
-        }}
-      />
+      {/* Top separator line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
 
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
+      <div className="relative z-10 container mx-auto px-4 md:px-8 text-center">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.65 }}
-          className="max-w-3xl mx-auto text-center"
+          transition={{ duration: 0.7 }}
         >
-          {/* Eyebrow */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2 bg-gold/10 border border-gold/25 rounded-full px-4 py-1.5 mb-8"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse-gold" />
-            <span className="text-gold text-xs font-semibold tracking-widest uppercase">
-              Pronto para Contratar?
-            </span>
-          </motion.div>
+          <span className="text-gold text-xs font-semibold tracking-[0.2em] uppercase inline-flex items-center gap-2 mb-5">
+            <span className="w-6 h-px bg-gold" />
+            Fale com a Gente
+            <span className="w-6 h-px bg-gold" />
+          </span>
 
-          {/* Headline */}
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-heading font-black text-4xl md:text-6xl text-white mb-5 leading-[1.05] tracking-tight"
-          >
-            Solicite seu Orçamento{' '}
-            <span className="text-gradient-gold block md:inline">Sem Compromisso</span>
-          </motion.h2>
+          <h2 className="font-heading font-black text-4xl sm:text-5xl md:text-6xl text-white tracking-tight leading-[0.95] mb-6">
+            Pronto para a<br />
+            <span style={{ color: '#D4AF37' }}>próxima viagem?</span>
+          </h2>
 
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-gray-400 text-base md:text-lg max-w-xl mx-auto mb-10 leading-relaxed"
-          >
-            Resposta em até 30 minutos durante o horário comercial. Atendemos Brasília, Goiânia,
-            Entorno e viagens para todo o Brasil.
-          </motion.p>
+          <p className="text-gray-400 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
+            Resposta em minutos pelo WhatsApp. Orçamento gratuito, sem compromisso.
+            Atendemos Brasília e todo o Centro-Oeste.
+          </p>
 
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8"
-          >
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
             <Button
               as="a"
-              href="/orcamento"
+              href="https://wa.me/5561984222205?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento."
               variant="gold"
-              size="xl"
-              rightIcon={<ArrowRight size={20} />}
-            >
-              Solicitar Orçamento Grátis
-            </Button>
-            <Button
-              as="a"
-              href="https://wa.me/5561984222205"
-              variant="outline"
-              size="xl"
-              leftIcon={<MessageCircle size={20} />}
+              size="lg"
+              leftIcon={<MessageCircle size={18} />}
               target="_blank"
               rel="noopener noreferrer"
             >
-              Chamar no WhatsApp
+              Falar no WhatsApp
             </Button>
-          </motion.div>
+            <Button
+              as="a"
+              href="/orcamento"
+              variant="outline"
+              size="lg"
+              rightIcon={<ArrowRight size={18} />}
+            >
+              Solicitar Orçamento
+            </Button>
+          </div>
 
-          {/* Social proof row */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.45 }}
-            className="flex flex-wrap items-center justify-center gap-6 mb-6"
-          >
-            {socialProof.map(({ icon: Icon, text }) => (
-              <div key={text} className="flex items-center gap-1.5 text-gray-500 text-sm">
-                <Icon size={13} className="text-gold/70" />
-                <span>{text}</span>
-              </div>
-            ))}
-          </motion.div>
-
-          {/* Instagram link */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.55 }}
-          >
+          {/* Secondary contacts */}
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
+            <a
+              href="tel:+5561984222205"
+              className="flex items-center gap-2 hover:text-gray-300 transition-colors"
+            >
+              <Phone size={14} />
+              (61) 98422-2205
+            </a>
+            <span className="w-px h-4 bg-white/10" />
             <a
               href="https://instagram.com/amavsturismo"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-gray-500 hover:text-gold text-sm transition-colors"
+              className="flex items-center gap-2 hover:text-gray-300 transition-colors"
             >
               <Instagram size={14} />
-              <span>@amavsturismo</span>
+              @amavsturismo
             </a>
-            <span className="text-gray-700 mx-3 text-sm">·</span>
-            <a
-              href="tel:+5561984222205"
-              className="text-gray-500 hover:text-gold text-sm transition-colors"
-            >
-              (61) 98422-2205
-            </a>
-          </motion.div>
+            <span className="w-px h-4 bg-white/10" />
+            <span className="text-gray-600">Base: Brasília, DF</span>
+          </div>
         </motion.div>
       </div>
+
+      {/* Bottom separator */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
     </section>
   )
 }
