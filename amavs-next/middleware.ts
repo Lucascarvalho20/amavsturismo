@@ -2,72 +2,72 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  const { pathname } = request.nextUrl
+  const isAdminLogin = pathname === '/admin/login'
+  const isAdminRoute = pathname.startsWith('/admin')
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  // Inject pathname into request headers so server components can read it
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', pathname)
+
+  if (!isAdminRoute) {
+    const res = NextResponse.next({ request: { headers: requestHeaders } })
+    res.headers.set('X-Frame-Options', 'DENY')
+    res.headers.set('X-Content-Type-Options', 'nosniff')
+    return res
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // If env vars missing, allow login through, block everything else
+  if (!supabaseUrl || !supabaseKey) {
+    if (isAdminLogin) {
+      return NextResponse.next({ request: { headers: requestHeaders } })
+    }
+    return NextResponse.redirect(new URL('/admin/login', request.url))
+  }
+
+  let supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
+
+  try {
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet: Array<{ name: string; value: string; options?: Record<string, unknown> }>) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse = NextResponse.next({ request: { headers: requestHeaders } })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options as Parameters<typeof supabaseResponse.cookies.set>[2])
           )
         },
       },
-    }
-  )
+    })
 
-  // Refresh session — do NOT remove this
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    const { data: { user }, error } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
-
-  const isAdminLogin = pathname === '/admin/login'
-  const isAdminRoute = pathname.startsWith('/admin')
-
-  // Security headers for all responses
-  supabaseResponse.headers.set('X-Frame-Options', 'DENY')
-  supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff')
-  supabaseResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-
-  if (isAdminRoute) {
-    if (!user && !isAdminLogin) {
-      // Not authenticated — redirect to login
-      const loginUrl = request.nextUrl.clone()
-      loginUrl.pathname = '/admin/login'
-      loginUrl.searchParams.set('redirect', pathname)
-      return NextResponse.redirect(loginUrl)
+    if ((error || !user) && !isAdminLogin) {
+      return NextResponse.redirect(new URL('/admin/login', request.url))
     }
 
     if (user && isAdminLogin) {
-      // Already authenticated — redirect to dashboard
-      const dashboardUrl = request.nextUrl.clone()
-      dashboardUrl.pathname = '/admin/dashboard'
-      dashboardUrl.searchParams.delete('redirect')
-      return NextResponse.redirect(dashboardUrl)
+      return NextResponse.redirect(new URL('/admin/dashboard', request.url))
+    }
+  } catch {
+    if (!isAdminLogin) {
+      return NextResponse.redirect(new URL('/admin/login', request.url))
     }
   }
+
+  supabaseResponse.headers.set('X-Frame-Options', 'DENY')
+  supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff')
+  supabaseResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
   return supabaseResponse
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths EXCEPT:
-     * - _next/static (static files)
-     * - _next/image (image optimization)
-     * - favicon.ico, favicon.svg
-     * - public folder files
-     */
-    '/((?!_next/static|_next/image|favicon|public|images).*)',
-  ],
+  matcher: ['/((?!_next/static|_next/image|favicon|public|images).*)'],
 }

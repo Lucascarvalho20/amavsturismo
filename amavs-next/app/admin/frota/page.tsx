@@ -137,7 +137,7 @@ function VehicleModal({
   const isNew = !vehicle
   const supabase = createClient()
   const [saving, setSaving] = useState(false)
-  const [photos, setPhotos] = useState<string[]>(vehicle?.photo_url ? [vehicle.photo_url] : [])
+  const [photos, setPhotos] = useState<string[]>(vehicle?.images?.length ? vehicle.images : vehicle?.photo_url ? [vehicle.photo_url] : [])
 
   const [form, setForm] = useState({
     name:        vehicle?.name ?? '',
@@ -169,6 +169,7 @@ function VehicleModal({
         price_km:  Number(form.price_km),
         price_day: Number(form.price_day),
         features:  form.features.split(',').map((f) => f.trim()).filter(Boolean),
+        images: photos,
         photo_url: photos[0] ?? null,
         updated_at: new Date().toISOString(),
       }
