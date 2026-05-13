@@ -5,11 +5,11 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import { TrendingUp, TrendingDown, Minus, MessageSquare, MapPin, Bus } from 'lucide-react'
 import { demandChartData, revenueChartData, vehicleMixData } from '@/lib/data'
 import { createClient } from '@/lib/supabase-browser'
 import { formatCurrency } from '@/lib/utils'
-import type { Vehicle, Contract } from '@/lib/types'
+import type { Vehicle, Contract, Lead } from '@/lib/types'
 
 const tooltipStyle = {
   backgroundColor: '#1A1A1A',
@@ -25,16 +25,19 @@ export default function RelatoriosPage() {
   const supabase = createClient()
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [contracts, setContracts] = useState<Contract[]>([])
+  const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const load = async () => {
-      const [{ data: v }, { data: c }] = await Promise.all([
-        supabase.from('vehicles').select('id, status, category'),
-        supabase.from('contracts').select('id, status, value'),
+      const [{ data: v }, { data: c }, { data: l }] = await Promise.all([
+        supabase.from('vehicles').select('id, name, status, category'),
+        supabase.from('contracts').select('id, status, value, contract_type'),
+        supabase.from('leads').select('id, origin, destination, vehicle_id, vehicle_category, status, created_at'),
       ])
       setVehicles((v ?? []) as Vehicle[])
       setContracts((c ?? []) as Contract[])
+      setLeads((l ?? []) as Lead[])
       setLoading(false)
     }
     load()
@@ -218,6 +221,111 @@ export default function RelatoriosPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* ── Lead Analytics ─────────────────────────────────────────────── */}
+      <div>
+        <h2 className="font-heading font-bold text-lg text-white mb-4 flex items-center gap-2">
+          <MessageSquare size={18} className="text-gold" />
+          Orçamentos — Analytics
+        </h2>
+        {leads.length === 0 ? (
+          <div className="glass-dark rounded-2xl p-8 text-center">
+            <p className="text-gray-500 text-sm">Nenhum orçamento recebido ainda.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+            {/* Conversion funnel */}
+            <div className="glass-dark rounded-2xl p-5">
+              <h3 className="text-white font-semibold text-sm mb-4 flex items-center gap-2">
+                <TrendingUp size={15} className="text-gold" /> Funil de Conversão
+              </h3>
+              {[
+                { label: 'Total recebidos', count: leads.length, color: 'bg-gray-500' },
+                { label: 'Em contato', count: leads.filter((l) => l.status === 'em_contato').length, color: 'bg-blue-500' },
+                { label: 'Aprovados', count: leads.filter((l) => l.status === 'aprovado').length, color: 'bg-emerald-500' },
+                { label: 'Convertidos', count: leads.filter((l) => l.status === 'convertido').length, color: 'bg-gold' },
+              ].map((item) => (
+                <div key={item.label} className="mb-3">
+                  <div className="flex justify-between text-xs mb-1">
+                    <span className="text-gray-400">{item.label}</span>
+                    <span className="text-white font-bold">{item.count}</span>
+                  </div>
+                  <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${item.color}`}
+                      style={{ width: `${leads.length > 0 ? (item.count / leads.length) * 100 : 0}%`, transition: 'width 1s ease' }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Top routes */}
+            <div className="glass-dark rounded-2xl p-5">
+              <h3 className="text-white font-semibold text-sm mb-4 flex items-center gap-2">
+                <MapPin size={15} className="text-gold" /> Rotas Mais Solicitadas
+              </h3>
+              {(() => {
+                const routeMap = new Map<string, number>()
+                leads.forEach((l) => {
+                  const route = `${l.origin} → ${l.destination || 'Local'}`
+                  routeMap.set(route, (routeMap.get(route) ?? 0) + 1)
+                })
+                const sorted = Array.from(routeMap.entries()).sort((a, b) => b[1] - a[1]).slice(0, 5)
+                if (sorted.length === 0) return <p className="text-gray-500 text-xs">Sem dados</p>
+                return (
+                  <div className="space-y-2">
+                    {sorted.map(([route, count], i) => (
+                      <div key={route} className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-gray-600 w-4 font-mono">{i + 1}.</span>
+                          <span className="text-gray-300 truncate">{route}</span>
+                        </div>
+                        <span className="text-gold font-bold ml-2 flex-shrink-0">{count}x</span>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
+            </div>
+
+            {/* Top vehicles */}
+            <div className="glass-dark rounded-2xl p-5">
+              <h3 className="text-white font-semibold text-sm mb-4 flex items-center gap-2">
+                <Bus size={15} className="text-gold" /> Veículos Mais Solicitados
+              </h3>
+              {(() => {
+                const catMap = new Map<string, number>()
+                leads.forEach((l) => {
+                  const cat = l.vehicle_category ?? 'sem preferência'
+                  catMap.set(cat, (catMap.get(cat) ?? 0) + 1)
+                })
+                const sorted = Array.from(catMap.entries()).sort((a, b) => b[1] - a[1])
+                const catLabel: Record<string, string> = { onibus: 'Ônibus', micro: 'Micro-ônibus', van: 'Van', 'sem preferência': 'Sem preferência' }
+                if (sorted.length === 0) return <p className="text-gray-500 text-xs">Sem dados</p>
+                return (
+                  <div className="space-y-3">
+                    {sorted.map(([cat, count]) => (
+                      <div key={cat}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-gray-400">{catLabel[cat] ?? cat}</span>
+                          <span className="text-white font-bold">{count} ({Math.round((count / leads.length) * 100)}%)</span>
+                        </div>
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-gold"
+                            style={{ width: `${(count / leads.length) * 100}%`, opacity: 0.6 + (count / leads.length) * 0.4 }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )
+              })()}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

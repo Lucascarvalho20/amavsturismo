@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, Search, Bus, Upload, X, Image as ImageIcon, CalendarDays } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, Bus, Upload, X, Image as ImageIcon, CalendarDays, Wrench } from 'lucide-react'
 import type { Vehicle, VehicleCategory } from '@/lib/types'
 import { cn, categoryLabel, formatCurrency } from '@/lib/utils'
 import { VehicleStatusBadge } from '@/components/ui/Badge'
@@ -10,6 +10,7 @@ import { Input, Select, Textarea } from '@/components/ui/Input'
 import { createClient } from '@/lib/supabase-browser'
 import toast from 'react-hot-toast'
 import VehicleCalendar from './VehicleCalendar'
+import VehicleMaintenance from './VehicleMaintenance'
 
 const CATEGORY_TABS: { label: string; value: 'all' | VehicleCategory }[] = [
   { label: 'Todos', value: 'all' },
@@ -249,6 +250,7 @@ export default function FrotaAdminPage() {
   const [activeCategory, setActiveCategory] = useState<'all' | VehicleCategory>('all')
   const [modal, setModal]       = useState<Vehicle | 'new' | null>(null)
   const [calendarVehicle, setCalendarVehicle] = useState<Vehicle | null>(null)
+  const [maintenanceVehicle, setMaintenanceVehicle] = useState<Vehicle | null>(null)
   const supabase = createClient()
 
   const load = async () => {
@@ -370,6 +372,13 @@ export default function FrotaAdminPage() {
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1 justify-end">
                         <button
+                          onClick={() => setMaintenanceVehicle(v)}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all"
+                          title="Manutenções"
+                        >
+                          <Wrench size={14} />
+                        </button>
+                        <button
                           onClick={() => setCalendarVehicle(v)}
                           className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
                           title="Calendário de disponibilidade"
@@ -397,6 +406,9 @@ export default function FrotaAdminPage() {
       )}
       {calendarVehicle && (
         <VehicleCalendar vehicle={calendarVehicle} onClose={() => setCalendarVehicle(null)} />
+      )}
+      {maintenanceVehicle && (
+        <VehicleMaintenance vehicle={maintenanceVehicle} onClose={() => setMaintenanceVehicle(null)} />
       )}
     </div>
   )

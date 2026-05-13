@@ -11,7 +11,7 @@ import { Input, Select, Textarea } from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import CityAutocomplete from '@/components/ui/CityAutocomplete'
 import { createClient } from '@/lib/supabase-browser'
-import { categoryLabel, formatCurrency, buildWhatsAppMessage, buildWhatsAppURL } from '@/lib/utils'
+import { categoryLabel, formatCurrency, buildWhatsAppMessage, buildWhatsAppURL, generateLeadCode } from '@/lib/utils'
 import type { Vehicle } from '@/lib/types'
 
 const step1Schema = z.object({
@@ -69,9 +69,33 @@ export default function OrcamentoForm() {
 
   const onStep2Submit = () => setCurrentStep(2)
 
-  const buildAndSendWhatsApp = () => {
+  const buildAndSendWhatsApp = async () => {
     if (!step1Data) return
     const data2 = form2.getValues()
+
+    // Save lead to database before opening WhatsApp
+    try {
+      const supabase = createClient()
+      await supabase.from('leads').insert({
+        code: generateLeadCode(),
+        name: data2.name,
+        phone: data2.phone.replace(/\D/g, ''),
+        email: data2.email || null,
+        origin: step1Data.origin,
+        destination: step1Data.destination || step1Data.origin,
+        travel_date: step1Data.travel_date,
+        return_date: step1Data.return_date || null,
+        passengers: step1Data.passengers,
+        vehicle_category: selectedVehicle?.category ?? null,
+        vehicle_id: step1Data.vehicle_id || null,
+        message: step1Data.message || null,
+        status: 'em_contato',
+        source: 'site',
+      })
+    } catch {
+      // Don't block WhatsApp if DB fails
+    }
+
     const msg = buildWhatsAppMessage({
       name: data2.name,
       phone: data2.phone,
@@ -84,7 +108,7 @@ export default function OrcamentoForm() {
       vehicleCategory: selectedVehicle ? categoryLabel(selectedVehicle.category) : undefined,
       message: step1Data.message,
     })
-    window.open(buildWhatsAppURL(msg), '_blank')
+    window.open(buildWhatsAppURL(msg), '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -220,7 +244,7 @@ export default function OrcamentoForm() {
                   )}
                 </div>
                 <div className="flex flex-col gap-3">
-                  <Button variant="gold" size="lg" fullWidth leftIcon={<MessageCircle size={18} />} onClick={buildAndSendWhatsApp}>
+                  <Button variant="gold" size="lg" fullWidth leftIcon={<MessageCircle size={18} />} onClick={() => { void buildAndSendWhatsApp() }}>
                     Enviar pelo WhatsApp
                   </Button>
                   <Button variant="navy" size="sm" fullWidth onClick={() => setCurrentStep(1)} leftIcon={<ArrowLeft size={16} />}>

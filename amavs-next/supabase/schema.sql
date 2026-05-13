@@ -224,3 +224,28 @@ create index if not exists vehicle_blocks_vehicle_idx on public.vehicle_blocks (
 -- Contracts: add contract_type and is_public columns
 alter table public.contracts add column if not exists contract_type text default 'licitacao' check (contract_type in ('licitacao','particular','pessoa_juridica','fretamento','aluguel','outro'));
 alter table public.contracts add column if not exists is_public boolean default true;
+
+-- ============================================================
+-- VEHICLE MAINTENANCE (Histórico de manutenções)
+-- ============================================================
+create table if not exists public.vehicle_maintenance (
+  id               uuid default uuid_generate_v4() primary key,
+  vehicle_id       uuid not null references public.vehicles(id) on delete cascade,
+  maintenance_date date not null,
+  type             text not null check (type in ('preventiva','corretiva','revisao','troca_pecas','vistoria','outro')),
+  description      text not null,
+  cost             numeric(10,2),
+  km_at_service    int,
+  document_url     text,
+  notes            text,
+  created_at       timestamptz default now()
+);
+alter table public.vehicle_maintenance enable row level security;
+create policy "maintenance_auth_all" on public.vehicle_maintenance for all using (auth.role() = 'authenticated');
+create index if not exists vehicle_maintenance_vehicle_idx on public.vehicle_maintenance (vehicle_id, maintenance_date desc);
+
+-- Storage bucket for maintenance documents (if not exists)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('maintenance', 'maintenance', false, 20971520, array['application/pdf','image/jpeg','image/png','image/webp'])
+  on conflict (id) do nothing;
+create policy "maintenance_auth_all" on storage.objects for all using (bucket_id = 'maintenance' and auth.role() = 'authenticated');
