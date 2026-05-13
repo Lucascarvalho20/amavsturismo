@@ -53,6 +53,23 @@ export interface Contract {
   vehicle_ids: string[]
   document_url: string | null
   notes: string | null
+  contract_type: 'licitacao' | 'particular' | 'pessoa_juridica' | 'fretamento' | 'aluguel' | 'outro'
+  is_public: boolean
+  created_at: string
+  updated_at: string
+}
+
+export type BlockType = 'reserva' | 'contrato_privado' | 'manutencao' | 'outro'
+
+export interface VehicleBlock {
+  id: string
+  vehicle_id: string
+  title: string
+  block_type: BlockType
+  start_date: string
+  end_date: string | null
+  is_indefinite: boolean
+  notes: string | null
   created_at: string
   updated_at: string
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, Search, Bus, Upload, X, Image as ImageIcon } from 'lucide-react'
+import { Plus, Pencil, Trash2, Search, Bus, Upload, X, Image as ImageIcon, CalendarDays } from 'lucide-react'
 import type { Vehicle, VehicleCategory } from '@/lib/types'
 import { cn, categoryLabel, formatCurrency } from '@/lib/utils'
 import { VehicleStatusBadge } from '@/components/ui/Badge'
@@ -9,6 +9,7 @@ import Button from '@/components/ui/Button'
 import { Input, Select, Textarea } from '@/components/ui/Input'
 import { createClient } from '@/lib/supabase-browser'
 import toast from 'react-hot-toast'
+import VehicleCalendar from './VehicleCalendar'
 
 const CATEGORY_TABS: { label: string; value: 'all' | VehicleCategory }[] = [
   { label: 'Todos', value: 'all' },
@@ -247,6 +248,7 @@ export default function FrotaAdminPage() {
   const [search, setSearch]     = useState('')
   const [activeCategory, setActiveCategory] = useState<'all' | VehicleCategory>('all')
   const [modal, setModal]       = useState<Vehicle | 'new' | null>(null)
+  const [calendarVehicle, setCalendarVehicle] = useState<Vehicle | null>(null)
   const supabase = createClient()
 
   const load = async () => {
@@ -367,6 +369,13 @@ export default function FrotaAdminPage() {
                     <td className="px-5 py-3.5"><VehicleStatusBadge status={v.status} /></td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1 justify-end">
+                        <button
+                          onClick={() => setCalendarVehicle(v)}
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 transition-all"
+                          title="Calendário de disponibilidade"
+                        >
+                          <CalendarDays size={14} />
+                        </button>
                         <button onClick={() => setModal(v)} className="p-1.5 rounded-lg text-gray-400 hover:text-gold hover:bg-gold/10 transition-all" title="Editar"><Pencil size={14} /></button>
                         <button onClick={() => handleDelete(v.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-wine/10 transition-all" title="Excluir"><Trash2 size={14} /></button>
                       </div>
@@ -385,6 +394,9 @@ export default function FrotaAdminPage() {
           onClose={() => setModal(null)}
           onSave={load}
         />
+      )}
+      {calendarVehicle && (
+        <VehicleCalendar vehicle={calendarVehicle} onClose={() => setCalendarVehicle(null)} />
       )}
     </div>
   )

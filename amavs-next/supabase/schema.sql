@@ -200,3 +200,27 @@ insert into public.contracts (code, client, modality, start_date, end_date, valu
 ('CT-2023-008', 'Tribunal de Justiça do DF','pregao_eletronico', '2023-07-01', '2024-06-30', 156000, 'encerrado','Transporte de magistrados e servidores para diligências externas.'),
 ('CT-2024-003', 'SENAC-DF',                 'dispensa',          '2024-05-01', '2024-10-31', 48000,  'ativo',    'Transporte de alunos para atividades práticas externas.')
 on conflict (code) do nothing;
+
+-- ============================================================
+-- VEHICLE BLOCKS (Availability calendar)
+-- ============================================================
+create table if not exists public.vehicle_blocks (
+  id          uuid default uuid_generate_v4() primary key,
+  vehicle_id  uuid not null references public.vehicles(id) on delete cascade,
+  title       text not null,
+  block_type  text not null check (block_type in ('reserva','contrato_privado','manutencao','outro')),
+  start_date  date not null,
+  end_date    date,
+  is_indefinite boolean default false,
+  notes       text,
+  created_at  timestamptz default now(),
+  updated_at  timestamptz default now()
+);
+alter table public.vehicle_blocks enable row level security;
+create policy "blocks_public_read" on public.vehicle_blocks for select using (true);
+create policy "blocks_auth_all"    on public.vehicle_blocks for all using (auth.role() = 'authenticated');
+create index if not exists vehicle_blocks_vehicle_idx on public.vehicle_blocks (vehicle_id, start_date);
+
+-- Contracts: add contract_type and is_public columns
+alter table public.contracts add column if not exists contract_type text default 'licitacao' check (contract_type in ('licitacao','particular','pessoa_juridica','fretamento','aluguel','outro'));
+alter table public.contracts add column if not exists is_public boolean default true;
