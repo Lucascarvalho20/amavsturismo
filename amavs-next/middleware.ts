@@ -17,7 +17,8 @@ export async function middleware(request: NextRequest) {
     return res
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseUrl = rawUrl?.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '')
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   // If env vars missing, allow login through, block everything else

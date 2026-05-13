@@ -1,11 +1,15 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
+function cleanUrl(raw: string): string {
+  return raw.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '')
+}
+
 export function createClient() {
   const cookieStore = cookies()
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    cleanUrl(process.env.NEXT_PUBLIC_SUPABASE_URL!),
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
