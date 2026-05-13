@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Licitações / Contratos | AMAVS Admin</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="css/admin.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="admin-wrap">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sl-icon"><span>A</span></div><div class="sl-text"><span class="sl-main">AMAVS</span><span class="sl-sub">Admin Panel</span></div></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <a href="index.html" class="nav-item"><i class="fas fa-chart-pie"></i> Dashboard</a><a href="orcamentos.html" class="nav-item"><i class="fas fa-file-invoice"></i> Orçamentos<span class="nav-badge">3</span></a><a href="veiculos.html" class="nav-item"><i class="fas fa-bus"></i> Veículos</a><a href="contratos.html" class="nav-item active"><i class="fas fa-file-contract"></i> Licitações/Contratos</a><a href="relatorios.html" class="nav-item"><i class="fas fa-chart-bar"></i> Relatórios</a><a href="usuarios.html" class="nav-item"><i class="fas fa-users"></i> Usuários</a><a href="perfil.html" class="nav-item"><i class="fas fa-user-circle"></i> Meu Perfil</a>
+    <div class="nav-section">Sistema</div>
+    <a href="../index.html" class="nav-item" target="_blank"><i class="fas fa-external-link-alt"></i> Ver site</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="su-avatar" id="suAvatar">A</div>
+      <div class="su-info"><div class="su-name" id="suName">Admin</div><div class="su-role" id="suRole">Administrador</div></div>
+      <button class="su-logout" onclick="adminLogout()" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </div>
+</aside>
+<div class="admin-main">
+  <header class="admin-topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+      <span class="page-title">Licitações / Contratos</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbarDate"></span>
+    </div>
+  </header>
+  <div class="admin-content">
+
+<div class="mini-stats">
+  <div class="mini-stat"><div class="ms-icon" style="background:#DCFCE7"><i class="fas fa-file-contract" style="color:#16A34A"></i></div><div><div class="ms-val" id="cActive">—</div><div class="ms-lbl">Ativos</div></div></div>
+  <div class="mini-stat"><div class="ms-icon" style="background:#FEF3C7"><i class="fas fa-clock" style="color:#D97706"></i></div><div><div class="ms-val" id="cPending">—</div><div class="ms-lbl">Em andamento</div></div></div>
+  <div class="mini-stat"><div class="ms-icon" style="background:#EDE9FE"><i class="fas fa-dollar-sign" style="color:#7C3AED"></i></div><div><div class="ms-val" id="cValue">—</div><div class="ms-lbl">Volume ativo</div></div></div>
+</div>
+<div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+  <button class="btn-admin btn-gold" onclick="openModal('contrModal')"><i class="fas fa-plus"></i> Novo contrato</button>
+</div>
+<div class="card">
+  <div class="card-header"><h3>Contratos cadastrados</h3></div>
+  <div class="table-wrap"><table class="data-table"><thead><tr><th>Nº</th><th>Órgão / Cliente</th><th>Modalidade</th><th>Início</th><th>Término</th><th>Valor</th><th>Status</th><th>Imagem</th><th>Ações</th></tr></thead><tbody id="contrBody"></tbody></table></div>
+</div>
+<div class="modal-overlay" id="contrModal">
+  <div class="modal-box wide"><div class="modal-header"><h3>Adicionar Contrato</h3><button class="modal-close" onclick="closeModal('contrModal')"><i class="fas fa-times"></i></button></div>
+  <div class="modal-body">
+    <div class="form-row"><div class="form-group"><label class="form-label">Nº do contrato *</label><input type="text" id="ctNum" class="form-input" placeholder="CT-2024-003" required/></div><div class="form-group"><label class="form-label">Status</label><select id="ctStatus" class="form-input"><option value="active">Ativo</option><option value="pending_licit">Em andamento</option><option value="ended">Encerrado</option></select></div></div>
+    <div class="form-group"><label class="form-label">Órgão / Cliente *</label><input type="text" id="ctClient" class="form-input" required/></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Modalidade</label><select id="ctMod" class="form-input"><option>Pregão Eletrônico</option><option>Tomada de Preços</option><option>Dispensa</option><option>Inexigibilidade</option><option>Contrato Privado</option></select></div><div class="form-group"><label class="form-label">Valor (R$)</label><input type="number" id="ctValue" class="form-input" min="0"/></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Data início</label><input type="date" id="ctStart" class="form-input"/></div><div class="form-group"><label class="form-label">Data término</label><input type="date" id="ctEnd" class="form-input"/></div></div>
+    <div class="form-group"><label class="form-label">Imagem do contrato (arquivo ou URL)</label><input type="text" id="ctImage" class="form-input" placeholder="assets/images/contrato-ct2024001.jpg"/><small style="color:var(--text3);font-size:.72rem;margin-top:.25rem;display:block">Adicione a imagem na pasta assets/images/ do servidor e informe o caminho acima.</small></div>
+    <div class="form-group"><label class="form-label">Descrição</label><textarea id="ctDesc" class="form-input" rows="2" placeholder="Breve descrição do objeto do contrato..."></textarea></div>
+  </div>
+  <div class="modal-footer"><button class="btn-admin btn-gold" onclick="saveContr()"><i class="fas fa-save"></i> Salvar</button><button class="btn-admin btn-outline" onclick="closeModal('contrModal')">Cancelar</button></div>
+  </div>
+</div>
+  </div>
+</div>
+</div>
+<script src="js/admin.js"></script>
+<script>
+document.getElementById("topbarDate").textContent = new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"numeric",month:"short"});
+
+let contratos=JSON.parse(JSON.stringify(mockContratos));
+function updContr(){
+  document.getElementById('cActive').textContent=contratos.filter(c=>c.status==='active').length;
+  document.getElementById('cPending').textContent=contratos.filter(c=>c.status==='pending_licit').length;
+  document.getElementById('cValue').textContent=fBRL(contratos.filter(c=>c.status==='active').reduce((s,c)=>s+c.value,0));
+}
+function renderContr(){
+  document.getElementById('contrBody').innerHTML=contratos.map(c=>`<tr><td><code style="color:var(--gold);font-size:.75rem">${c.id}</code></td><td>${c.client}</td><td style="font-size:.78rem">${c.modality||'—'}</td><td>${fDate(c.start)}</td><td>${fDate(c.end)}</td><td>${fBRL(c.value)}</td><td>${badge(c.status)}</td><td>${c.image?`<img src="${c.image}" style="width:48px;height:36px;object-fit:cover;border-radius:5px" onerror="this.style.display='none'"/>`:'—'}</td><td><button class="tbl-btn danger" onclick="delContr('${c.id}')"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+  // Also update public site localStorage
+  localStorage.setItem('amavs_contratos', JSON.stringify(contratos.map(c=>({num:c.id,title:c.client,desc:c.modality||'',date:c.start,status:c.status==='active'?'active':'ended',image:c.image||''}))));
+}
+function saveContr(){const num=document.getElementById('ctNum').value.trim(),client=document.getElementById('ctClient').value.trim();if(!num||!client){adminToast('Campos obrigatórios.','error');return;}contratos.push({id:num,client,modality:document.getElementById('ctMod').value,start:document.getElementById('ctStart').value,end:document.getElementById('ctEnd').value,value:+document.getElementById('ctValue').value||0,status:document.getElementById('ctStatus').value,image:document.getElementById('ctImage').value,desc:document.getElementById('ctDesc').value});closeModal('contrModal');renderContr();updContr();adminToast('Contrato adicionado!');}
+function delContr(id){if(!confirm('Remover contrato?'))return;contratos=contratos.filter(c=>c.id!==id);renderContr();updContr();adminToast('Removido.','info');}
+renderContr();updContr();
+
+</script>
+</body>
+</html>

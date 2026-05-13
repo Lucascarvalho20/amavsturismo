@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Usuários | AMAVS Admin</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="css/admin.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="admin-wrap">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sl-icon"><span>A</span></div><div class="sl-text"><span class="sl-main">AMAVS</span><span class="sl-sub">Admin Panel</span></div></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <a href="index.html" class="nav-item"><i class="fas fa-chart-pie"></i> Dashboard</a><a href="orcamentos.html" class="nav-item"><i class="fas fa-file-invoice"></i> Orçamentos<span class="nav-badge">3</span></a><a href="veiculos.html" class="nav-item"><i class="fas fa-bus"></i> Veículos</a><a href="contratos.html" class="nav-item"><i class="fas fa-file-contract"></i> Licitações/Contratos</a><a href="relatorios.html" class="nav-item"><i class="fas fa-chart-bar"></i> Relatórios</a><a href="usuarios.html" class="nav-item active"><i class="fas fa-users"></i> Usuários</a><a href="perfil.html" class="nav-item"><i class="fas fa-user-circle"></i> Meu Perfil</a>
+    <div class="nav-section">Sistema</div>
+    <a href="../index.html" class="nav-item" target="_blank"><i class="fas fa-external-link-alt"></i> Ver site</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="su-avatar" id="suAvatar">A</div>
+      <div class="su-info"><div class="su-name" id="suName">Admin</div><div class="su-role" id="suRole">Administrador</div></div>
+      <button class="su-logout" onclick="adminLogout()" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </div>
+</aside>
+<div class="admin-main">
+  <header class="admin-topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+      <span class="page-title">Usuários</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbarDate"></span>
+    </div>
+  </header>
+  <div class="admin-content">
+
+<div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+  <button class="btn-admin btn-gold" onclick="openModal('userModal')"><i class="fas fa-plus"></i> Novo usuário</button>
+</div>
+<div class="card">
+  <div class="card-header"><h3>Usuários do sistema</h3></div>
+  <div class="table-wrap"><table class="data-table"><thead><tr><th>Nome</th><th>Usuário</th><th>E-mail</th><th>Perfil</th><th>Status</th><th>Último acesso</th><th>Ações</th></tr></thead><tbody id="usersBody"></tbody></table></div>
+</div>
+<div class="card" style="margin-top:1.5rem"><div class="card-header"><h3>Segurança</h3></div><div class="card-body" style="font-size:.85rem;color:var(--text2);line-height:1.8">
+  <p><i class="fas fa-info-circle" style="color:var(--gold)"></i> Credenciais de demonstração: <strong>admin / admin123</strong> | <strong>operador / op2024</strong></p>
+  <p><i class="fas fa-shield-alt" style="color:var(--gold)"></i> Em produção, configure autenticação PHP via <code>backend/auth.php</code> + banco MySQL.</p>
+  <p><i class="fas fa-lock" style="color:var(--gold)"></i> Ative HTTPS obrigatório no Hostinger para proteger dados dos clientes.</p>
+</div></div>
+<div class="modal-overlay" id="userModal"><div class="modal-box"><div class="modal-header"><h3>Novo Usuário</h3><button class="modal-close" onclick="closeModal('userModal')"><i class="fas fa-times"></i></button></div>
+<div class="modal-body">
+  <div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" id="uName" class="form-input" required/></div><div class="form-group"><label class="form-label">Usuário (login) *</label><input type="text" id="uUser" class="form-input" required/></div></div>
+  <div class="form-row"><div class="form-group"><label class="form-label">E-mail</label><input type="email" id="uEmail" class="form-input"/></div><div class="form-group"><label class="form-label">Senha *</label><input type="password" id="uPass" class="form-input" required/></div></div>
+  <div class="form-group"><label class="form-label">Perfil</label><select id="uRole" class="form-input"><option value="admin">Administrador</option><option value="operator">Operador</option><option value="viewer">Visualizador</option></select></div>
+</div>
+<div class="modal-footer"><button class="btn-admin btn-gold" onclick="saveUser()"><i class="fas fa-save"></i> Criar</button><button class="btn-admin btn-outline" onclick="closeModal('userModal')">Cancelar</button></div></div></div>
+  </div>
+</div>
+</div>
+<script src="js/admin.js"></script>
+<script>
+document.getElementById("topbarDate").textContent = new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"numeric",month:"short"});
+
+let users=JSON.parse(JSON.stringify(mockUsers));const roles={admin:'Administrador',operator:'Operador',viewer:'Visualizador'};
+function renderUsers(){document.getElementById('usersBody').innerHTML=users.map(u=>`<tr><td><strong>${u.name}</strong></td><td><code style="color:var(--gold)">${u.user}</code></td><td style="font-size:.78rem">${u.email||'—'}</td><td><span class="bdg bdg-blue">${roles[u.role]||u.role}</span></td><td>${badge(u.status)}</td><td style="font-size:.78rem">${fDate(u.lastLogin)}</td><td>${u.id!==1?`<button class="tbl-btn danger" onclick="delUser(${u.id})"><i class="fas fa-trash"></i></button>`:''}</td></tr>`).join('');}
+function saveUser(){const name=document.getElementById('uName').value.trim(),user=document.getElementById('uUser').value.trim();if(!name||!user){adminToast('Campos obrigatórios.','error');return;}users.push({id:Date.now(),name,user,email:document.getElementById('uEmail').value,role:document.getElementById('uRole').value,status:'active',lastLogin:null});closeModal('userModal');renderUsers();adminToast('Usuário criado!');}
+function delUser(id){if(!confirm('Excluir usuário?'))return;users=users.filter(u=>u.id!==id);renderUsers();adminToast('Removido.','info');}
+renderUsers();
+
+</script>
+</body>
+</html>

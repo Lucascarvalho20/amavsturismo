@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sobre Nós | AMAVS Turismo</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  
+</head>
+<body>
+<div id="pageLoader" class="page-loader"><div class="loader-brand">AMAVS <span>Turismo</span></div><div class="loader-bar"><div class="loader-fill"></div></div></div>
+<a href="https://wa.me/5561984222205" class="wpp-float" target="_blank"><i class="fab fa-whatsapp"></i> <span>WhatsApp</span></a>
+<button class="chatbot-btn" id="chatbotBtn"><i class="fas fa-comments"></i></button>
+<div class="chatbot-panel" id="chatbotPanel">
+  <div class="chat-header"><div class="chat-av">A</div><div><div class="chat-hname">Assistente AMAVS</div><div class="chat-hstatus">Online agora</div></div><button class="chat-close" id="chatClose"><i class="fas fa-times"></i></button></div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-quick"><button class="qbtn">Quero um orçamento</button><button class="qbtn">Que veículo me indica?</button><button class="qbtn">Atendem licitações?</button></div>
+  <div class="chat-form"><input type="text" id="chatInput" placeholder="Digite sua pergunta..."/><button class="chat-send" id="chatSend"><i class="fas fa-paper-plane"></i></button></div>
+</div>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><div class="logo-icon"><span>A</span></div><div class="logo-text"><span class="logo-main">AMAVS</span><span class="logo-sub">Turismo</span></div></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" >Início</a></li>
+      <li class="has-dropdown"><a href="frota.html" >Nossa Frota <i class="fas fa-chevron-down" style="font-size:.65rem"></i></a>
+        <ul class="dropdown"><li><a href="onibus.html"><i class="fas fa-bus"></i>Ônibus</a></li><li><a href="micro-onibus.html"><i class="fas fa-shuttle-van"></i>Micro-ônibus</a></li><li><a href="vans.html"><i class="fas fa-van-shuttle"></i>Vans</a></li></ul>
+      </li>
+      <li><a href="licitacoes.html" >Licitações</a></li>
+      <li><a href="sobre.html" class='active'>Sobre</a></li>
+      <li><a href="contato.html" >Contato</a></li>
+      <li><a href="orcamento.html" class="nav-cta ">Solicitar Orçamento</a></li>
+    </ul>
+    <div class="nav-phone"><i class="fas fa-phone"></i> (61) 98422-2205</div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section class="page-hero"><div class="container" style="position:relative;z-index:1">
+  <div class="ph-badge">Nossa história</div>
+  <h1 class="ph-title">Mais de 14 anos movendo pessoas</h1>
+  <p class="ph-sub">Da cidade ao interior, da empresa ao evento — a AMAVS nasceu do compromisso com qualidade.</p>
+</div></section>
+<section style="padding:80px 0">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center" class="reveal">
+      <div>
+        <div style="background:var(--gray-100);border-radius:var(--radius-lg);aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <img src="assets/images/sobre-empresa.jpg" alt="AMAVS Turismo" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.innerHTML='<div style=padding:3rem;text-align:center><i class=fas fa-bus style=font-size:4rem;color:var(--gray-300)></i></div>'"/>
+        </div>
+      </div>
+      <div>
+        <span class="section-badge">Nossa história</span>
+        <h2 style="font-family:var(--font-heading);font-size:2rem;color:var(--navy);margin:1rem 0">Uma empresa nascida para <em style="color:var(--gold);font-style:italic">servir bem</em></h2>
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1rem">A AMAVS Turismo foi fundada com um único objetivo: oferecer fretamento com o padrão que empresas e órgãos públicos merecem. Desde o primeiro veículo, a segurança e a pontualidade nunca foram negociáveis.</p>
+        <p style="color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem">Ao longo de mais de uma década, crescemos renovando a frota, qualificando motoristas e aprimorando nossos processos. Hoje somos referência em Brasília/DF.</p>
+        <div style="display:flex;gap:2.5rem;padding-top:1.5rem;border-top:1px solid var(--gray-100)">
+          <div><div style="font-family:var(--font-heading);font-size:2rem;color:var(--gold)">500+</div><div style="font-size:.78rem;color:var(--text-muted)">Viagens realizadas</div></div>
+          <div><div style="font-family:var(--font-heading);font-size:2rem;color:var(--gold)">15+</div><div style="font-size:.78rem;color:var(--text-muted)">Veículos na frota</div></div>
+          <div><div style="font-family:var(--font-heading);font-size:2rem;color:var(--gold)">98%</div><div style="font-size:.78rem;color:var(--text-muted)">Satisfação</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section style="padding:60px 0;background:var(--gray-50)">
+  <div class="container">
+    <div class="section-header"><span class="section-badge">Nossos valores</span><h2 class="section-title">O que nos guia</h2></div>
+    <div class="why-grid">
+      <div class="why-card reveal"><div class="why-icon"><i class="fas fa-shield-alt"></i></div><h3>Segurança</h3><p>Frotas revisadas, motoristas treinados e seguro completo em todas as viagens. A vida dos passageiros é nossa prioridade.</p></div>
+      <div class="why-card reveal"><div class="why-icon"><i class="fas fa-clock"></i></div><h3>Pontualidade</h3><p>Compromisso com horários é inegociável. Monitoramos cada viagem para garantir chegadas no tempo certo.</p></div>
+      <div class="why-card reveal"><div class="why-icon"><i class="fas fa-star"></i></div><h3>Excelência</h3><p>Não nos contentamos com o suficiente. Buscamos superar expectativas em cada serviço prestado.</p></div>
+    </div>
+  </div>
+</section>
+<section style="padding:80px 0">
+  <div class="container">
+    <div class="section-header"><span class="section-badge">Trajetória</span><h2 class="section-title">Nossa linha do tempo</h2></div>
+    <div class="timeline">
+      <div class="tl-item reveal"><div class="tl-card"><div class="tl-year">2010</div><h4>Fundação</h4><p>A AMAVS começa com 2 veículos e o sonho de transformar o fretamento regional.</p></div><div class="tl-dot"></div><div class="tl-empty"></div></div>
+      <div class="tl-item reveal"><div class="tl-empty"></div><div class="tl-dot"></div><div class="tl-card"><div class="tl-year">2013</div><h4>Primeiro contrato público</h4><p>Conquistamos nossa primeira licitação, marcando a entrada no segmento público.</p></div></div>
+      <div class="tl-item reveal"><div class="tl-card"><div class="tl-year">2016</div><h4>Expansão da frota</h4><p>Chegamos a 8 veículos e iniciamos atendimento a grandes empresas.</p></div><div class="tl-dot"></div><div class="tl-empty"></div></div>
+      <div class="tl-item reveal"><div class="tl-empty"></div><div class="tl-dot"></div><div class="tl-card"><div class="tl-year">2020</div><h4>Renovação completa</h4><p>Investimento em veículos de última geração, elevando o padrão de conforto.</p></div></div>
+      <div class="tl-item reveal"><div class="tl-card"><div class="tl-year">2024</div><h4>Referência regional</h4><p>Frota moderna, 500+ viagens e a confiança de dezenas de empresas e órgãos públicos.</p></div><div class="tl-dot"></div><div class="tl-empty"></div></div>
+    </div>
+  </div>
+</section>
+<section class="cta-section"><div class="container"><div class="cta-inner"><div><h2 class="cta-title">Pronto para viajar com a AMAVS?</h2><p class="cta-sub">Solicite um orçamento gratuito agora.</p></div><div class="cta-btns"><a href="orcamento.html" class="btn btn-gold">Solicitar orçamento</a><a href="contato.html" class="btn btn-outline" style="border-color:rgba(255,255,255,.3);color:var(--white)">Fale conosco</a></div></div></div></section>
+<footer class="footer"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="footer-logo">AMAVS <span>Turismo</span></div><p class="footer-desc">14 anos de excelência em fretamento e transporte executivo em Brasília/DF e todo o Brasil.</p><div class="social-row"><a href="#" class="social-btn"><i class="fab fa-instagram"></i></a><a href="#" class="social-btn"><i class="fab fa-facebook"></i></a><a href="https://wa.me/5561984222205" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a></div></div>
+    <div class="footer-col"><div class="fcol-title">Frota</div><ul class="fcol-links"><li><a href="onibus.html">Ônibus</a></li><li><a href="micro-onibus.html">Micro-ônibus</a></li><li><a href="vans.html">Vans</a></li></ul></div>
+    <div class="footer-col"><div class="fcol-title">Empresa</div><ul class="fcol-links"><li><a href="sobre.html">Sobre nós</a></li><li><a href="licitacoes.html">Licitações</a></li><li><a href="contato.html">Contato</a></li><li><a href="privacidade.html">Privacidade</a></li><li><a href="termos.html">Termos</a></li></ul></div>
+    <div class="footer-col"><div class="fcol-title">Contato</div><ul class="fcontact-list"><li><i class="fas fa-phone"></i><a href="tel:61984222205">(61) 98422-2205</a></li><li><i class="fab fa-whatsapp"></i><a href="https://wa.me/5561984222205" target="_blank">(61) 98422-2205</a></li><li><i class="fas fa-envelope"></i><a href="mailto:contato@amavsturismo.com.br">contato@amavsturismo.com.br</a></li><li><i class="fas fa-map-marker-alt"></i>Brasília/DF e região</li></ul></div>
+  </div>
+  <div class="admin-bar"><div class="admin-bar-info"><span class="ab-label"><i class="fas fa-shield-alt" style="margin-right:4px"></i>Área Administrativa</span><div class="ab-creds"><div class="ab-cred"><span>Login:</span><code>admin</code></div><div class="ab-cred"><span>Senha:</span><code>admin123</code></div></div></div><a href="admin/login.html" class="admin-bar-btn"><i class="fas fa-cog" style="margin-right:5px"></i>Acessar Painel</a></div>
+  <div class="footer-bottom"><span>© 2024 AMAVS Turismo. Todos os direitos reservados.</span><span><a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos</a></span></div>
+</div></footer>
+<script src="js/main.js"></script>
+
+</body>
+</html>

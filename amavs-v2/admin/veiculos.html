@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Veículos | AMAVS Admin</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="css/admin.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="admin-wrap">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sl-icon"><span>A</span></div><div class="sl-text"><span class="sl-main">AMAVS</span><span class="sl-sub">Admin Panel</span></div></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <a href="index.html" class="nav-item"><i class="fas fa-chart-pie"></i> Dashboard</a><a href="orcamentos.html" class="nav-item"><i class="fas fa-file-invoice"></i> Orçamentos<span class="nav-badge">3</span></a><a href="veiculos.html" class="nav-item active"><i class="fas fa-bus"></i> Veículos</a><a href="contratos.html" class="nav-item"><i class="fas fa-file-contract"></i> Licitações/Contratos</a><a href="relatorios.html" class="nav-item"><i class="fas fa-chart-bar"></i> Relatórios</a><a href="usuarios.html" class="nav-item"><i class="fas fa-users"></i> Usuários</a><a href="perfil.html" class="nav-item"><i class="fas fa-user-circle"></i> Meu Perfil</a>
+    <div class="nav-section">Sistema</div>
+    <a href="../index.html" class="nav-item" target="_blank"><i class="fas fa-external-link-alt"></i> Ver site</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="su-avatar" id="suAvatar">A</div>
+      <div class="su-info"><div class="su-name" id="suName">Admin</div><div class="su-role" id="suRole">Administrador</div></div>
+      <button class="su-logout" onclick="adminLogout()" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </div>
+</aside>
+<div class="admin-main">
+  <header class="admin-topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+      <span class="page-title">Veículos</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbarDate"></span>
+    </div>
+  </header>
+  <div class="admin-content">
+
+<div class="mini-stats">
+  <div class="mini-stat"><div class="ms-icon" style="background:#DCFCE7"><i class="fas fa-check-circle" style="color:#16A34A"></i></div><div><div class="ms-val" id="mAvail">—</div><div class="ms-lbl">Disponíveis</div></div></div>
+  <div class="mini-stat"><div class="ms-icon" style="background:#FEF3C7"><i class="fas fa-wrench" style="color:#D97706"></i></div><div><div class="ms-val" id="mMaint">—</div><div class="ms-lbl">Manutenção</div></div></div>
+  <div class="mini-stat"><div class="ms-icon" style="background:#EDE9FE"><i class="fas fa-users" style="color:#7C3AED"></i></div><div><div class="ms-val" id="mCap">—</div><div class="ms-lbl">Capacidade total</div></div></div>
+</div>
+<div class="filters-bar">
+  <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchVeic" placeholder="Buscar veículo, placa..."/></div>
+  <select id="catVeic" class="filter-select"><option value="">Todas categorias</option><option>Ônibus</option><option>Micro-ônibus</option><option>Van</option></select>
+  <button class="btn-admin btn-gold" onclick="openModal('veicModal')"><i class="fas fa-plus"></i> Novo veículo</button>
+</div>
+<div class="card">
+  <div class="card-header"><h3>Frota completa</h3></div>
+  <div class="table-wrap"><table class="data-table"><thead><tr><th>Veículo</th><th>Modelo</th><th>Categoria</th><th>Placa</th><th>Cap.</th><th>Ano</th><th>KM</th><th>Próx. revisão</th><th>Status</th><th>Ações</th></tr></thead><tbody id="veicBody"></tbody></table></div>
+</div>
+<div class="modal-overlay" id="veicModal">
+  <div class="modal-box wide"><div class="modal-header"><h3 id="veicModalTitle">Novo Veículo</h3><button class="modal-close" onclick="closeModal('veicModal')"><i class="fas fa-times"></i></button></div>
+  <div class="modal-body">
+    <div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" id="vName" class="form-input" required/></div><div class="form-group"><label class="form-label">Modelo *</label><input type="text" id="vModel" class="form-input" required/></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Categoria</label><select id="vCat" class="form-input"><option>Ônibus</option><option>Micro-ônibus</option><option>Van</option></select></div><div class="form-group"><label class="form-label">Capacidade (pax)</label><input type="number" id="vCap" class="form-input" min="1"/></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Placa</label><input type="text" id="vPlate" class="form-input"/></div><div class="form-group"><label class="form-label">Ano</label><input type="number" id="vYear" class="form-input" min="2000" max="2030"/></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">KM atual</label><input type="number" id="vKm" class="form-input" min="0"/></div><div class="form-group"><label class="form-label">R$/km</label><input type="number" id="vPriceKm" class="form-input" step="0.01"/></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Status</label><select id="vStatus" class="form-input"><option value="available">Disponível</option><option value="maintenance">Manutenção</option><option value="unavailable">Indisponível</option></select></div><div class="form-group"><label class="form-label">Próxima revisão</label><input type="date" id="vNextService" class="form-input"/></div></div>
+    <div class="form-group"><label class="form-label">Foto principal (URL ou nome do arquivo)</label><input type="text" id="vImage" class="form-input" placeholder="assets/images/meu-veiculo.jpg"/></div>
+  </div>
+  <div class="modal-footer"><button class="btn-admin btn-gold" onclick="saveVeic()"><i class="fas fa-save"></i> Salvar</button><button class="btn-admin btn-outline" onclick="closeModal('veicModal')">Cancelar</button></div>
+  </div>
+</div>
+  </div>
+</div>
+</div>
+<script src="js/admin.js"></script>
+<script>
+document.getElementById("topbarDate").textContent = new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"numeric",month:"short"});
+
+let vehicles=JSON.parse(JSON.stringify(mockVehicles));let editId=null;
+function updStats(){document.getElementById('mAvail').textContent=vehicles.filter(v=>v.status==='available').length;document.getElementById('mMaint').textContent=vehicles.filter(v=>v.status==='maintenance').length;document.getElementById('mCap').textContent=vehicles.reduce((s,v)=>s+v.cap,0)+' pax';}
+function renderVeic(){
+  const s=document.getElementById('searchVeic').value.toLowerCase();
+  const cat=document.getElementById('catVeic').value;
+  const f=vehicles.filter(v=>(!s||v.name.toLowerCase().includes(s)||v.plate.toLowerCase().includes(s))&&(!cat||v.cat===cat));
+  document.getElementById('veicBody').innerHTML=f.map(v=>`<tr><td><strong>${v.name}</strong></td><td>${v.model}</td><td>${v.cat}</td><td><code style="color:var(--gold);font-size:.78rem">${v.plate}</code></td><td>${v.cap}</td><td>${v.year}</td><td>${v.km.toLocaleString('pt-BR')}</td><td>${fDate(v.nextService)}</td><td>${badge(v.status)}</td><td><button class="tbl-btn" onclick="editVeic(${v.id})"><i class="fas fa-edit"></i></button><button class="tbl-btn danger" onclick="delVeic(${v.id})"><i class="fas fa-trash"></i></button></td></tr>`).join('');
+}
+function editVeic(id){editId=id;const v=vehicles.find(x=>x.id===id);if(!v)return;document.getElementById('veicModalTitle').textContent='Editar Veículo';['Name','Model','Cat','Cap','Plate','Year','Km','PriceKm','Status','NextService','Image'].forEach(k=>{const el=document.getElementById('v'+k);if(el)el.value=v[k.toLowerCase()]||v[k.toLowerCase().replace('priceKm','priceKm')]||''});document.getElementById('vPriceKm').value=v.priceKm||'';document.getElementById('vNextService').value=v.nextService||'';openModal('veicModal');}
+function saveVeic(){const name=document.getElementById('vName').value.trim();if(!name){adminToast('Nome obrigatório.','error');return;}const data={name,model:document.getElementById('vModel').value,cat:document.getElementById('vCat').value,cap:+document.getElementById('vCap').value,plate:document.getElementById('vPlate').value,year:+document.getElementById('vYear').value,km:+document.getElementById('vKm').value,priceKm:+document.getElementById('vPriceKm').value,status:document.getElementById('vStatus').value,nextService:document.getElementById('vNextService').value,image:document.getElementById('vImage').value};if(editId){const i=vehicles.findIndex(v=>v.id===editId);vehicles[i]={...vehicles[i],...data};adminToast('Veículo atualizado!');}else{vehicles.push({id:Date.now(),...data});adminToast('Veículo adicionado!');}editId=null;document.getElementById('veicModalTitle').textContent='Novo Veículo';['Name','Model','Cap','Plate','Year','Km','PriceKm','NextService','Image'].forEach(k=>{const el=document.getElementById('v'+k);if(el)el.value='';});closeModal('veicModal');renderVeic();updStats();}
+function delVeic(id){if(!confirm('Remover veículo?'))return;vehicles=vehicles.filter(v=>v.id!==id);renderVeic();updStats();adminToast('Removido.','info');}
+document.getElementById('searchVeic').addEventListener('input',renderVeic);
+document.getElementById('catVeic').addEventListener('change',renderVeic);
+renderVeic();updStats();
+
+</script>
+</body>
+</html>

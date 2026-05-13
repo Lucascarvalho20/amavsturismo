@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" fill="none">
+  <rect width="600" height="340" fill="#0D1B2A"/>
+  <rect x="60" y="90" width="480" height="170" rx="14" fill="#142235" stroke="#D4AF37" stroke-width="1.5" stroke-opacity="0.3"/>
+  <rect x="60" y="90" width="480" height="65" rx="14" fill="#1a2e42" fill-opacity="0.6"/>
+  <rect x="78" y="100" width="65" height="47" rx="5" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="155" y="100" width="65" height="47" rx="5" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="232" y="100" width="65" height="47" rx="5" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="309" y="100" width="65" height="47" rx="5" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="386" y="100" width="65" height="47" rx="5" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <circle cx="155" cy="268" r="32" fill="#0D1B2A" stroke="#D4AF37" stroke-width="2" stroke-opacity="0.5"/>
+  <circle cx="155" cy="268" r="17" fill="#142235" stroke="#D4AF37" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="445" cy="268" r="32" fill="#0D1B2A" stroke="#D4AF37" stroke-width="2" stroke-opacity="0.5"/>
+  <circle cx="445" cy="268" r="17" fill="#142235" stroke="#D4AF37" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="300" y="200" text-anchor="middle" fill="#D4AF37" fill-opacity="0.1" font-size="30" font-family="Montserrat,sans-serif" font-weight="900">MICRO-ÔNIBUS</text>
+</svg>

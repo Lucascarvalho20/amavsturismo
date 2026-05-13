@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalhes do Veículo | AMAVS Turismo</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  
+</head>
+<body>
+<div id="pageLoader" class="page-loader"><div class="loader-brand">AMAVS <span>Turismo</span></div><div class="loader-bar"><div class="loader-fill"></div></div></div>
+<a href="https://wa.me/5561984222205" class="wpp-float" target="_blank"><i class="fab fa-whatsapp"></i> <span>WhatsApp</span></a>
+<button class="chatbot-btn" id="chatbotBtn"><i class="fas fa-comments"></i></button>
+<div class="chatbot-panel" id="chatbotPanel">
+  <div class="chat-header"><div class="chat-av">A</div><div><div class="chat-hname">Assistente AMAVS</div><div class="chat-hstatus">Online agora</div></div><button class="chat-close" id="chatClose"><i class="fas fa-times"></i></button></div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-quick"><button class="qbtn">Quero um orçamento</button><button class="qbtn">Que veículo me indica?</button><button class="qbtn">Atendem licitações?</button></div>
+  <div class="chat-form"><input type="text" id="chatInput" placeholder="Digite sua pergunta..."/><button class="chat-send" id="chatSend"><i class="fas fa-paper-plane"></i></button></div>
+</div>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><div class="logo-icon"><span>A</span></div><div class="logo-text"><span class="logo-main">AMAVS</span><span class="logo-sub">Turismo</span></div></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" >Início</a></li>
+      <li class="has-dropdown"><a href="frota.html" class='active'>Nossa Frota <i class="fas fa-chevron-down" style="font-size:.65rem"></i></a>
+        <ul class="dropdown"><li><a href="onibus.html"><i class="fas fa-bus"></i>Ônibus</a></li><li><a href="micro-onibus.html"><i class="fas fa-shuttle-van"></i>Micro-ônibus</a></li><li><a href="vans.html"><i class="fas fa-van-shuttle"></i>Vans</a></li></ul>
+      </li>
+      <li><a href="licitacoes.html" >Licitações</a></li>
+      <li><a href="sobre.html" >Sobre</a></li>
+      <li><a href="contato.html" >Contato</a></li>
+      <li><a href="orcamento.html" class="nav-cta ">Solicitar Orçamento</a></li>
+    </ul>
+    <div class="nav-phone"><i class="fas fa-phone"></i> (61) 98422-2205</div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div style="padding-top:var(--nav-h)"></div>
+<div class="container" style="padding:40px 24px 80px" id="vehicleContent">
+  <a href="frota.html" style="display:inline-flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-muted);margin-bottom:1.5rem"><i class="fas fa-arrow-left"></i> Voltar à frota</a>
+  <div class="vd-grid">
+    <div>
+      <div class="vd-gallery">
+        <div class="vd-main-img"><img id="vdMainImg" src="assets/images/placeholder.svg" alt=""/></div>
+        <div class="vd-thumbs" id="vdThumbs"></div>
+      </div>
+      <div style="margin-top:2rem">
+        <h2 id="vdName" style="font-family:var(--font-heading);font-size:1.8rem;color:var(--navy);margin-bottom:.3rem"></h2>
+        <div id="vdModel" style="color:var(--text-muted);margin-bottom:1rem"></div>
+        <div id="vdStatus" style="margin-bottom:1rem"></div>
+        <p id="vdDesc" style="color:var(--text-secondary);line-height:1.8;margin-bottom:1.5rem"></p>
+        <h3 style="font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.75rem">Especificações</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1.5rem">
+          <div style="background:var(--gray-50);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Capacidade</div><div style="font-weight:700;color:var(--navy)" id="vdCapacity"></div></div>
+          <div style="background:var(--gray-50);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Ano</div><div style="font-weight:700;color:var(--navy)" id="vdYear"></div></div>
+          <div style="background:var(--gray-50);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Placa</div><div style="font-weight:700;color:var(--navy)" id="vdPlate"></div></div>
+          <div style="background:var(--gray-50);border-radius:10px;padding:.75rem 1rem"><div style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.2rem">Quilometragem</div><div style="font-weight:700;color:var(--navy)" id="vdKm"></div></div>
+        </div>
+        <h3 style="font-size:1rem;font-weight:700;color:var(--navy);margin-bottom:.75rem">Equipamentos a bordo</h3>
+        <div class="vd-features" id="vdFeatures"></div>
+      </div>
+    </div>
+    <div class="vd-sidebar">
+      <div class="vd-price-card">
+        <div class="vpc-from">A partir de</div>
+        <div class="vpc-val" id="vdPriceKm">—</div>
+        <div class="vpc-unit">por quilômetro rodado</div>
+        <div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--gray-100)">
+          <div class="vpc-from">Diária</div>
+          <div style="font-size:1.2rem;font-weight:700;color:var(--text-secondary)" id="vdPriceDay">—</div>
+        </div>
+        <div style="font-size:.75rem;color:var(--text-muted);margin-top:.75rem"><i class="fas fa-info-circle" style="color:var(--gold)"></i> Preço inclui motorista e seguro. Combustível à parte.</div>
+      </div>
+      <a href="orcamento.html" class="btn btn-navy" style="width:100%;justify-content:center;margin-bottom:.75rem"><i class="fas fa-calculator"></i> Solicitar orçamento</a>
+      <a id="vdWppBtn" href="#" class="btn btn-wpp" style="width:100%;justify-content:center" target="_blank"><i class="fab fa-whatsapp"></i> Consultar no WhatsApp</a>
+      <div style="margin-top:1.5rem;background:var(--gold-light);border:1px solid var(--gold-mid);border-radius:12px;padding:1rem">
+        <div style="font-size:.75rem;font-weight:700;color:var(--gold-hover);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem"><i class="fas fa-shield-alt"></i> Incluso no fretamento</div>
+        <div class="vdf"><i class="fas fa-check-circle"></i> Motorista profissional CNH D/E</div>
+        <div class="vdf"><i class="fas fa-check-circle"></i> Seguro total de passageiros</div>
+        <div class="vdf"><i class="fas fa-check-circle"></i> Rastreamento GPS 24h</div>
+        <div class="vdf"><i class="fas fa-check-circle"></i> Suporte durante a viagem</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:4rem">
+    <h2 style="font-family:var(--font-heading);font-size:1.5rem;color:var(--navy);margin-bottom:1.5rem">Outros veículos disponíveis</h2>
+    <div class="fleet-grid" id="moreVehicles"></div>
+  </div>
+</div>
+<footer class="footer"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="footer-logo">AMAVS <span>Turismo</span></div><p class="footer-desc">14 anos de excelência em fretamento e transporte executivo em Brasília/DF e todo o Brasil.</p><div class="social-row"><a href="#" class="social-btn"><i class="fab fa-instagram"></i></a><a href="#" class="social-btn"><i class="fab fa-facebook"></i></a><a href="https://wa.me/5561984222205" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a></div></div>
+    <div class="footer-col"><div class="fcol-title">Frota</div><ul class="fcol-links"><li><a href="onibus.html">Ônibus</a></li><li><a href="micro-onibus.html">Micro-ônibus</a></li><li><a href="vans.html">Vans</a></li></ul></div>
+    <div class="footer-col"><div class="fcol-title">Empresa</div><ul class="fcol-links"><li><a href="sobre.html">Sobre nós</a></li><li><a href="licitacoes.html">Licitações</a></li><li><a href="contato.html">Contato</a></li><li><a href="privacidade.html">Privacidade</a></li><li><a href="termos.html">Termos</a></li></ul></div>
+    <div class="footer-col"><div class="fcol-title">Contato</div><ul class="fcontact-list"><li><i class="fas fa-phone"></i><a href="tel:61984222205">(61) 98422-2205</a></li><li><i class="fab fa-whatsapp"></i><a href="https://wa.me/5561984222205" target="_blank">(61) 98422-2205</a></li><li><i class="fas fa-envelope"></i><a href="mailto:contato@amavsturismo.com.br">contato@amavsturismo.com.br</a></li><li><i class="fas fa-map-marker-alt"></i>Brasília/DF e região</li></ul></div>
+  </div>
+  <div class="admin-bar"><div class="admin-bar-info"><span class="ab-label"><i class="fas fa-shield-alt" style="margin-right:4px"></i>Área Administrativa</span><div class="ab-creds"><div class="ab-cred"><span>Login:</span><code>admin</code></div><div class="ab-cred"><span>Senha:</span><code>admin123</code></div></div></div><a href="admin/login.html" class="admin-bar-btn"><i class="fas fa-cog" style="margin-right:5px"></i>Acessar Painel</a></div>
+  <div class="footer-bottom"><span>© 2024 AMAVS Turismo. Todos os direitos reservados.</span><span><a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos</a></span></div>
+</div></footer>
+<script src="js/main.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AMAVS Turismo — Fretamento Executivo em Brasília/DF</title>
+  <meta name="description" content="Fretamento de ônibus, micro-ônibus e vans em Brasília/DF. Empresas, eventos e licitações. 14 anos de experiência. Orçamento grátis em 30min."/>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+<div id="pageLoader" class="page-loader"><div class="loader-brand">AMAVS <span>Turismo</span></div><div class="loader-bar"><div class="loader-fill"></div></div></div>
+
+<a href="https://wa.me/5561984222205?text=Ol%C3%A1%21+Vim+pelo+site+e+gostaria+de+um+or%C3%A7amento." class="wpp-float" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> <span>WhatsApp</span></a>
+
+<button class="chatbot-btn" id="chatbotBtn" aria-label="Fale com nossa assistente"><i class="fas fa-comments"></i></button>
+<div class="chatbot-panel" id="chatbotPanel">
+  <div class="chat-header">
+    <div class="chat-av">A</div>
+    <div><div class="chat-hname">Assistente AMAVS</div><div class="chat-hstatus">Online agora</div></div>
+    <button class="chat-close" id="chatClose"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-quick">
+    <button class="qbtn">Quero um orçamento</button>
+    <button class="qbtn">Qual veículo me indica?</button>
+    <button class="qbtn">Atendem licitações?</button>
+    <button class="qbtn">Horário de atendimento</button>
+  </div>
+  <div class="chat-form">
+    <input type="text" id="chatInput" placeholder="Digite sua pergunta..."/>
+    <button class="chat-send" id="chatSend"><i class="fas fa-paper-plane"></i></button>
+  </div>
+</div>
+
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon"><span>A</span></div>
+      <div class="logo-text"><span class="logo-main">AMAVS</span><span class="logo-sub">Turismo</span></div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" class="active">Início</a></li>
+      <li class="has-dropdown">
+        <a href="frota.html">Nossa Frota <i class="fas fa-chevron-down" style="font-size:.6rem"></i></a>
+        <ul class="dropdown">
+          <li><a href="onibus.html"><i class="fas fa-bus"></i>Ônibus (46–50 pax)</a></li>
+          <li><a href="micro-onibus.html"><i class="fas fa-shuttle-van"></i>Micro-ônibus (20–28 pax)</a></li>
+          <li><a href="vans.html"><i class="fas fa-van-shuttle"></i>Vans (15–16 pax)</a></li>
+        </ul>
+      </li>
+      <li><a href="licitacoes.html">Licitações</a></li>
+      <li><a href="sobre.html">Sobre</a></li>
+      <li><a href="contato.html">Contato</a></li>
+      <li><a href="orcamento.html" class="nav-cta">Solicitar Orçamento</a></li>
+    </ul>
+    <div class="nav-phone"><i class="fas fa-phone"></i> (61) 98422-2205</div>
+    <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow"><i class="fas fa-award"></i> Empresa certificada — Desde 2010</div>
+        <h1 class="hero-title">Viaje com <em>segurança</em> e <em>conforto</em> garantidos</h1>
+        <p class="hero-desc">Fretamento executivo de ônibus, micro-ônibus e vans em Brasília/DF. Atendemos empresas, eventos e órgãos públicos há mais de 14 anos.</p>
+        <div class="hero-actions">
+          <a href="orcamento.html" class="btn btn-gold btn-lg"><i class="fas fa-calculator"></i> Orçamento grátis</a>
+          <a href="frota.html" class="btn btn-lg" style="background:rgba(255,255,255,.08);color:#fff;border:1.5px solid rgba(255,255,255,.2)">Ver a frota</a>
+        </div>
+        <div class="hero-stats-row">
+          <div class="hs-item"><div class="hs-num">500+</div><div class="hs-lbl">Viagens</div></div>
+          <div class="hs-item"><div class="hs-num">14</div><div class="hs-lbl">Anos</div></div>
+          <div class="hs-item"><div class="hs-num">6</div><div class="hs-lbl">Veículos</div></div>
+          <div class="hs-item"><div class="hs-num">98%</div><div class="hs-lbl">Satisfação</div></div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hc-title"><i class="fas fa-calculator" style="margin-right:5px"></i>Calcule seu orçamento</div>
+        <div class="hc-stats">
+          <div class="hcs"><div class="hcs-n">15</div><div class="hcs-l">a 50 pax</div></div>
+          <div class="hcs"><div class="hcs-n">30min</div><div class="hcs-l">resposta</div></div>
+          <div class="hcs"><div class="hcs-n">0</div><div class="hcs-l">acidentes</div></div>
+          <div class="hcs"><div class="hcs-n">24h</div><div class="hcs-l">suporte</div></div>
+        </div>
+        <div class="hc-form">
+          <div class="hcf-label"><i class="fas fa-route"></i> Dados rápidos</div>
+          <div class="hcf-field"><i class="fas fa-map-pin"></i><input type="text" id="hqOrigem" placeholder="Cidade de origem"/></div>
+          <div class="hcf-field"><i class="fas fa-flag-checkered"></i><input type="text" id="hqDestino" placeholder="Cidade de destino"/></div>
+          <div class="hcf-field"><i class="fas fa-users"></i><input type="number" id="hqPax" placeholder="Passageiros" min="1"/></div>
+          <div class="hcf-field"><i class="fas fa-user"></i><input type="text" id="hqNome" placeholder="Seu nome"/></div>
+          <button onclick="sendHeroQuote()" class="btn btn-gold" style="width:100%;justify-content:center;margin-top:.5rem"><i class="fab fa-whatsapp"></i> Enviar pelo WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES STRIP -->
+<div class="services-strip">
+  <div class="container">
+    <div class="strip-items">
+      <div class="strip-item"><i class="fas fa-building"></i><span>Corporativo</span></div>
+      <div class="strip-item"><i class="fas fa-umbrella-beach"></i><span>Turismo</span></div>
+      <div class="strip-item"><i class="fas fa-graduation-cap"></i><span>Escolar</span></div>
+      <div class="strip-item"><i class="fas fa-glass-cheers"></i><span>Eventos</span></div>
+      <div class="strip-item"><i class="fas fa-landmark"></i><span>Licitações</span></div>
+      <div class="strip-item"><i class="fas fa-plane-arrival"></i><span>Aeroporto</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FLEET -->
+<section class="fleet-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-badge"><i class="fas fa-bus"></i> Nossa Frota</span>
+      <h2 class="section-title">Veículos <em>modernos</em> para cada necessidade</h2>
+      <p class="section-sub">Todos os veículos com ar-condicionado, Wi-Fi, seguro total e motoristas certificados CNH D/E.</p>
+    </div>
+    <div class="fleet-tabs">
+      <button class="tab-btn active" data-filter="all">Todos</button>
+      <button class="tab-btn" data-filter="onibus">Ônibus</button>
+      <button class="tab-btn" data-filter="micro">Micro-ônibus</button>
+      <button class="tab-btn" data-filter="van">Vans</button>
+    </div>
+    <div class="fleet-grid" id="fleetGrid"></div>
+    <div style="text-align:center;margin-top:2.5rem">
+      <a href="frota.html" class="btn btn-navy">Ver frota completa <i class="fas fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-banner">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-num" data-count="500" data-suffix="+">0</div><div class="stat-lbl">Viagens realizadas</div></div>
+      <div class="stat-box"><div class="stat-num" data-count="14" data-suffix=" anos">0</div><div class="stat-lbl">De experiência</div></div>
+      <div class="stat-box"><div class="stat-num" data-count="98" data-suffix="%">0</div><div class="stat-lbl">Satisfação dos clientes</div></div>
+      <div class="stat-box"><div class="stat-num" data-count="6">0</div><div class="stat-lbl">Veículos disponíveis</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="why-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-badge">Por que nos escolher</span>
+      <h2 class="section-title">Referência em transporte <em>premium</em></h2>
+      <p class="section-sub">Mais de 14 anos conectando pessoas com segurança, conforto e responsabilidade.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card reveal"><div class="why-icon"><i class="fas fa-shield-alt"></i></div><h3>Segurança Certificada</h3><p>Veículos revisados, seguro total e motoristas com CNH D/E e treinamento especializado em cada viagem.</p></div>
+      <div class="why-card reveal"><div class="why-icon"><i class="fas fa-clock"></i></div><h3>Pontualidade Garantida</h3><p>Rastreamento GPS em tempo real e suporte 24h para garantir chegadas pontuais.</p></div>
+      <div class="why-card reveal"><div class="why-icon"><i class="fas fa-wifi"></i></div><h3>Conforto & Tecnologia</h3><p>Wi-Fi, ar-condicionado, tomadas USB e poltronas reclináveis em toda a frota.</p></div>
+      <div class="why-card reveal"><div class="why-icon"><i class="fas fa-file-invoice-dollar"></i></div><h3>Preço Transparente</h3><p>Orçamento sem surpresas, com nota fiscal e flexibilidade de pagamento para pessoas jurídicas.</p></div>
+      <div class="why-card reveal"><div class="why-icon"><i class="fas fa-headset"></i></div><h3>Suporte Completo</h3><p>Do orçamento à chegada — atendimento por WhatsApp, telefone e e-mail a qualquer hora.</p></div>
+      <div class="why-card reveal"><div class="why-icon"><i class="fas fa-landmark"></i></div><h3>Contratos Públicos</h3><p>Participamos de licitações e pregões com toda a documentação regularizada: ANTT, certidões, NF.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE SECTION -->
+<section class="quote-section">
+  <div class="container">
+    <div class="quote-inner">
+      <div class="reveal">
+        <span class="section-badge">Orçamento gratuito</span>
+        <h2 class="qi-title">Cotação em <em style="color:var(--gold);font-style:italic">30 minutos</em></h2>
+        <p class="qi-text">Sem compromisso. Nossa equipe analisa sua necessidade e envia o melhor veículo com o valor completo — inclui motorista e seguro.</p>
+        <div class="qi-perks">
+          <div class="perk"><i class="fas fa-check-circle"></i> 100% sem compromisso</div>
+          <div class="perk"><i class="fas fa-check-circle"></i> Sugestão do melhor veículo para seu grupo</div>
+          <div class="perk"><i class="fas fa-check-circle"></i> Resposta em até 30 minutos</div>
+          <div class="perk"><i class="fas fa-check-circle"></i> Nota fiscal para empresas e órgãos</div>
+          <div class="perk"><i class="fas fa-check-circle"></i> Parcelamento disponível</div>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">
+          <a href="orcamento.html" class="btn btn-navy"><i class="fas fa-calculator"></i> Formulário completo</a>
+          <a href="https://wa.me/5561984222205" class="btn btn-wpp" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp direto</a>
+        </div>
+      </div>
+      <div class="quote-box reveal">
+        <div class="qbox-head">
+          <div class="qbox-icon"><i class="fas fa-route" style="color:var(--gold)"></i></div>
+          <div><h3>Orçamento rápido</h3><p>Resposta via WhatsApp em minutos</p></div>
+        </div>
+        <div class="form-group"><label class="form-label">Origem *</label><input type="text" class="form-input" id="qOrigem" placeholder="Cidade ou endereço de saída"/></div>
+        <div class="form-group"><label class="form-label">Destino *</label><input type="text" class="form-input" id="qDestino" placeholder="Cidade ou local de chegada"/></div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Data</label><input type="date" class="form-input" id="qData"/></div>
+          <div class="form-group"><label class="form-label">Passageiros</label><input type="number" class="form-input" id="qPax" min="1" placeholder="Qtd."/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Seu nome *</label><input type="text" class="form-input" id="qNome" placeholder="Nome completo"/></div>
+        <button onclick="sendSectionQuote()" class="btn btn-gold" style="width:100%;justify-content:center"><i class="fab fa-whatsapp"></i> Enviar orçamento pelo WhatsApp</button>
+        <p style="text-align:center;margin-top:.6rem;font-size:.75rem;color:var(--text-muted)">Seus dados são protegidos — <a href="privacidade.html" style="color:var(--gold)">saiba mais</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi-section">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-badge">Depoimentos</span>
+      <h2 class="section-title">O que nossos <em>clientes</em> dizem</h2>
+      <p class="section-sub">Mais de 200 clientes atendidos em todo o Brasil. Veja o que eles falam sobre a AMAVS.</p>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal"><div class="testi-quote">"</div><div class="testi-stars">★★★★★</div><p class="testi-text">Contratamos a AMAVS para o transporte de 80 funcionários na nossa convenção anual. Pontualidade impecável, ônibus impecável. Vamos renovar o contrato com certeza.</p><div class="testi-author"><div class="testi-av">R</div><div><div class="testi-name">Ricardo Almeida</div><div class="testi-role">Gerente RH — TechCorp Brasil</div></div></div></div>
+      <div class="testi-card reveal"><div class="testi-quote">"</div><div class="testi-stars">★★★★★</div><p class="testi-text">Excelente serviço para nossa formatura. Van impecável, motorista atencioso e cheguei no horário. Recomendo a AMAVS sem hesitar para qualquer evento.</p><div class="testi-author"><div class="testi-av">A</div><div><div class="testi-name">Ana Paula Santos</div><div class="testi-role">Coordenadora — Col. Estadual</div></div></div></div>
+      <div class="testi-card reveal"><div class="testi-quote">"</div><div class="testi-stars">★★★★★</div><p class="testi-text">Trabalhamos com a AMAVS em contrato público há 2 anos. Seriedade, documentação sempre em dia e atendimento diferenciado. É a escolha certa para o setor público.</p><div class="testi-author"><div class="testi-av">M</div><div><div class="testi-name">Marcos Oliveira</div><div class="testi-role">Secretário Municipal</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENTS -->
+<section class="clients-section">
+  <div class="container">
+    <div class="clients-lbl">Empresas e órgãos que confiam na AMAVS Turismo</div>
+    <div class="clients-logos">
+      <span class="client-lbl">Prefeitura DF</span>
+      <span class="client-lbl">SABESP</span>
+      <span class="client-lbl">Min. da Saúde</span>
+      <span class="client-lbl">TechCorp Brasil</span>
+      <span class="client-lbl">Sec. Educação</span>
+      <span class="client-lbl">Banco do Brasil</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <div>
+        <h2 class="cta-title">Pronto para planejar sua viagem?</h2>
+        <p class="cta-sub">Solicite um orçamento gratuito agora e receba uma proposta em até 30 minutos.</p>
+      </div>
+      <div class="cta-btns">
+        <a href="orcamento.html" class="btn btn-gold btn-lg"><i class="fas fa-calculator"></i> Orçamento grátis</a>
+        <a href="https://wa.me/5561984222205" class="btn btn-wpp btn-lg" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">AMAVS <span>Turismo</span></div>
+        <p class="footer-desc">Mais de 14 anos conectando pessoas com segurança, conforto e pontualidade. Frota moderna para empresas, grupos e órgãos públicos em todo o Brasil.</p>
+        <div class="social-row">
+          <a href="#" class="social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-btn" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+          <a href="#" class="social-btn" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="https://wa.me/5561984222205" class="social-btn" aria-label="WhatsApp" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="fcol-title">Nossa Frota</div>
+        <ul class="fcol-links">
+          <li><a href="onibus.html">Ônibus (46–50 pax)</a></li>
+          <li><a href="micro-onibus.html">Micro-ônibus (20–28 pax)</a></li>
+          <li><a href="vans.html">Vans (15–16 pax)</a></li>
+          <li><a href="frota.html">Ver frota completa</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="fcol-title">Empresa</div>
+        <ul class="fcol-links">
+          <li><a href="sobre.html">Sobre nós</a></li>
+          <li><a href="licitacoes.html">Licitações</a></li>
+          <li><a href="orcamento.html">Solicitar orçamento</a></li>
+          <li><a href="privacidade.html">Política de privacidade</a></li>
+          <li><a href="termos.html">Termos de uso</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="fcol-title">Contato</div>
+        <ul class="fcontact-list">
+          <li><i class="fas fa-phone"></i><a href="tel:61984222205">(61) 98422-2205</a></li>
+          <li><i class="fab fa-whatsapp"></i><a href="https://wa.me/5561984222205" target="_blank">(61) 98422-2205</a></li>
+          <li><i class="fas fa-envelope"></i><a href="mailto:contato@amavsturismo.com.br">contato@amavsturismo.com.br</a></li>
+          <li><i class="fas fa-map-marker-alt"></i>Brasília/DF e região</li>
+          <li><i class="fas fa-clock"></i>Seg–Sex 8h–18h · Sáb 8h–12h</li>
+        </ul>
+      </div>
+    </div>
+    <div class="admin-bar">
+      <div class="admin-bar-info">
+        <span class="ab-label"><i class="fas fa-shield-alt" style="margin-right:5px"></i>Área Restrita</span>
+        <div class="ab-creds">
+          <div class="ab-cred"><span>Login:</span><code>admin</code></div>
+          <div class="ab-cred"><span>Senha:</span><code>admin123</code></div>
+          <div class="ab-cred"><span>Operador:</span><code>operador / op2024</code></div>
+        </div>
+      </div>
+      <a href="admin/login.html" class="admin-bar-btn"><i class="fas fa-cog" style="margin-right:5px"></i>Painel Admin</a>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 AMAVS Turismo. Todos os direitos reservados.</span>
+      <span><a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+function sendHeroQuote() {
+  const o=document.getElementById('hqOrigem').value.trim(),d=document.getElementById('hqDestino').value.trim(),n=document.getElementById('hqNome').value.trim(),p=document.getElementById('hqPax').value;
+  if(!o||!d||!n){showToast('Preencha pelo menos: origem, destino e seu nome.','error');return;}
+  const msg='🚌 *Orçamento Rápido — AMAVS*\n\nNome: '+n+'\nOrigem: '+o+'\nDestino: '+d+'\nPassageiros: '+(p||'não informado');
+  window.open('https://wa.me/5561984222205?text='+encodeURIComponent(msg),'_blank');
+  showToast('Redirecionando para o WhatsApp!');
+}
+function sendSectionQuote() {
+  const o=document.getElementById('qOrigem').value.trim(),d=document.getElementById('qDestino').value.trim(),n=document.getElementById('qNome').value.trim();
+  const pax=document.getElementById('qPax').value,data=document.getElementById('qData').value;
+  if(!o||!d||!n){showToast('Preencha origem, destino e seu nome.','error');return;}
+  const msg='🚌 *Orçamento AMAVS*\n\nNome: '+n+'\nOrigem: '+o+'\nDestino: '+d+'\nData: '+(data||'A combinar')+'\nPassageiros: '+(pax||'não informado');
+  window.open('https://wa.me/5561984222205?text='+encodeURIComponent(msg),'_blank');
+  showToast('Redirecionando para o WhatsApp!');
+}
+</script>
+</body>
+</html>

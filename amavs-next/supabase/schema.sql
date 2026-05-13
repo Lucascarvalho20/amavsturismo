@@ -1,0 +1,202 @@
+-- ============================================================
+-- Amav's Turismo — Schema Supabase
+-- Execute no SQL Editor: supabase.com → seu projeto → SQL Editor
+-- ============================================================
+
+-- Extensões
+create extension if not exists "uuid-ossp";
+
+-- ============================================================
+-- VEÍCULOS
+-- ============================================================
+create table if not exists public.vehicles (
+  id           uuid default uuid_generate_v4() primary key,
+  name         text not null,
+  model        text not null,
+  category     text not null check (category in ('onibus','micro','van')),
+  capacity     int  not null check (capacity > 0),
+  year         int  not null,
+  plate        text not null unique,
+  km           int  default 0,
+  price_km     numeric(8,2) default 0,
+  price_day    numeric(8,2) default 0,
+  status       text default 'disponivel' check (status in ('disponivel','em_uso','manutencao')),
+  next_service date,
+  features     text[] default '{}',
+  images       text[] default '{}',  -- múltiplas fotos do veículo
+  description  text default '',
+  photo_url    text,
+  created_at   timestamptz default now(),
+  updated_at   timestamptz default now()
+);
+
+-- ============================================================
+-- CONTRATOS
+-- ============================================================
+create table if not exists public.contracts (
+  id           uuid default uuid_generate_v4() primary key,
+  code         text not null unique,
+  client       text not null,
+  modality     text not null check (modality in ('pregao_eletronico','tomada_precos','concorrencia','dispensa','inexigibilidade')),
+  start_date   date not null,
+  end_date     date not null,
+  value        numeric(12,2) not null default 0,
+  status       text default 'ativo' check (status in ('ativo','encerrado','em_licitacao','suspenso')),
+  vehicle_ids  uuid[] default '{}',
+  document_url text,
+  notes        text,
+  created_at   timestamptz default now(),
+  updated_at   timestamptz default now()
+);
+
+-- ============================================================
+-- LEADS (Orçamentos)
+-- ============================================================
+create table if not exists public.leads (
+  id               uuid default uuid_generate_v4() primary key,
+  code             text not null unique,
+  name             text not null,
+  phone            text not null,
+  email            text,
+  origin           text not null,
+  destination      text not null,
+  travel_date      date not null,
+  return_date      date,
+  passengers       int  not null default 1 check (passengers > 0),
+  vehicle_category text check (vehicle_category in ('onibus','micro','van')),
+  vehicle_id       uuid references public.vehicles(id) on delete set null,
+  message          text,
+  status           text default 'pendente' check (status in ('pendente','em_contato','aprovado','recusado','convertido')),
+  source           text default 'site' check (source in ('whatsapp','site','instagram','indicacao','outro')),
+  created_at       timestamptz default now(),
+  updated_at       timestamptz default now()
+);
+
+-- ============================================================
+-- RESERVAS (Calendário de disponibilidade)
+-- ============================================================
+create table if not exists public.reservations (
+  id          uuid default uuid_generate_v4() primary key,
+  vehicle_id  uuid not null references public.vehicles(id) on delete cascade,
+  client_name text not null,
+  client_phone text not null,
+  start_date  date not null,
+  end_date    date not null,
+  origin      text not null,
+  destination text not null,
+  passengers  int  not null default 1,
+  total_value numeric(10,2) default 0,
+  notes       text,
+  status      text default 'confirmada' check (status in ('confirmada','pendente','cancelada')),
+  created_at  timestamptz default now()
+);
+
+-- ============================================================
+-- AUDIT LOG
+-- ============================================================
+create table if not exists public.audit_log (
+  id          uuid default uuid_generate_v4() primary key,
+  user_id     uuid references auth.users(id) on delete set null,
+  user_email  text,
+  action      text not null,
+  resource    text,
+  resource_id text,
+  details     jsonb,
+  ip_address  inet,
+  user_agent  text,
+  created_at  timestamptz default now()
+);
+
+-- ============================================================
+-- LOGIN ATTEMPTS (Rate limiting)
+-- ============================================================
+create table if not exists public.login_attempts (
+  id          uuid default uuid_generate_v4() primary key,
+  email       text not null,
+  ip_address  inet,
+  success     boolean default false,
+  created_at  timestamptz default now()
+);
+
+create index if not exists login_attempts_email_idx on public.login_attempts (email, created_at desc);
+create index if not exists login_attempts_ip_idx    on public.login_attempts (ip_address, created_at desc);
+create index if not exists audit_log_created_idx    on public.audit_log (created_at desc);
+
+-- ============================================================
+-- ROW LEVEL SECURITY
+-- ============================================================
+
+-- Vehicles: public read, authenticated write
+alter table public.vehicles    enable row level security;
+alter table public.contracts   enable row level security;
+alter table public.leads       enable row level security;
+alter table public.reservations enable row level security;
+alter table public.audit_log   enable row level security;
+alter table public.login_attempts enable row level security;
+
+-- Public can read vehicles and active contracts
+create policy "vehicles_public_read"    on public.vehicles    for select using (true);
+create policy "contracts_public_read"   on public.contracts   for select using (status = 'ativo');
+create policy "reservations_public_read" on public.reservations for select using (true);
+
+-- Public can insert leads (form submissions)
+create policy "leads_public_insert"     on public.leads       for insert with check (true);
+
+-- Authenticated users (admin) have full access
+create policy "vehicles_auth_all"    on public.vehicles    for all using (auth.role() = 'authenticated');
+create policy "contracts_auth_all"   on public.contracts   for all using (auth.role() = 'authenticated');
+create policy "leads_auth_all"       on public.leads       for all using (auth.role() = 'authenticated');
+create policy "reservations_auth_all" on public.reservations for all using (auth.role() = 'authenticated');
+create policy "audit_log_auth_read"  on public.audit_log   for select using (auth.role() = 'authenticated');
+create policy "audit_log_insert"     on public.audit_log   for insert with check (true);
+create policy "login_attempts_insert" on public.login_attempts for insert with check (true);
+create policy "login_attempts_auth_read" on public.login_attempts for select using (auth.role() = 'authenticated');
+
+-- ============================================================
+-- SUPABASE STORAGE
+-- Execute no SQL Editor DEPOIS de criar as tabelas
+-- ============================================================
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('vehicles', 'vehicles', true, 5242880, array['image/jpeg','image/png','image/webp','image/gif'])
+  on conflict (id) do nothing;
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+  values ('contracts', 'contracts', false, 20971520, array['application/pdf'])
+  on conflict (id) do nothing;
+
+-- Storage policies
+create policy "vehicles_public_read"    on storage.objects for select using (bucket_id = 'vehicles');
+create policy "vehicles_auth_upload"    on storage.objects for insert with check (bucket_id = 'vehicles' and auth.role() = 'authenticated');
+create policy "vehicles_auth_delete"    on storage.objects for delete using (bucket_id = 'vehicles' and auth.role() = 'authenticated');
+create policy "contracts_auth_all"      on storage.objects for all using (bucket_id = 'contracts' and auth.role() = 'authenticated');
+
+-- ============================================================
+-- SEED DATA — dados iniciais
+-- ============================================================
+insert into public.vehicles (name, model, category, capacity, year, plate, km, price_km, price_day, status, features, description) values
+('Ônibus Executivo Gold', 'Mercedes-Benz O-500 RS', 'onibus', 46, 2022, 'JKL-1A23', 95000, 4.50, 1800.00, 'disponivel',
+ array['Ar condicionado','Wi-Fi','Tomadas USB','Poltronas reclináveis','TV','Frigobar','Banheiro'],
+ 'Ônibus executivo de alto padrão ideal para viagens longas, grupos corporativos e excursões premium.'),
+('Ônibus Governo Federal', 'Scania K-360', 'onibus', 50, 2021, 'MNO-2B34', 140000, 4.20, 1600.00, 'em_uso',
+ array['Ar condicionado','Poltronas reclináveis','Banheiro','Porta-malas amplo','GPS rastreador'],
+ 'Ônibus homologado para contratos governamentais. Documentação completa.'),
+('Micro-ônibus Premium', 'Volare W9', 'micro', 28, 2023, 'PQR-3C45', 42000, 3.80, 1200.00, 'disponivel',
+ array['Ar condicionado','Wi-Fi','Tomadas USB','Poltronas reclináveis','Janelas panorâmicas'],
+ 'Micro-ônibus ideal para grupos médios, eventos corporativos e traslados.'),
+('Micro-ônibus Escolar', 'Neobus Thunder', 'micro', 25, 2020, 'STU-4D56', 78000, 3.20, 980.00, 'disponivel',
+ array['Ar condicionado','Cinto de segurança','Câmeras internas','GPS rastreador'],
+ 'Adaptado para transporte escolar e excursões estudantis.'),
+('Van Executiva', 'Mercedes-Benz Sprinter 416', 'van', 16, 2023, 'VWX-5E67', 28000, 2.80, 800.00, 'disponivel',
+ array['Ar condicionado','Wi-Fi','Tomadas USB','Poltronas em couro','Teto alto'],
+ 'Van executiva de última geração para pequenos grupos e traslados VIP.'),
+('Van Governo', 'Renault Master 2.3', 'van', 15, 2022, 'YZA-6F78', 55000, 2.50, 720.00, 'manutencao',
+ array['Ar condicionado','GPS rastreador','Câmera de ré','Porta lateral deslizante'],
+ 'Van homologada para contratos com órgãos públicos.')
+on conflict (plate) do nothing;
+
+insert into public.contracts (code, client, modality, start_date, end_date, value, status, notes) values
+('CT-2024-001', 'Ministério da Educação',   'pregao_eletronico', '2024-01-02', '2024-12-31', 384000, 'ativo',    'Transporte de servidores entre ministérios na Esplanada.'),
+('CT-2024-002', 'SESI-DF',                  'tomada_precos',     '2024-03-01', '2025-02-28', 96000,  'ativo',    'Transporte de funcionários para eventos e confraternizações.'),
+('CT-2023-008', 'Tribunal de Justiça do DF','pregao_eletronico', '2023-07-01', '2024-06-30', 156000, 'encerrado','Transporte de magistrados e servidores para diligências externas.'),
+('CT-2024-003', 'SENAC-DF',                 'dispensa',          '2024-05-01', '2024-10-31', 48000,  'ativo',    'Transporte de alunos para atividades práticas externas.')
+on conflict (code) do nothing;

@@ -1,0 +1,36 @@
+# AMAVS Turismo — Apache Security Config
+Options -Indexes
+ServerSignature Off
+
+# Força HTTPS (ative após configurar SSL no Hostinger)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Bloqueia acesso direto ao backend e db
+<FilesMatch "\.(php|sql|env|log|sh|py)$">
+  <RequireAll>
+    Require all denied
+  </RequireAll>
+</FilesMatch>
+
+# Permite backend apenas de chamadas internas
+<Directory "backend">
+  Require all denied
+</Directory>
+
+# Cabeçalhos de segurança
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Cache para assets estáticos
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+</IfModule>

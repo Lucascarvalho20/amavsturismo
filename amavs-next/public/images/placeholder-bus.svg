@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" fill="none">
+  <rect width="800" height="450" fill="#0D1B2A"/>
+  <rect x="80" y="120" width="640" height="220" rx="16" fill="#142235" stroke="#D4AF37" stroke-width="1.5" stroke-opacity="0.3"/>
+  <rect x="80" y="120" width="640" height="80" rx="16" fill="#1a2e42" fill-opacity="0.6"/>
+  <rect x="100" y="132" width="80" height="58" rx="6" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="195" y="132" width="80" height="58" rx="6" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="290" y="132" width="80" height="58" rx="6" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="385" y="132" width="80" height="58" rx="6" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="480" y="132" width="80" height="58" rx="6" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="575" y="132" width="80" height="58" rx="6" fill="#D4AF37" fill-opacity="0.08" stroke="#D4AF37" stroke-width="1" stroke-opacity="0.3"/>
+  <circle cx="200" cy="348" r="40" fill="#0D1B2A" stroke="#D4AF37" stroke-width="2" stroke-opacity="0.5"/>
+  <circle cx="200" cy="348" r="22" fill="#142235" stroke="#D4AF37" stroke-width="1.5" stroke-opacity="0.4"/>
+  <circle cx="600" cy="348" r="40" fill="#0D1B2A" stroke="#D4AF37" stroke-width="2" stroke-opacity="0.5"/>
+  <circle cx="600" cy="348" r="22" fill="#142235" stroke="#D4AF37" stroke-width="1.5" stroke-opacity="0.4"/>
+  <text x="400" y="280" text-anchor="middle" fill="#D4AF37" fill-opacity="0.1" font-size="42" font-family="Montserrat,sans-serif" font-weight="900">AMAV'S TURISMO</text>
+</svg>

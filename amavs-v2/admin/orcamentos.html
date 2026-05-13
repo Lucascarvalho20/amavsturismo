@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Orçamentos | AMAVS Admin</title>
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="css/admin.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="admin-wrap">
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sl-icon"><span>A</span></div><div class="sl-text"><span class="sl-main">AMAVS</span><span class="sl-sub">Admin Panel</span></div></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <a href="index.html" class="nav-item"><i class="fas fa-chart-pie"></i> Dashboard</a><a href="orcamentos.html" class="nav-item active"><i class="fas fa-file-invoice"></i> Orçamentos<span class="nav-badge">3</span></a><a href="veiculos.html" class="nav-item"><i class="fas fa-bus"></i> Veículos</a><a href="contratos.html" class="nav-item"><i class="fas fa-file-contract"></i> Licitações/Contratos</a><a href="relatorios.html" class="nav-item"><i class="fas fa-chart-bar"></i> Relatórios</a><a href="usuarios.html" class="nav-item"><i class="fas fa-users"></i> Usuários</a><a href="perfil.html" class="nav-item"><i class="fas fa-user-circle"></i> Meu Perfil</a>
+    <div class="nav-section">Sistema</div>
+    <a href="../index.html" class="nav-item" target="_blank"><i class="fas fa-external-link-alt"></i> Ver site</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="su-avatar" id="suAvatar">A</div>
+      <div class="su-info"><div class="su-name" id="suName">Admin</div><div class="su-role" id="suRole">Administrador</div></div>
+      <button class="su-logout" onclick="adminLogout()" title="Sair"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </div>
+</aside>
+<div class="admin-main">
+  <header class="admin-topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+      <span class="page-title">Orçamentos</span>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-date" id="topbarDate"></span>
+    </div>
+  </header>
+  <div class="admin-content">
+
+<div class="filters-bar">
+  <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchOrc" placeholder="Buscar cliente, veículo ou ID..."/></div>
+  <select id="statusOrc" class="filter-select"><option value="">Todos os status</option><option value="pending">Pendente</option><option value="approved">Aprovado</option><option value="completed">Concluído</option><option value="rejected">Recusado</option></select>
+  <button class="btn-admin btn-outline" onclick="exportCSV()"><i class="fas fa-download"></i> Exportar CSV</button>
+</div>
+<div class="card">
+  <div class="card-header"><h3>Todos os orçamentos</h3><span id="orcCount" style="font-size:.78rem;color:var(--text3)">5 registros</span></div>
+  <div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Cliente</th><th>Veículo</th><th>Rota</th><th>Pax</th><th>Data</th><th>Status</th><th>Valor</th><th>Ações</th></tr></thead><tbody id="orcBody"></tbody></table></div>
+</div>
+<div class="modal-overlay" id="orcModal">
+  <div class="modal-box"><div class="modal-header"><h3>Detalhes do Orçamento</h3><button class="modal-close" onclick="closeModal('orcModal')"><i class="fas fa-times"></i></button></div><div class="modal-body" id="orcDetail"></div><div class="modal-footer"><button class="btn-admin btn-success" id="btnAprove"><i class="fas fa-check"></i> Aprovar</button><button class="btn-admin btn-danger" id="btnReject"><i class="fas fa-times"></i> Recusar</button><button class="btn-admin btn-outline" onclick="closeModal('orcModal')">Fechar</button></div></div>
+</div>
+  </div>
+</div>
+</div>
+<script src="js/admin.js"></script>
+<script>
+document.getElementById("topbarDate").textContent = new Date().toLocaleDateString("pt-BR",{weekday:"short",day:"numeric",month:"short"});
+
+let quotes=JSON.parse(JSON.stringify(mockQuotes));
+let curId=null;
+function renderOrc(){
+  const s=document.getElementById('searchOrc').value.toLowerCase();
+  const st=document.getElementById('statusOrc').value;
+  const f=quotes.filter(q=>(!s||q.client.toLowerCase().includes(s)||q.vehicle.toLowerCase().includes(s)||q.id.toLowerCase().includes(s))&&(!st||q.status===st));
+  document.getElementById('orcCount').textContent=f.length+' registros';
+  document.getElementById('orcBody').innerHTML=f.map(q=>`<tr><td><code style="color:var(--gold);font-size:.72rem">${q.id.slice(-8)}</code></td><td>${q.client}</td><td>${q.vehicle}</td><td style="font-size:.78rem">${q.origin}→${q.dest}</td><td>${q.pax}</td><td>${fDate(q.date)}</td><td>${badge(q.status)}</td><td>${fBRL(q.value)}</td><td><button class="tbl-btn" onclick="viewOrc('${q.id}')"><i class="fas fa-eye"></i></button><a href="https://wa.me/5561984222205?text=Sobre+orc+${q.id}" class="tbl-btn" target="_blank"><i class="fab fa-whatsapp"></i></a></td></tr>`).join('');
+}
+function viewOrc(id){curId=id;const q=quotes.find(x=>x.id===id);if(!q)return;document.getElementById('orcDetail').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:.85rem"><div><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase">ID</div><div style="font-weight:600">${q.id}</div></div><div><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase">Status</div>${badge(q.status)}</div><div><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase">Cliente</div><div style="font-weight:600">${q.client}</div></div><div><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase">Data</div><div>${fDate(q.date)}</div></div><div><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase">Veículo</div><div>${q.vehicle}</div></div><div><div style="font-size:.68nm;color:var(--text3);text-transform:uppercase">Passageiros</div><div>${q.pax}</div></div><div style="grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase">Rota</div><div style="font-weight:600">${q.origin} → ${q.dest}</div></div><div style="grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase">Valor estimado</div><div style="font-size:1.3rem;font-weight:700;color:var(--gold)">${fBRL(q.value)}</div></div></div>`;
+  document.getElementById('btnAprove').onclick=()=>{const q2=quotes.find(x=>x.id===curId);if(q2)q2.status='approved';renderOrc();closeModal('orcModal');adminToast('Orçamento aprovado!');};
+  document.getElementById('btnReject').onclick=()=>{const q2=quotes.find(x=>x.id===curId);if(q2)q2.status='rejected';renderOrc();closeModal('orcModal');adminToast('Orçamento recusado.','error');};
+  openModal('orcModal');
+}
+function exportCSV(){const rows=[['ID','Cliente','Veículo','Origem','Destino','Passageiros','Data','Status','Valor'],...quotes.map(q=>[q.id,q.client,q.vehicle,q.origin,q.dest,q.pax,q.date,q.status,q.value])];const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(r=>r.join(';')).join('\n'));a.download='orcamentos.csv';a.click();}
+document.getElementById('searchOrc').addEventListener('input',renderOrc);
+document.getElementById('statusOrc').addEventListener('change',renderOrc);
+renderOrc();
+
+</script>
+</body>
+</html>

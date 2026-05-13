@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contato | AMAVS Turismo</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  
+</head>
+<body>
+<div id="pageLoader" class="page-loader"><div class="loader-brand">AMAVS <span>Turismo</span></div><div class="loader-bar"><div class="loader-fill"></div></div></div>
+<a href="https://wa.me/5561984222205" class="wpp-float" target="_blank"><i class="fab fa-whatsapp"></i> <span>WhatsApp</span></a>
+<button class="chatbot-btn" id="chatbotBtn"><i class="fas fa-comments"></i></button>
+<div class="chatbot-panel" id="chatbotPanel">
+  <div class="chat-header"><div class="chat-av">A</div><div><div class="chat-hname">Assistente AMAVS</div><div class="chat-hstatus">Online agora</div></div><button class="chat-close" id="chatClose"><i class="fas fa-times"></i></button></div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-quick"><button class="qbtn">Quero um orçamento</button><button class="qbtn">Que veículo me indica?</button><button class="qbtn">Atendem licitações?</button></div>
+  <div class="chat-form"><input type="text" id="chatInput" placeholder="Digite sua pergunta..."/><button class="chat-send" id="chatSend"><i class="fas fa-paper-plane"></i></button></div>
+</div>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><div class="logo-icon"><span>A</span></div><div class="logo-text"><span class="logo-main">AMAVS</span><span class="logo-sub">Turismo</span></div></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" >Início</a></li>
+      <li class="has-dropdown"><a href="frota.html" >Nossa Frota <i class="fas fa-chevron-down" style="font-size:.65rem"></i></a>
+        <ul class="dropdown"><li><a href="onibus.html"><i class="fas fa-bus"></i>Ônibus</a></li><li><a href="micro-onibus.html"><i class="fas fa-shuttle-van"></i>Micro-ônibus</a></li><li><a href="vans.html"><i class="fas fa-van-shuttle"></i>Vans</a></li></ul>
+      </li>
+      <li><a href="licitacoes.html" >Licitações</a></li>
+      <li><a href="sobre.html" >Sobre</a></li>
+      <li><a href="contato.html" class='active'>Contato</a></li>
+      <li><a href="orcamento.html" class="nav-cta ">Solicitar Orçamento</a></li>
+    </ul>
+    <div class="nav-phone"><i class="fas fa-phone"></i> (61) 98422-2205</div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section class="page-hero on-gray"><div class="container" style="position:relative;z-index:1">
+  <div class="ph-badge"><i class="fas fa-headset"></i> Contato</div>
+  <h1 class="ph-title">Estamos prontos para te atender</h1>
+  <p class="ph-sub">Resposta rápida por WhatsApp, telefone ou e-mail. Orçamentos em até 30 minutos.</p>
+</div></section>
+<section style="padding:60px 0 80px;background:var(--gray-50)">
+  <div class="container">
+    <div class="contact-channels" style="margin-bottom:3rem">
+      <div class="cc-card reveal"><div class="cc-icon"><i class="fas fa-phone"></i></div><div class="cc-label">Telefone</div><div class="cc-val"><a href="tel:61984222205">(61) 98422-2205</a></div></div>
+      <div class="cc-card reveal"><div class="cc-icon" style="background:#E8FAF0"><i class="fab fa-whatsapp" style="color:#25D366"></i></div><div class="cc-label">WhatsApp</div><div class="cc-val"><a href="https://wa.me/5561984222205" target="_blank">(61) 98422-2205</a></div></div>
+      <div class="cc-card reveal"><div class="cc-icon"><i class="fas fa-envelope"></i></div><div class="cc-label">E-mail</div><div class="cc-val"><a href="mailto:contato@amavsturismo.com.br" style="font-size:.82rem">contato@amavsturismo.com.br</a></div></div>
+      <div class="cc-card reveal"><div class="cc-icon"><i class="fas fa-map-marker-alt"></i></div><div class="cc-label">Localização</div><div class="cc-val" style="font-size:.85rem">Brasília/DF e região</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start">
+      <div>
+        <h3 style="font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:1rem">Horário de atendimento</h3>
+        <table class="hours-table">
+          <tr><td>Segunda a Sexta</td><td>08h às 18h</td></tr>
+          <tr><td>Sábado</td><td>08h às 12h</td></tr>
+          <tr><td>Domingo e Feriados</td><td>Emergências via WhatsApp</td></tr>
+        </table>
+        <a href="https://wa.me/5561984222205?text=Ol%C3%A1!+Vim+pelo+site+e+quero+falar+com+a+AMAVS." class="btn btn-wpp" style="margin-top:1.5rem;width:100%;justify-content:center" target="_blank"><i class="fab fa-whatsapp"></i> Iniciar conversa no WhatsApp</a>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:2rem;box-shadow:var(--shadow-sm)">
+        <h3 style="font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem">Enviar mensagem</h3>
+        <form id="contactForm">
+          <div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" name="nome" class="form-input" placeholder="Seu nome" required/></div><div class="form-group"><label class="form-label">Empresa</label><input type="text" name="empresa" class="form-input" placeholder="Opcional"/></div></div>
+          <div class="form-row"><div class="form-group"><label class="form-label">WhatsApp *</label><input type="tel" name="telefone" class="form-input" placeholder="(61) 9 9999-9999" required/></div><div class="form-group"><label class="form-label">E-mail</label><input type="email" name="email" class="form-input" placeholder="seu@email.com"/></div></div>
+          <div class="form-group"><label class="form-label">Assunto</label><select name="assunto" class="form-input"><option value="">Selecione...</option><option>Orçamento</option><option>Licitação</option><option>Dúvidas sobre a frota</option><option>Financeiro / NF</option><option>Outro</option></select></div>
+          <div class="form-group"><label class="form-label">Mensagem *</label><textarea name="mensagem" class="form-input" rows="4" placeholder="Descreva sua necessidade..." required></textarea></div>
+          <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center"><i class="fab fa-whatsapp"></i> Enviar via WhatsApp</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<footer class="footer"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="footer-logo">AMAVS <span>Turismo</span></div><p class="footer-desc">14 anos de excelência em fretamento e transporte executivo em Brasília/DF e todo o Brasil.</p><div class="social-row"><a href="#" class="social-btn"><i class="fab fa-instagram"></i></a><a href="#" class="social-btn"><i class="fab fa-facebook"></i></a><a href="https://wa.me/5561984222205" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a></div></div>
+    <div class="footer-col"><div class="fcol-title">Frota</div><ul class="fcol-links"><li><a href="onibus.html">Ônibus</a></li><li><a href="micro-onibus.html">Micro-ônibus</a></li><li><a href="vans.html">Vans</a></li></ul></div>
+    <div class="footer-col"><div class="fcol-title">Empresa</div><ul class="fcol-links"><li><a href="sobre.html">Sobre nós</a></li><li><a href="licitacoes.html">Licitações</a></li><li><a href="contato.html">Contato</a></li><li><a href="privacidade.html">Privacidade</a></li><li><a href="termos.html">Termos</a></li></ul></div>
+    <div class="footer-col"><div class="fcol-title">Contato</div><ul class="fcontact-list"><li><i class="fas fa-phone"></i><a href="tel:61984222205">(61) 98422-2205</a></li><li><i class="fab fa-whatsapp"></i><a href="https://wa.me/5561984222205" target="_blank">(61) 98422-2205</a></li><li><i class="fas fa-envelope"></i><a href="mailto:contato@amavsturismo.com.br">contato@amavsturismo.com.br</a></li><li><i class="fas fa-map-marker-alt"></i>Brasília/DF e região</li></ul></div>
+  </div>
+  <div class="admin-bar"><div class="admin-bar-info"><span class="ab-label"><i class="fas fa-shield-alt" style="margin-right:4px"></i>Área Administrativa</span><div class="ab-creds"><div class="ab-cred"><span>Login:</span><code>admin</code></div><div class="ab-cred"><span>Senha:</span><code>admin123</code></div></div></div><a href="admin/login.html" class="admin-bar-btn"><i class="fas fa-cog" style="margin-right:5px"></i>Acessar Painel</a></div>
+  <div class="footer-bottom"><span>© 2024 AMAVS Turismo. Todos os direitos reservados.</span><span><a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos</a></span></div>
+</div></footer>
+<script src="js/main.js"></script>
+<script>document.getElementById("contactForm")?.addEventListener("submit",e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(!d.nome||!d.telefone||!d.mensagem){showToast("Preencha os campos obrigatórios.","error");return;}window.open("https://wa.me/5561984222205?text="+encodeURIComponent("Contato via site
+Nome: "+d.nome+"
+Tel: "+d.telefone+"
+Empresa: "+(d.empresa||"—")+"
+Assunto: "+(d.assunto||"Geral")+"
+
+"+d.mensagem),"_blank");showToast("Redirecionando para o WhatsApp!");e.target.reset();});</script>
+</body>
+</html>

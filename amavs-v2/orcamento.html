@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solicitar Orçamento | AMAVS Turismo</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  
+</head>
+<body>
+<div id="pageLoader" class="page-loader"><div class="loader-brand">AMAVS <span>Turismo</span></div><div class="loader-bar"><div class="loader-fill"></div></div></div>
+<a href="https://wa.me/5561984222205" class="wpp-float" target="_blank"><i class="fab fa-whatsapp"></i> <span>WhatsApp</span></a>
+<button class="chatbot-btn" id="chatbotBtn"><i class="fas fa-comments"></i></button>
+<div class="chatbot-panel" id="chatbotPanel">
+  <div class="chat-header"><div class="chat-av">A</div><div><div class="chat-hname">Assistente AMAVS</div><div class="chat-hstatus">Online agora</div></div><button class="chat-close" id="chatClose"><i class="fas fa-times"></i></button></div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-quick"><button class="qbtn">Quero um orçamento</button><button class="qbtn">Que veículo me indica?</button><button class="qbtn">Atendem licitações?</button></div>
+  <div class="chat-form"><input type="text" id="chatInput" placeholder="Digite sua pergunta..."/><button class="chat-send" id="chatSend"><i class="fas fa-paper-plane"></i></button></div>
+</div>
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo"><div class="logo-icon"><span>A</span></div><div class="logo-text"><span class="logo-main">AMAVS</span><span class="logo-sub">Turismo</span></div></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html" >Início</a></li>
+      <li class="has-dropdown"><a href="frota.html" >Nossa Frota <i class="fas fa-chevron-down" style="font-size:.65rem"></i></a>
+        <ul class="dropdown"><li><a href="onibus.html"><i class="fas fa-bus"></i>Ônibus</a></li><li><a href="micro-onibus.html"><i class="fas fa-shuttle-van"></i>Micro-ônibus</a></li><li><a href="vans.html"><i class="fas fa-van-shuttle"></i>Vans</a></li></ul>
+      </li>
+      <li><a href="licitacoes.html" >Licitações</a></li>
+      <li><a href="sobre.html" >Sobre</a></li>
+      <li><a href="contato.html" >Contato</a></li>
+      <li><a href="orcamento.html" class="nav-cta active">Solicitar Orçamento</a></li>
+    </ul>
+    <div class="nav-phone"><i class="fas fa-phone"></i> (61) 98422-2205</div>
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section class="page-hero on-gray"><div class="container" style="position:relative;z-index:1">
+  <div class="ph-badge"><i class="fas fa-calculator"></i> Orçamento</div>
+  <h1 class="ph-title">Solicitar Orçamento Gratuito</h1>
+  <p class="ph-sub">Preencha o formulário e receba uma proposta personalizada em até 30 minutos via WhatsApp.</p>
+</div></section>
+<section style="padding:60px 0 80px;background:var(--gray-50)">
+  <div class="container" style="max-width:720px">
+    <!-- Steps -->
+    <div class="orc-steps">
+      <div class="os-item active"><div class="os-circle">1</div><div class="os-lbl">Viagem</div></div>
+      <div class="os-line"></div>
+      <div class="os-item"><div class="os-circle">2</div><div class="os-lbl">Contato</div></div>
+      <div class="os-line"></div>
+      <div class="os-item"><div class="os-circle">3</div><div class="os-lbl">Confirmação</div></div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:2.5rem;box-shadow:var(--shadow-sm)">
+      <form id="orcForm">
+        <!-- Panel 1 -->
+        <div class="orc-panel">
+          <h3 style="font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-route" style="color:var(--gold);margin-right:8px"></i>Dados da viagem</h3>
+          <div class="form-row"><div class="form-group"><label class="form-label">Origem *</label><input type="text" name="origem" class="form-input" placeholder="Cidade / endereço de saída" required/></div><div class="form-group"><label class="form-label">Destino *</label><input type="text" name="destino" class="form-input" placeholder="Cidade / endereço de chegada" required/></div></div>
+          <div class="form-row"><div class="form-group"><label class="form-label">Data de ida *</label><input type="date" name="data_ida" class="form-input" required/></div><div class="form-group"><label class="form-label">Data de volta</label><input type="date" name="data_volta" class="form-input"/></div></div>
+          <div class="form-row"><div class="form-group"><label class="form-label">Nº de passageiros *</label><input type="number" name="passageiros" class="form-input" min="1" placeholder="Ex: 35" required/></div><div class="form-group"><label class="form-label">Tipo de viagem</label><select name="tipo_viagem" class="form-input"><option value="ida">Somente ida</option><option value="ida_volta">Ida e volta</option><option value="diaria">Diária</option><option value="contrato">Contrato recorrente</option></select></div></div>
+          <div class="form-group"><label class="form-label">Observações</label><textarea name="observacoes" class="form-input" rows="3" placeholder="Horário desejado, necessidades especiais, número de bagagens..."></textarea></div>
+        </div>
+        <!-- Panel 2 -->
+        <div class="orc-panel" style="display:none">
+          <h3 style="font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:1.5rem"><i class="fas fa-user" style="color:var(--gold);margin-right:8px"></i>Seus dados de contato</h3>
+          <div class="form-row"><div class="form-group"><label class="form-label">Nome completo *</label><input type="text" name="nome" class="form-input" placeholder="Seu nome" required/></div><div class="form-group"><label class="form-label">Empresa / Órgão</label><input type="text" name="empresa" class="form-input" placeholder="Opcional"/></div></div>
+          <div class="form-row"><div class="form-group"><label class="form-label">WhatsApp *</label><input type="tel" name="telefone" class="form-input" placeholder="(61) 99999-9999" required/></div><div class="form-group"><label class="form-label">E-mail</label><input type="email" name="email" class="form-input" placeholder="seu@email.com"/></div></div>
+          <div class="form-group"><label class="form-label">Como prefere receber o orçamento?</label><select name="canal" class="form-input"><option value="whatsapp">WhatsApp (mais rápido)</option><option value="email">E-mail</option><option value="ambos">Ambos</option></select></div>
+          <div class="sec-note"><i class="fas fa-lock"></i> Seus dados são protegidos e usados somente para envio do orçamento. Nunca compartilhamos com terceiros.</div>
+        </div>
+        <!-- Panel 3 -->
+        <div class="orc-panel" style="display:none">
+          <h3 style="font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:1rem"><i class="fas fa-check-circle" style="color:var(--green);margin-right:8px"></i>Confirmar solicitação</h3>
+          <p style="color:var(--text-secondary);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem">Ao confirmar, seu orçamento será enviado automaticamente para nossa equipe pelo WhatsApp e você receberá uma resposta em até 30 minutos no horário comercial.</p>
+          <div style="background:var(--gold-light);border:1px solid var(--gold-mid);border-radius:12px;padding:1.2rem;margin-bottom:1.5rem">
+            <div style="font-size:.75rem;font-weight:700;color:var(--gold-hover);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">Resumo do pedido</div>
+            <div style="font-size:.85rem;color:var(--text-secondary);display:flex;flex-direction:column;gap:.3rem">
+              <div>📍 <strong>Rota:</strong> <span id="resumoRota">—</span></div>
+              <div>📅 <strong>Data:</strong> <span id="resumoData">—</span></div>
+              <div>👥 <strong>Passageiros:</strong> <span id="resumoPax">—</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Panel 4 (success) -->
+        <div class="orc-panel" style="display:none;text-align:center;padding:2rem 0">
+          <div style="width:72px;height:72px;background:var(--green-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem"><i class="fas fa-check" style="font-size:1.8rem;color:var(--green)"></i></div>
+          <h3 style="font-size:1.3rem;font-weight:700;color:var(--navy);margin-bottom:.5rem">Orçamento enviado!</h3>
+          <p style="color:var(--text-secondary);font-size:.9rem;margin-bottom:1.5rem">Código: <strong id="quoteCode" style="color:var(--gold)"></strong><br>Nossa equipe responderá em até 30 minutos.</p>
+          <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+            <a href="index.html" class="btn btn-outline btn-sm">Voltar ao início</a>
+            <a href="https://wa.me/5561984222205" class="btn btn-wpp btn-sm" target="_blank"><i class="fab fa-whatsapp"></i> Abrir WhatsApp</a>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;margin-top:1.5rem;justify-content:space-between">
+          <button type="button" id="orcPrev" class="btn btn-outline btn-sm" style="display:none"><i class="fas fa-arrow-left"></i> Anterior</button>
+          <div style="flex:1"></div>
+          <button type="button" id="orcNext" class="btn btn-navy btn-sm">Próximo <i class="fas fa-arrow-right"></i></button>
+          <button type="submit" id="orcSubmit" class="btn btn-gold btn-sm" style="display:none"><i class="fab fa-whatsapp"></i> Confirmar e enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+<footer class="footer"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="footer-logo">AMAVS <span>Turismo</span></div><p class="footer-desc">14 anos de excelência em fretamento e transporte executivo em Brasília/DF e todo o Brasil.</p><div class="social-row"><a href="#" class="social-btn"><i class="fab fa-instagram"></i></a><a href="#" class="social-btn"><i class="fab fa-facebook"></i></a><a href="https://wa.me/5561984222205" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a></div></div>
+    <div class="footer-col"><div class="fcol-title">Frota</div><ul class="fcol-links"><li><a href="onibus.html">Ônibus</a></li><li><a href="micro-onibus.html">Micro-ônibus</a></li><li><a href="vans.html">Vans</a></li></ul></div>
+    <div class="footer-col"><div class="fcol-title">Empresa</div><ul class="fcol-links"><li><a href="sobre.html">Sobre nós</a></li><li><a href="licitacoes.html">Licitações</a></li><li><a href="contato.html">Contato</a></li><li><a href="privacidade.html">Privacidade</a></li><li><a href="termos.html">Termos</a></li></ul></div>
+    <div class="footer-col"><div class="fcol-title">Contato</div><ul class="fcontact-list"><li><i class="fas fa-phone"></i><a href="tel:61984222205">(61) 98422-2205</a></li><li><i class="fab fa-whatsapp"></i><a href="https://wa.me/5561984222205" target="_blank">(61) 98422-2205</a></li><li><i class="fas fa-envelope"></i><a href="mailto:contato@amavsturismo.com.br">contato@amavsturismo.com.br</a></li><li><i class="fas fa-map-marker-alt"></i>Brasília/DF e região</li></ul></div>
+  </div>
+  <div class="admin-bar"><div class="admin-bar-info"><span class="ab-label"><i class="fas fa-shield-alt" style="margin-right:4px"></i>Área Administrativa</span><div class="ab-creds"><div class="ab-cred"><span>Login:</span><code>admin</code></div><div class="ab-cred"><span>Senha:</span><code>admin123</code></div></div></div><a href="admin/login.html" class="admin-bar-btn"><i class="fas fa-cog" style="margin-right:5px"></i>Acessar Painel</a></div>
+  <div class="footer-bottom"><span>© 2024 AMAVS Turismo. Todos os direitos reservados.</span><span><a href="privacidade.html">Privacidade</a> · <a href="termos.html">Termos</a></span></div>
+</div></footer>
+<script src="js/main.js"></script>
+<script>
+document.getElementById("orcForm")?.addEventListener("change", () => {
+  const f = document.getElementById("orcForm");
+  const d = new FormData(f);
+  const el = id => document.getElementById(id);
+  if(el("resumoRota")) el("resumoRota").textContent = (d.get("origem")||"—") + " → " + (d.get("destino")||"—");
+  if(el("resumoData")) el("resumoData").textContent = d.get("data_ida")||"—";
+  if(el("resumoPax")) el("resumoPax").textContent = d.get("passageiros")||"—";
+});
+</script>
+</body>
+</html>
