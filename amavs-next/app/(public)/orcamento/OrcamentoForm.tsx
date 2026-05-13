@@ -9,13 +9,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Input, Select, Textarea } from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
+import CityAutocomplete from '@/components/ui/CityAutocomplete'
 import { createClient } from '@/lib/supabase-browser'
 import { categoryLabel, formatCurrency, buildWhatsAppMessage, buildWhatsAppURL } from '@/lib/utils'
 import type { Vehicle } from '@/lib/types'
 
 const step1Schema = z.object({
-  origin: z.string().min(3, 'Informe a cidade de origem'),
-  destination: z.string().min(3, 'Informe o destino'),
+  origin: z.string().min(2, 'Informe a cidade de origem'),
+  destination: z.string().optional(),
   travel_date: z.string().min(1, 'Informe a data de ida'),
   return_date: z.string().optional(),
   passengers: z.coerce.number().min(1, 'Mínimo 1 passageiro').max(60, 'Máximo 60'),
@@ -52,7 +53,7 @@ export default function OrcamentoForm() {
 
   const form1 = useForm<Step1Data>({
     resolver: zodResolver(step1Schema),
-    defaultValues: { vehicle_id: initialVehicle, passengers: 20, origin: 'Brasília, DF' },
+    defaultValues: { vehicle_id: initialVehicle, passengers: 20, origin: 'Brasília, DF', destination: '' },
   })
 
   const form2 = useForm<Step2Data>({
@@ -75,7 +76,7 @@ export default function OrcamentoForm() {
       name: data2.name,
       phone: data2.phone,
       origin: step1Data.origin,
-      destination: step1Data.destination,
+      destination: step1Data.destination ?? '',
       travelDate: step1Data.travel_date,
       returnDate: step1Data.return_date,
       passengers: step1Data.passengers,
@@ -122,21 +123,23 @@ export default function OrcamentoForm() {
             <motion.div key="step1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.3 }}>
               <form onSubmit={form1.handleSubmit(onStep1Submit)} className="glass-dark rounded-2xl p-6 space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Input
-                    label="Cidade de Origem"
+                  <CityAutocomplete
+                    label="Cidade de Origem *"
+                    value={form1.watch('origin') ?? ''}
+                    onChange={(v) => form1.setValue('origin', v)}
                     placeholder="Ex: Brasília, DF"
-                    {...form1.register('origin')}
                     error={form1.formState.errors.origin?.message}
                     required
                   />
-                  <Input
+                  <CityAutocomplete
                     label="Destino"
-                    placeholder="Ex: Goiânia, GO"
-                    {...form1.register('destination')}
+                    value={form1.watch('destination') ?? ''}
+                    onChange={(v) => form1.setValue('destination', v)}
+                    placeholder="Ex: Goiânia, GO (opcional)"
                     error={form1.formState.errors.destination?.message}
-                    required
                   />
                 </div>
+                <p className="text-gray-500 text-xs -mt-2">Deixe o destino em branco para viagens dentro da mesma cidade ou região.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input label="Data de Ida" type="date" {...form1.register('travel_date')} error={form1.formState.errors.travel_date?.message} required />
                   <Input label="Data de Volta (opcional)" type="date" {...form1.register('return_date')} />
@@ -198,7 +201,7 @@ export default function OrcamentoForm() {
                     { label: 'Telefone', value: form2.getValues('phone') },
                     { label: 'E-mail', value: form2.getValues('email') || '—' },
                     { label: 'Origem', value: step1Data.origin },
-                    { label: 'Destino', value: step1Data.destination },
+                    { label: 'Destino', value: step1Data.destination || 'Mesma cidade / Local' },
                     { label: 'Data de Ida', value: step1Data.travel_date },
                     { label: 'Data de Volta', value: step1Data.return_date || 'Somente ida' },
                     { label: 'Passageiros', value: String(step1Data.passengers) },

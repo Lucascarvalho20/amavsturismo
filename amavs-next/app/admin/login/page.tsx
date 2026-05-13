@@ -93,11 +93,23 @@ export default function AdminLoginPage() {
       if (error) {
         const newAttempts = attempts + 1
         setAttempts(newAttempts)
+        // Show real error to help diagnose
+        const msg = error.message?.toLowerCase() ?? ''
+        let friendlyMsg = 'E-mail ou senha incorretos.'
+        if (msg.includes('email not confirmed') || msg.includes('not confirmed')) {
+          friendlyMsg = 'E-mail não confirmado. Verifique sua caixa de entrada.'
+        } else if (msg.includes('invalid login') || msg.includes('invalid credentials')) {
+          friendlyMsg = 'E-mail ou senha incorretos.'
+        } else if (msg.includes('too many')) {
+          friendlyMsg = 'Muitas tentativas. Aguarde alguns minutos.'
+        } else if (error.message) {
+          friendlyMsg = error.message
+        }
         if (newAttempts >= 5) {
           setBlocked(true)
           toast.error('Conta bloqueada por excesso de tentativas.')
         } else {
-          toast.error('E-mail ou senha incorretos.')
+          toast.error(friendlyMsg)
         }
         setLoading(false)
         return
