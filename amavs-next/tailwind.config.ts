@@ -65,6 +65,7 @@ const config: Config = {
         'ping-slow':   'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         'shimmer':     'shimmer 2s linear infinite',
         'fade-up':     'fadeUp 0.6s ease-out forwards',
+        'marquee':     'marquee 30s linear infinite',
       },
       keyframes: {
         float: {
@@ -82,6 +83,10 @@ const config: Config = {
         fadeUp: {
           '0%':   { opacity: '0', transform: 'translateY(30px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        marquee: {
+          '0%':   { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
         },
       },
     },

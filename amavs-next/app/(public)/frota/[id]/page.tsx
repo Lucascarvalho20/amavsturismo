@@ -147,6 +147,8 @@ export default async function VehicleDetailPage({ params }: Props) {
                   size="lg"
                   fullWidth
                   leftIcon={<MessageCircle size={16} />}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
                   WhatsApp Direto
                 </Button>

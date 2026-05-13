@@ -246,7 +246,7 @@ export default async function LicitacoesPage() {
             <Button as="a" href="/orcamento" variant="gold" size="lg">
               Solicitar Proposta
             </Button>
-            <Button as="a" href="https://wa.me/5561984222205" variant="outline" size="lg">
+            <Button as="a" href="https://wa.me/5561984222205" variant="outline" size="lg" target="_blank" rel="noopener noreferrer">
               Falar com Especialista
             </Button>
           </div>

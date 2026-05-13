@@ -88,6 +88,8 @@ export default function SobrePage() {
               variant="gold"
               size="lg"
               leftIcon={<MessageCircle size={18} />}
+              target="_blank"
+              rel="noopener noreferrer"
             >
               Chamar no WhatsApp
             </Button>
