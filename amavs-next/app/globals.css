@@ -5,43 +5,70 @@
 @tailwind utilities;
 
 /* ============================================================
-   DESIGN TOKENS — Dark mode (default)
+   DESIGN TOKENS — Light mode is the default (Apple-Business)
    ============================================================ */
 :root {
-  --bg:         #111111;
-  --bg-card:    #1A1A1A;
-  --bg-input:   #242424;
-  --bg-hover:   #2A2A2A;
-  --border:     rgba(255, 255, 255, 0.07);
-  --border-md:  rgba(255, 255, 255, 0.12);
-  --text:       #F2F2F2;
-  --text-muted: #888888;
-  --text-dim:   #555555;
-  --gold:       #D4AF37;
-  --gold-muted: rgba(212, 175, 55, 0.1);
-  --gold-border:rgba(212, 175, 55, 0.2);
-  --wine:       #BB1E1E;
-  --shadow:     0 4px 24px rgba(0,0,0,0.4);
-  --shadow-sm:  0 2px 8px rgba(0,0,0,0.25);
+  /* Surfaces (light) */
+  --bg:            #FFFFFF;
+  --bg-elevated:   #F5F5F7;
+  --bg-card:       #FFFFFF;
+  --bg-card-2:     #FAFAFA;
+  --bg-input:      #F5F5F7;
+  --bg-hover:      #EDEDF0;
+
+  /* Borders */
+  --border:        rgba(0, 0, 0, 0.08);
+  --border-md:     rgba(0, 0, 0, 0.14);
+  --border-strong: rgba(0, 0, 0, 0.22);
+
+  /* Text */
+  --text:          #1D1D1F;
+  --text-muted:    #515154;
+  --text-dim:      #86868B;
+
+  /* Accent */
+  --gold:          #A37A11;
+  --gold-strong:   #8C6700;
+  --gold-soft:     #D4AF37;
+  --gold-muted:    rgba(163, 122, 17, 0.10);
+  --gold-border:   rgba(163, 122, 17, 0.22);
+
+  --wine:          #9E1919;
+
+  /* Shadows */
+  --shadow-sm:     0 1px 2px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.05);
+  --shadow:        0 4px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.05);
+  --shadow-lg:     0 12px 32px rgba(0,0,0,0.08), 0 24px 56px rgba(0,0,0,0.06);
 }
 
-/* Light mode overrides */
-.light {
-  --bg:         #FAFAFA;
-  --bg-card:    #FFFFFF;
-  --bg-input:   #F4F4F5;
-  --bg-hover:   #EEEEEE;
-  --border:     rgba(0, 0, 0, 0.07);
-  --border-md:  rgba(0, 0, 0, 0.12);
-  --text:       #111111;
-  --text-muted: #666666;
-  --text-dim:   #999999;
-  --gold:       #9D7F20;
-  --gold-muted: rgba(157, 127, 32, 0.08);
-  --gold-border:rgba(157, 127, 32, 0.2);
-  --wine:       #9e1919;
-  --shadow:     0 4px 24px rgba(0,0,0,0.08);
-  --shadow-sm:  0 2px 8px rgba(0,0,0,0.06);
+/* Dark mode overrides */
+.dark {
+  --bg:            #0B0B0E;
+  --bg-elevated:   #131316;
+  --bg-card:       #18181B;
+  --bg-card-2:     #1E1E22;
+  --bg-input:      #1F1F23;
+  --bg-hover:      #26262B;
+
+  --border:        rgba(255, 255, 255, 0.08);
+  --border-md:     rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.22);
+
+  --text:          #F4F4F5;
+  --text-muted:    #A1A1AA;
+  --text-dim:      #71717A;
+
+  --gold:          #D4AF37;
+  --gold-strong:   #E5C24E;
+  --gold-soft:     #F5D97A;
+  --gold-muted:    rgba(212, 175, 55, 0.10);
+  --gold-border:   rgba(212, 175, 55, 0.22);
+
+  --wine:          #BB1E1E;
+
+  --shadow-sm:     0 1px 2px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.25);
+  --shadow:        0 4px 16px rgba(0,0,0,0.35), 0 12px 32px rgba(0,0,0,0.30);
+  --shadow-lg:     0 16px 40px rgba(0,0,0,0.45), 0 28px 64px rgba(0,0,0,0.35);
 }
 
 /* ============================================================
@@ -50,107 +77,94 @@
 @layer base {
   * { box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    background: var(--bg);
+  }
 
   body {
     background: var(--bg);
     color: var(--text);
     @apply font-body antialiased;
     min-height: 100vh;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
-  h1, h2, h3, h4, h5, h6 { @apply font-heading; }
+  h1, h2, h3, h4, h5, h6 { @apply font-heading; color: var(--text); letter-spacing: -0.02em; }
 
   ::selection {
-    background: rgba(212, 175, 55, 0.25);
+    background: var(--gold-muted);
     color: var(--text);
   }
 
   /* Scrollbar */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.3); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.6); }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: 8px; border: 2px solid var(--bg); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
 }
 
 /* ============================================================
-   COMPONENTS
+   COMPONENTS — semantic, theme-aware
    ============================================================ */
 @layer components {
+  /* Generic surfaces */
+  .surface          { background: var(--bg); color: var(--text); }
+  .surface-elevated { background: var(--bg-elevated); color: var(--text); }
+  .surface-card     { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
 
-  /* Glass cards */
+  /* Glass — adapts to theme */
   .glass {
-    background: rgba(255,255,255,0.04);
-    backdrop-filter: blur(12px);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
   }
-  .light .glass {
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border);
-  }
-
   .glass-gold {
-    background: rgba(255,255,255,0.04);
-    backdrop-filter: blur(12px);
+    background: var(--bg-card);
     border: 1px solid var(--gold-border);
-    box-shadow: 0 4px 20px rgba(212,175,55,0.08);
+    box-shadow: 0 4px 20px var(--gold-muted);
   }
-  .light .glass-gold {
-    background: rgba(255,255,255,0.9);
-    border: 1px solid var(--gold-border);
-  }
-
   .glass-dark {
     background: var(--bg-card);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
-    transition: background 0.3s ease, border-color 0.3s ease;
   }
 
-  /* Card hover */
+  /* Card hover lift */
   .card-hover {
-    @apply transition-all duration-300;
-    &:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--gold-border);
   }
 
   /* Gold dividers */
-  .gold-divider {
-    height: 2px;
-    width: 48px;
-    background: linear-gradient(90deg, var(--gold), transparent);
-    border-radius: 2px;
-    margin: 16px 0;
-  }
-  .gold-divider-center {
-    height: 2px;
-    width: 48px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    border-radius: 2px;
-    margin: 16px auto;
-  }
+  .gold-divider        { height: 2px; width: 48px; background: linear-gradient(90deg, var(--gold), transparent); border-radius: 2px; margin: 16px 0; }
+  .gold-divider-center { height: 2px; width: 48px; background: linear-gradient(90deg, transparent, var(--gold), transparent); border-radius: 2px; margin: 16px auto; }
 
-  /* Gradient text */
+  /* Gradient gold text */
   .text-gradient-gold {
-    background: linear-gradient(135deg, var(--gold) 0%, #f5e99a 50%, var(--gold) 100%);
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-soft) 50%, var(--gold) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   /* Status badges */
-  .badge-green  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-500 border border-emerald-500/25; }
-  .badge-red    { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/25; }
-  .badge-gold   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border; background: var(--gold-muted); color: var(--gold); border-color: var(--gold-border); }
-  .badge-blue   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/15 text-blue-400 border border-blue-500/25; }
-  .badge-gray   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/15 text-gray-400 border border-gray-500/20; }
-  .badge-amber  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/15 text-amber-400 border border-amber-500/25; }
+  .badge-green  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25; }
+  .badge-red    { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/25; }
+  .badge-gold   { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; background: var(--gold-muted); color: var(--gold-strong); border: 1px solid var(--gold-border); }
+  .dark .badge-gold { color: var(--gold); }
+  .badge-blue   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25; }
+  .badge-gray   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500/15 text-gray-600 dark:text-gray-400 border border-gray-500/20; }
+  .badge-amber  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25; }
 
   /* Grid background */
   .bg-grid {
-    background-image: linear-gradient(var(--border) 1px, transparent 1px),
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
       linear-gradient(90deg, var(--border) 1px, transparent 1px);
     background-size: 60px 60px;
   }
@@ -161,77 +175,81 @@
     border: 1px solid var(--border-md);
     color: var(--text);
     @apply rounded-lg px-4 py-2.5 text-sm transition-all duration-200;
-    &::placeholder { color: var(--text-dim); }
-    &:focus {
-      outline: none;
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px var(--gold-muted);
-    }
+  }
+  .input-base::placeholder { color: var(--text-dim); }
+  .input-base:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-muted);
   }
 
-  /* Scrollbar thin */
+  /* Scrollbar utilities */
   .scrollbar-thin::-webkit-scrollbar { width: 4px; }
   .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.25); border-radius: 2px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border-md); border-radius: 2px; }
 
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
-  }
+  .scrollbar-hide  { -ms-overflow-style: none; scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
 }
 
 /* ============================================================
-   LIGHT MODE OVERRIDES for existing Tailwind classes
-   These allow components to work in both themes without
-   rewriting every class with dark: variants
+   LEGACY OVERRIDES — keep existing components working
+   These map old `navy-*` and dark-on-white classes to vars
+   so untouched admin pages still respect the theme.
    ============================================================ */
 
-/* Backgrounds */
-.light .bg-navy-200,
-.light body                          { background-color: #FAFAFA !important; }
-.light .bg-navy-100                  { background-color: #FFFFFF !important; }
-.light .bg-navy-50                   { background-color: #F4F4F5 !important; }
-.light .bg-navy-300                  { background-color: #EEEEEE !important; }
+/* navy → surfaces */
+.bg-navy-200, .bg-navy { background-color: var(--bg) !important; }
+.bg-navy-100          { background-color: var(--bg-elevated) !important; }
+.bg-navy-50           { background-color: var(--bg-card-2) !important; }
+.bg-navy-300          { background-color: var(--bg-hover) !important; }
 
-/* Text */
-.light .text-gray-100                { color: #111111 !important; }
-.light .text-gray-200                { color: #222222 !important; }
-.light .text-gray-300                { color: #333333 !important; }
-.light .text-gray-400                { color: #555555 !important; }
-.light .text-gray-500                { color: #777777 !important; }
-.light .text-gray-600                { color: #999999 !important; }
-.light .text-white                   { color: #111111 !important; }
+/* Hardcoded hex backgrounds → theme surfaces */
+.bg-\[\#0a0a0a\], .bg-\[\#0b0b0d\], .bg-\[\#0c0c0e\], .bg-\[\#0d0d0d\], .bg-\[\#0e0e10\], .bg-\[\#0f0f12\],
+.bg-\[\#101013\], .bg-\[\#111\], .bg-\[\#111114\] { background-color: var(--bg) !important; }
+
+.bg-\[\#1a1a1a\], .bg-\[\#18181B\], .bg-\[\#1e1e22\] { background-color: var(--bg-card) !important; }
+
+/* Text color remap so dark-on-white still looks right */
+.text-white   { color: var(--text) !important; }
+.text-gray-100 { color: var(--text) !important; }
+.text-gray-200 { color: var(--text) !important; }
+.text-gray-300 { color: var(--text-muted) !important; }
+.text-gray-400 { color: var(--text-muted) !important; }
+.text-gray-500 { color: var(--text-dim) !important; }
+.text-gray-600 { color: var(--text-dim) !important; }
+
+/* `.force-dark` scope — opt-out of theme remap.
+   Used for sections that have a permanently dark background (eg hero).
+   Inside .force-dark, text-white stays literally white regardless of theme. */
+.force-dark .text-white,
+.force-dark .text-gray-100,
+.force-dark .text-gray-200 { color: #ffffff !important; }
+.force-dark .text-gray-300 { color: rgba(255,255,255,0.85) !important; }
+.force-dark .text-gray-400 { color: rgba(255,255,255,0.65) !important; }
+.force-dark .text-gray-500 { color: rgba(255,255,255,0.5) !important; }
+.force-dark .text-gray-600 { color: rgba(255,255,255,0.4) !important; }
+
+/* Gold text uses theme var */
+.text-gold { color: var(--gold) !important; }
 
 /* Borders */
-.light .border-white\/5              { border-color: rgba(0,0,0,0.04) !important; }
-.light .border-white\/10             { border-color: rgba(0,0,0,0.07) !important; }
-.light .border-white\/20             { border-color: rgba(0,0,0,0.10) !important; }
-.light .border-white\/30             { border-color: rgba(0,0,0,0.14) !important; }
-.light .border-gold\/10              { border-color: rgba(157,127,32,0.12) !important; }
-.light .border-gold\/20              { border-color: rgba(157,127,32,0.22) !important; }
+.border-white\/5,
+.border-white\/\[0\.04\], .border-white\/\[0\.05\], .border-white\/\[0\.06\], .border-white\/\[0\.07\], .border-white\/\[0\.08\] { border-color: var(--border) !important; }
+.border-white\/10, .border-white\/\[0\.10\], .border-white\/\[0\.12\] { border-color: var(--border-md) !important; }
+.border-white\/20, .border-white\/30 { border-color: var(--border-strong) !important; }
+.border-gold\/10 { border-color: var(--gold-muted) !important; }
+.border-gold\/20, .border-gold\/30 { border-color: var(--gold-border) !important; }
 
-/* Hover backgrounds */
-.light .hover\:bg-white\/5:hover     { background-color: rgba(0,0,0,0.04) !important; }
-.light .hover\:bg-white\/10:hover    { background-color: rgba(0,0,0,0.07) !important; }
+/* Background tint helpers */
+.bg-white\/5  { background-color: color-mix(in srgb, var(--text) 4%, transparent) !important; }
+.bg-white\/10 { background-color: color-mix(in srgb, var(--text) 8%, transparent) !important; }
+.hover\:bg-white\/5:hover  { background-color: color-mix(in srgb, var(--text) 5%, transparent) !important; }
+.hover\:bg-white\/10:hover { background-color: color-mix(in srgb, var(--text) 9%, transparent) !important; }
 
-/* Glass in light */
-.light .glass-dark                   { background-color: #FFFFFF !important; border-color: rgba(0,0,0,0.07) !important; }
+/* Glass tints already use vars; nothing else needed */
 
-/* White opacity backgrounds */
-.light .bg-white\/5                  { background-color: rgba(0,0,0,0.03) !important; }
-.light .bg-white\/10                 { background-color: rgba(0,0,0,0.06) !important; }
-
-/* Gold text in light mode (slightly darker) */
-.light .text-gold                    { color: #9D7F20 !important; }
-.light .text-gradient-gold           {
-  background: linear-gradient(135deg, #9D7F20 0%, #D4AF37 50%, #9D7F20 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Recharts */
+/* Recharts (admin) */
 .recharts-tooltip-wrapper .recharts-default-tooltip {
   background: var(--bg-card) !important;
   border: 1px solid var(--gold-border) !important;
@@ -240,78 +258,34 @@
 }
 
 /* ============================================================
-   LIGHT MODE — fix hardcoded dark hex values in sections
+   ANIMATIONS — used by sections
    ============================================================ */
-.light .bg-\[\#0a0a0a\],
-.light .bg-\[\#0d0d0d\],
-.light .bg-\[\#111\]    { background-color: #F5F5F5 !important; }
-.light .bg-\[\#1a1a1a\] { background-color: #FFFFFF !important; }
-
-/* Fix hardcoded dark border colors in light mode */
-.light .border-white\/\[0\.04\],
-.light .border-white\/\[0\.05\],
-.light .border-white\/\[0\.06\],
-.light .border-white\/\[0\.07\],
-.light .border-white\/\[0\.08\] { border-color: rgba(0,0,0,0.07) !important; }
-
-/* Fix text colors on sections with hardcoded dark bg */
-.light section .text-gray-400,
-.light section .text-gray-500,
-.light section .text-gray-600 {
-  color: #555 !important;
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.3); }
 }
+.animate-pulse-gold { animation: pulse-gold 2s cubic-bezier(0.4,0,0.6,1) infinite; }
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee { animation: marquee 24s linear infinite; }
+.animate-marquee:hover { animation-play-state: paused; }
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal-up { animation: reveal-up 0.7s cubic-bezier(0.25,0.46,0.45,0.94) both; }
 
 /* ============================================================
-   MICRO-INTERACTIONS — Hover shimmer, ripple, lift effects
+   MICRO-INTERACTIONS
    ============================================================ */
+.hover-lift { transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease; }
+.hover-lift:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
 
-/* Card shimmer — light sweep on hover */
-.shimmer {
-  position: relative;
-  overflow: hidden;
-}
-.shimmer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    105deg,
-    transparent 40%,
-    rgba(212,175,55,0.06) 55%,
-    transparent 70%
-  );
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-  pointer-events: none;
-}
-.shimmer:hover::after {
-  transform: translateX(100%);
-}
-
-/* Gold border glow on hover */
-.hover-gold-border {
-  border: 1px solid rgba(255,255,255,0.06);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-.hover-gold-border:hover {
-  border-color: rgba(212,175,55,0.25);
-  box-shadow: 0 0 0 1px rgba(212,175,55,0.08), 0 4px 24px rgba(0,0,0,0.3);
-}
-
-/* Smooth lift on hover */
-.hover-lift {
-  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease;
-}
-.hover-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-}
-
-/* Link underline slide-in */
-.link-underline {
-  position: relative;
-  text-decoration: none;
-}
+.link-underline { position: relative; text-decoration: none; }
 .link-underline::after {
   content: '';
   position: absolute;
@@ -324,23 +298,16 @@
 }
 .link-underline:hover::after { width: 100%; }
 
-/* Smooth focus ring */
 .focus-gold:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gold);
 }
 
-/* Pulse gold dot */
-@keyframes pulse-gold {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.6; transform: scale(1.3); }
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-pulse-gold, .animate-marquee, .reveal-up { animation: none !important; }
+  * { transition-duration: 0.01ms !important; }
 }
-.animate-pulse-gold { animation: pulse-gold 2s cubic-bezier(0.4,0,0.6,1) infinite; }
-
-/* Marquee scroll */
-@keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.animate-marquee { animation: marquee 24s linear infinite; }
-.animate-marquee:hover { animation-play-state: paused; }

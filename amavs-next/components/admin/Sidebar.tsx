@@ -14,6 +14,8 @@ import {
   Menu,
   X,
   ChevronRight,
+  Palette,
+  Monitor,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -27,12 +29,14 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/admin/frota', icon: Bus, label: 'Frota' },
-  { href: '/admin/orcamentos', icon: FileText, label: 'Orçamentos' },
-  { href: '/admin/contratos', icon: ScrollText, label: 'Contratos' },
-  { href: '/admin/relatorios', icon: BarChart2, label: 'Relatórios' },
-  { href: '/admin/perfil', icon: User, label: 'Perfil' },
+  { href: '/admin/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/admin/frota',        icon: Bus,             label: 'Frota' },
+  { href: '/admin/orcamentos',   icon: FileText,        label: 'Orçamentos' },
+  { href: '/admin/contratos',    icon: ScrollText,      label: 'Contratos' },
+  { href: '/admin/relatorios',   icon: BarChart2,       label: 'Relatórios' },
+  { href: '/admin/personalizar', icon: Palette,         label: 'Personalizar' },
+  { href: '/admin/computadores', icon: Monitor,         label: 'Computadores' },
+  { href: '/admin/perfil',       icon: User,            label: 'Perfil' },
 ]
 
 function SidebarContent({

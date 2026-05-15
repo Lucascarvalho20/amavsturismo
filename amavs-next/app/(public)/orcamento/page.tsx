@@ -12,8 +12,11 @@ export const metadata: Metadata = {
 export default function OrcamentoPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-navy-200 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-gold/40 border-t-gold rounded-full animate-spin" />
+      <div className="min-h-screen surface flex items-center justify-center">
+        <div
+          className="w-8 h-8 border-2 rounded-full animate-spin"
+          style={{ borderColor: 'var(--border)', borderTopColor: 'var(--gold)' }}
+        />
       </div>
     }>
       <OrcamentoForm />

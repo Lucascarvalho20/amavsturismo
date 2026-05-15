@@ -2,11 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Users, Zap, ArrowRight } from 'lucide-react'
-import Link from 'next/link'
-import Section, { SectionHeader } from '@/components/ui/Section'
-import Button from '@/components/ui/Button'
-import Badge from '@/components/ui/Badge'
+import { Users, ArrowRight, Bus } from 'lucide-react'
 import { formatCurrency, categoryLabel } from '@/lib/utils'
 import type { Vehicle, VehicleCategory } from '@/lib/types'
 
@@ -19,53 +15,25 @@ const tabs: { id: Tab; label: string }[] = [
   { id: 'van', label: 'Vans' },
 ]
 
-function BusPlaceholder({ category }: { category: VehicleCategory }) {
+function VehiclePlaceholder({ name, category }: { name: string; category: VehicleCategory }) {
+  const initials = name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
   return (
-    <div className="w-full h-40 flex items-center justify-center bg-navy-200 rounded-t-xl">
-      <svg viewBox="0 0 200 80" className="w-40 h-24 opacity-70" xmlns="http://www.w3.org/2000/svg">
-        {category === 'van' ? (
-          <>
-            <rect x="10" y="20" width="120" height="45" rx="6" fill="#D4AF37" opacity="0.7" />
-            <rect x="12" y="12" width="100" height="12" rx="3" fill="#D4AF37" opacity="0.5" />
-            <rect x="18" y="24" width="20" height="16" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="42" y="24" width="20" height="16" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="66" y="24" width="20" height="16" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <circle cx="35" cy="68" r="10" fill="#142235" stroke="#D4AF37" strokeWidth="2" />
-            <circle cx="35" cy="68" r="4" fill="#D4AF37" />
-            <circle cx="105" cy="68" r="10" fill="#142235" stroke="#D4AF37" strokeWidth="2" />
-            <circle cx="105" cy="68" r="4" fill="#D4AF37" />
-          </>
-        ) : category === 'micro' ? (
-          <>
-            <rect x="5" y="15" width="155" height="48" rx="6" fill="#D4AF37" opacity="0.7" />
-            <rect x="8" y="8" width="130" height="10" rx="3" fill="#D4AF37" opacity="0.5" />
-            <rect x="12" y="20" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="35" y="20" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="58" y="20" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="81" y="20" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="104" y="20" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <circle cx="35" cy="66" r="10" fill="#142235" stroke="#D4AF37" strokeWidth="2" />
-            <circle cx="35" cy="66" r="4" fill="#D4AF37" />
-            <circle cx="130" cy="66" r="10" fill="#142235" stroke="#D4AF37" strokeWidth="2" />
-            <circle cx="130" cy="66" r="4" fill="#D4AF37" />
-          </>
-        ) : (
-          <>
-            <rect x="3" y="12" width="180" height="52" rx="6" fill="#D4AF37" opacity="0.7" />
-            <rect x="6" y="5" width="155" height="10" rx="3" fill="#D4AF37" opacity="0.5" />
-            <rect x="10" y="18" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="33" y="18" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="56" y="18" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="79" y="18" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="102" y="18" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <rect x="125" y="18" width="18" height="14" rx="2" fill="#0D1B2A" opacity="0.8" />
-            <circle cx="35" cy="68" r="10" fill="#142235" stroke="#D4AF37" strokeWidth="2" />
-            <circle cx="35" cy="68" r="4" fill="#D4AF37" />
-            <circle cx="150" cy="68" r="10" fill="#142235" stroke="#D4AF37" strokeWidth="2" />
-            <circle cx="150" cy="68" r="4" fill="#D4AF37" />
-          </>
-        )}
-      </svg>
+    <div className="relative w-full h-full flex items-center justify-center overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
+      <div className="absolute inset-0 bg-grid opacity-50" />
+      <div className="absolute top-4 left-4 flex items-center gap-1.5">
+        <Bus size={14} strokeWidth={1.4} style={{ color: 'var(--text-dim)' }} />
+        <span className="text-[10px] tracking-[0.2em] uppercase font-medium" style={{ color: 'var(--text-dim)' }}>
+          {categoryLabel(category)}
+        </span>
+      </div>
+      <div className="relative font-heading font-semibold text-6xl tracking-tight" style={{ color: 'var(--text-dim)' }}>
+        {initials}
+      </div>
     </div>
   )
 }
@@ -81,137 +49,147 @@ export default function FleetPreviewClient({ vehicles }: Props) {
     activeTab === 'todos' ? vehicles : vehicles.filter((v) => v.category === activeTab)
 
   return (
-    <Section className="py-20 bg-navy-200" id="frota">
-      <div className="container mx-auto px-4 md:px-6">
-        <SectionHeader
-          eyebrow="Nossa Frota"
-          title="Veículos para Cada Necessidade"
-          subtitle="Ônibus, micro-ônibus e vans modernos, com manutenção em dia e documentação regularizada."
-        />
+    <section className="py-32 md:py-40 surface" id="frota">
+      <div className="container mx-auto px-6 md:px-10 max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-end justify-between flex-wrap gap-6 mb-12 md:mb-16"
+        >
+          <div className="max-w-xl">
+            <div className="text-xs font-medium tracking-[0.28em] uppercase mb-5" style={{ color: 'var(--text-dim)' }}>
+              Nossa frota
+            </div>
+            <h2 className="font-heading font-semibold tracking-tight leading-[1.05] text-[clamp(2.25rem,5vw,4rem)]">
+              Veículos para<br />
+              cada necessidade.
+            </h2>
+          </div>
+          <p className="text-lg font-light leading-relaxed max-w-md" style={{ color: 'var(--text-muted)' }}>
+            Ônibus, micro-ônibus e vans modernos com manutenção em dia e documentação regularizada.
+          </p>
+        </motion.div>
 
         {/* Tabs */}
-        <div className="flex items-center justify-center gap-2 mb-10 flex-wrap">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                activeTab === tab.id
-                  ? 'bg-gold text-navy-200 shadow-glow-gold/30'
-                  : 'glass text-gray-400 hover:text-white'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-2 mb-12 md:mb-16 overflow-x-auto scrollbar-hide -mx-6 px-6">
+          {tabs.map((tab) => {
+            const active = activeTab === tab.id
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className="px-5 h-10 rounded-full text-sm font-medium whitespace-nowrap transition-all"
+                style={{
+                  background: active ? 'var(--text)' : 'transparent',
+                  color: active ? 'var(--bg)' : 'var(--text-muted)',
+                  border: `1px solid ${active ? 'var(--text)' : 'var(--border-md)'}`,
+                }}
+              >
+                {tab.label}
+              </button>
+            )
+          })}
         </div>
 
-        {/* Vehicle grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           <AnimatePresence mode="wait">
             {filtered.map((vehicle, i) => (
-              <motion.div
+              <motion.a
                 key={vehicle.id}
-                initial={{ opacity: 0, y: 20 }}
+                href={`/frota/${vehicle.id}`}
+                initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.35, delay: i * 0.06 }}
-                className="glass-dark rounded-xl overflow-hidden card-hover group"
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.6, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                className="group block surface-card rounded-3xl overflow-hidden card-hover"
               >
-                {/* Image */}
-                <div className="relative">
+                <div className="relative w-full aspect-[4/3] overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
                   {vehicle.photo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={vehicle.photo_url}
                       alt={vehicle.name}
-                      className="w-full h-40 object-cover"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
-                    <BusPlaceholder category={vehicle.category} />
+                    <VehiclePlaceholder name={vehicle.name} category={vehicle.category} />
                   )}
-                  <div className="absolute top-3 left-3">
-                    <Badge
-                      variant={
+                  <div className="absolute top-4 left-4">
+                    <span
+                      className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full text-[11px] font-medium backdrop-blur-md"
+                      style={{
+                        background: 'rgba(255,255,255,0.92)',
+                        color: '#1D1D1F',
+                        border: '1px solid rgba(0,0,0,0.06)',
+                      }}
+                    >
+                      {categoryLabel(vehicle.category)}
+                    </span>
+                  </div>
+                  <div className="absolute top-4 right-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 h-7 rounded-full text-[11px] font-medium backdrop-blur-md ${
                         vehicle.status === 'disponivel'
-                          ? 'green'
+                          ? 'bg-emerald-500/90 text-white'
                           : vehicle.status === 'em_uso'
-                          ? 'blue'
-                          : 'amber'
-                      }
+                          ? 'bg-blue-500/90 text-white'
+                          : 'bg-amber-500/90 text-white'
+                      }`}
                     >
                       {vehicle.status === 'disponivel'
                         ? 'Disponível'
                         : vehicle.status === 'em_uso'
-                        ? 'Em Uso'
+                        ? 'Em uso'
                         : 'Manutenção'}
-                    </Badge>
-                  </div>
-                  <div className="absolute top-3 right-3">
-                    <Badge variant="gold">{categoryLabel(vehicle.category)}</Badge>
+                    </span>
                   </div>
                 </div>
 
-                {/* Info */}
-                <div className="p-5">
-                  <h3 className="font-heading font-bold text-white text-lg mb-0.5">{vehicle.name}</h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    {vehicle.model} • {vehicle.year}
+                <div className="p-7 md:p-8">
+                  <h3 className="font-heading font-semibold text-xl md:text-2xl tracking-tight mb-1" style={{ color: 'var(--text)' }}>
+                    {vehicle.name}
+                  </h3>
+                  <p className="text-sm font-light mb-6" style={{ color: 'var(--text-dim)' }}>
+                    {vehicle.model} · {vehicle.year}
                   </p>
 
-                  <div className="flex items-center gap-4 mb-4 text-sm text-gray-400">
-                    <span className="flex items-center gap-1.5">
-                      <Users size={14} className="text-gold" />
-                      {vehicle.capacity} pax
+                  <div className="flex items-center justify-between text-sm" style={{ color: 'var(--text-muted)' }}>
+                    <span className="inline-flex items-center gap-1.5">
+                      <Users size={14} strokeWidth={1.5} />
+                      {vehicle.capacity} passageiros
                     </span>
-                    <span className="flex items-center gap-1.5">
-                      <Zap size={14} className="text-gold" />
+                    <span className="font-medium" style={{ color: 'var(--text)' }}>
                       {formatCurrency(vehicle.price_km)}/km
                     </span>
                   </div>
 
-                  {/* Features */}
-                  <div className="flex flex-wrap gap-1.5 mb-5">
-                    {vehicle.features.slice(0, 3).map((f) => (
-                      <span
-                        key={f}
-                        className="text-xs bg-white/5 text-gray-400 px-2 py-0.5 rounded-full"
-                      >
-                        {f}
-                      </span>
-                    ))}
-                    {vehicle.features.length > 3 && (
-                      <span className="text-xs text-gold">+{vehicle.features.length - 3}</span>
-                    )}
-                  </div>
-
-                  {/* CTAs */}
-                  <div className="flex gap-2">
-                    <Button as="a" href={`/frota/${vehicle.id}`} variant="outline" size="sm" fullWidth>
-                      Ver Detalhes
-                    </Button>
-                    <Button
-                      as="a"
-                      href={`/orcamento?veiculo=${vehicle.id}`}
-                      variant="gold"
-                      size="sm"
-                      fullWidth
-                    >
-                      Orçamento
-                    </Button>
+                  <div className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium group/cta" style={{ color: 'var(--gold-strong)' }}>
+                    Ver detalhes
+                    <ArrowRight size={14} className="transition-transform group-hover/cta:translate-x-0.5" />
                   </div>
                 </div>
-              </motion.div>
+              </motion.a>
             ))}
           </AnimatePresence>
         </div>
 
-        {/* CTA */}
-        <div className="text-center">
-          <Button as="a" href="/frota" variant="outline" size="lg" rightIcon={<ArrowRight size={18} />}>
-            Ver Frota Completa
-          </Button>
+        <div className="mt-16 md:mt-20 flex justify-center">
+          <a
+            href="/frota"
+            className="inline-flex items-center gap-2 h-12 px-7 rounded-full text-[15px] font-medium transition-all"
+            style={{
+              background: 'var(--text)',
+              color: 'var(--bg)',
+            }}
+          >
+            Ver frota completa
+            <ArrowRight size={16} />
+          </a>
         </div>
       </div>
-    </Section>
+    </section>
   )
 }

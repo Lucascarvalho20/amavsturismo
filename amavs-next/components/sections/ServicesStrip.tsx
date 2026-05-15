@@ -1,59 +1,78 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Bus, Building2, Mountain, Briefcase } from 'lucide-react'
+import { Bus, Building2, Mountain, Briefcase, ArrowUpRight } from 'lucide-react'
 
 const services = [
-  {
-    icon: Bus,
-    label: 'Fretamento Corporativo',
-    desc: 'Transporte regular de colaboradores com contrato mensal ou anual.',
-  },
-  {
-    icon: Building2,
-    label: 'Contratos Públicos',
-    desc: 'Especialistas em pregão eletrônico, SICAF regularizado e documentação completa.',
-  },
-  {
-    icon: Mountain,
-    label: 'Excursões e Turismo',
-    desc: 'Pacotes para grupos, passeios regionais e viagens de lazer.',
-  },
-  {
-    icon: Briefcase,
-    label: 'Eventos e Traslados',
-    desc: 'Transporte para eventos corporativos, feiras e congressos em Brasília.',
-  },
+  { icon: Bus,        label: 'Fretamento Corporativo', desc: 'Transporte regular de colaboradores com contrato mensal ou anual.' },
+  { icon: Building2,  label: 'Contratos Públicos',     desc: 'Pregão eletrônico, SICAF regularizado e documentação completa.' },
+  { icon: Mountain,   label: 'Excursões e Turismo',    desc: 'Pacotes para grupos, passeios regionais e viagens de lazer.' },
+  { icon: Briefcase,  label: 'Eventos e Traslados',    desc: 'Transporte para eventos, feiras e congressos em Brasília.' },
 ]
 
 export default function ServicesStrip() {
   return (
-    <div className="bg-[#0d0d0d] border-y border-white/[0.05]">
-      <div className="container mx-auto px-4 md:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.05]">
+    <section className="py-32 md:py-40" style={{ background: 'var(--bg-elevated)' }} id="servicos">
+      <div className="container mx-auto px-6 md:px-10 max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-end justify-between flex-wrap gap-6 mb-16 md:mb-20"
+        >
+          <div className="max-w-xl">
+            <div className="text-xs font-medium tracking-[0.28em] uppercase mb-5" style={{ color: 'var(--text-dim)' }}>
+              O que fazemos
+            </div>
+            <h2 className="font-heading font-semibold tracking-tight leading-[1.05] text-[clamp(2.25rem,5vw,4rem)]">
+              Fretamento, sob<br />
+              medida.
+            </h2>
+          </div>
+          <p className="text-lg font-light leading-relaxed max-w-md" style={{ color: 'var(--text-muted)' }}>
+            Do contrato federal de longo prazo ao traslado pontual de um congresso —
+            atendemos pessoas e organizações em Brasília e Centro-Oeste.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px" style={{ background: 'var(--border)' }}>
           {services.map((s, i) => {
             const Icon = s.icon
             return (
               <motion.div
                 key={s.label}
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="flex items-start gap-4 px-6 py-8 group hover:bg-white/[0.02] transition-colors duration-200"
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                className="group cursor-default"
+                style={{ background: 'var(--bg)' }}
               >
-                <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center flex-shrink-0 group-hover:bg-gold/15 transition-colors mt-0.5">
-                  <Icon size={18} className="text-gold" />
-                </div>
-                <div>
-                  <p className="text-white font-semibold text-sm mb-1 font-heading">{s.label}</p>
-                  <p className="text-gray-500 text-xs leading-relaxed">{s.desc}</p>
+                <div className="p-10 md:p-14 h-full flex flex-col justify-between min-h-[280px]">
+                  <div className="flex items-start justify-between gap-4 mb-10">
+                    <Icon size={28} strokeWidth={1.4} style={{ color: 'var(--gold-strong)' }} />
+                    <ArrowUpRight
+                      size={20}
+                      strokeWidth={1.5}
+                      className="opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0"
+                      style={{ color: 'var(--text-dim)' }}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-heading font-semibold text-2xl md:text-3xl tracking-tight mb-3" style={{ color: 'var(--text)' }}>
+                      {s.label}
+                    </h3>
+                    <p className="text-base font-light leading-relaxed max-w-md" style={{ color: 'var(--text-muted)' }}>
+                      {s.desc}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             )
           })}
         </div>
       </div>
-    </div>
+    </section>
   )
 }

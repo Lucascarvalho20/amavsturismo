@@ -1,63 +1,89 @@
-'use client'
+import { createClient } from '@/lib/supabase-server'
+import StatsClient from './StatsClient'
 
-import { useEffect, useRef, useState } from 'react'
-import { motion, useInView } from 'framer-motion'
-
-const stats = [
-  { value: 15, suffix: '+', label: 'Anos de Experiência', sub: 'Atuando desde 2009' },
-  { value: 500, suffix: '+', label: 'Viagens Realizadas', sub: 'No Centro-Oeste' },
-  { value: 100, suffix: '%', label: 'Documentação Regular', sub: 'ANTT · SICAF · CNH E' },
-  { value: 4, suffix: '', label: 'Contratos Públicos', sub: 'Gov. Federal e DF' },
-]
-
-function AnimatedNumber({ target, suffix }: { target: number; suffix: string }) {
-  const [count, setCount] = useState(0)
-  const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref as React.RefObject<Element>, { once: true })
-
-  useEffect(() => {
-    if (!inView) return
-    let frame = 0
-    const total = 50
-    const timer = setInterval(() => {
-      frame++
-      setCount(Math.round((frame / total) * target))
-      if (frame >= total) clearInterval(timer)
-    }, 1600 / total)
-    return () => clearInterval(timer)
-  }, [inView, target])
-
-  return <span ref={ref}>{count}{suffix}</span>
+export interface SiteStat {
+  key: string
+  label: string
+  sub: string
+  value: number
+  format: 'number' | 'currency' | 'percent'
 }
 
-export default function StatsSection() {
-  return (
-    <section className="py-20 bg-[#111] relative overflow-hidden">
-      {/* Gold glow */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse 60% 40% at 50% 50%, rgba(212,175,55,0.04) 0%, transparent 70%)' }}
-      />
-      <div className="container mx-auto px-4 md:px-8 relative z-10">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.04] rounded-2xl overflow-hidden border border-white/[0.05]">
-          {stats.map((s, i) => (
-            <motion.div
-              key={s.label}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
-              className="bg-[#111] px-6 md:px-10 py-10 text-center"
-            >
-              <div className="font-heading font-black text-5xl md:text-6xl text-gold tracking-tight mb-2">
-                <AnimatedNumber target={s.value} suffix={s.suffix} />
-              </div>
-              <div className="text-white font-semibold text-sm mb-1">{s.label}</div>
-              <div className="text-gray-600 text-xs">{s.sub}</div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
+export default async function StatsSection() {
+  const supabase = createClient()
+
+  const [
+    { data: configRows },
+    { data: vehiclesData },
+    { data: contractsData },
+    { data: leadsData },
+  ] = await Promise.all([
+    supabase
+      .from('site_stats')
+      .select('key,label,sub,value_override,display_order,is_active,format')
+      .eq('is_active', true)
+      .order('display_order', { ascending: true }),
+    supabase.from('vehicles').select('capacity,status'),
+    supabase.from('contracts').select('status,value'),
+    supabase.from('leads').select('status,travel_date'),
+  ])
+
+  const fleetSize = vehiclesData?.length ?? 0
+  const totalCapacity = (vehiclesData ?? []).reduce(
+    (s: number, v: { capacity: number }) => s + (v.capacity ?? 0),
+    0,
   )
+  const vehiclesAvailable = (vehiclesData ?? []).filter(
+    (v: { status: string }) => v.status === 'disponivel',
+  ).length
+  const activeContracts = (contractsData ?? []).filter(
+    (c: { status: string }) => c.status === 'ativo',
+  ).length
+  const activeContractsValue = (contractsData ?? [])
+    .filter((c: { status: string }) => c.status === 'ativo')
+    .reduce((s: number, c: { value: number }) => s + (c.value ?? 0), 0)
+
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = now.getMonth()
+  const tripsYear = (leadsData ?? []).filter((l: { status: string; travel_date: string }) => {
+    if (l.status !== 'convertido' || !l.travel_date) return false
+    return new Date(l.travel_date).getFullYear() === year
+  }).length
+  const tripsMonth = (leadsData ?? []).filter((l: { status: string; travel_date: string }) => {
+    if (l.status !== 'convertido' || !l.travel_date) return false
+    const d = new Date(l.travel_date)
+    return d.getFullYear() === year && d.getMonth() === month
+  }).length
+
+  const computeAuto = (key: string): number => {
+    switch (key) {
+      case 'fleet_size': return fleetSize
+      case 'total_capacity': return totalCapacity
+      case 'vehicles_available': return vehiclesAvailable
+      case 'active_contracts': return activeContracts
+      case 'active_contracts_value': return activeContractsValue
+      case 'trips_year': return tripsYear
+      case 'trips_month': return tripsMonth
+      default: return 0
+    }
+  }
+
+  const stats: SiteStat[] = (configRows ?? []).map((row: {
+    key: string
+    label: string
+    sub: string
+    value_override: number | null
+    format: 'number' | 'currency' | 'percent'
+  }) => ({
+    key: row.key,
+    label: row.label,
+    sub: row.sub ?? '',
+    value: row.value_override ?? computeAuto(row.key),
+    format: row.format ?? 'number',
+  }))
+
+  if (stats.length === 0) return null
+
+  return <StatsClient stats={stats} />
 }

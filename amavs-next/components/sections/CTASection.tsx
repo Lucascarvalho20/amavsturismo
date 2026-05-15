@@ -2,96 +2,85 @@
 
 import { motion } from 'framer-motion'
 import { ArrowRight, MessageCircle, Instagram, Phone } from 'lucide-react'
-import Button from '@/components/ui/Button'
 
 export default function CTASection() {
   return (
-    <section className="py-28 bg-[#0a0a0a] relative overflow-hidden">
-      {/* Gold gradient at bottom */}
-      <div
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[900px] h-[400px] pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at 50% 100%, rgba(212,175,55,0.1) 0%, transparent 60%)',
-          filter: 'blur(60px)',
-        }}
-      />
-      {/* Top separator line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-
-      <div className="relative z-10 container mx-auto px-4 md:px-8 text-center">
+    <section className="py-32 md:py-44 relative overflow-hidden surface">
+      <div className="container mx-auto px-6 md:px-10 max-w-5xl text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="text-gold text-xs font-semibold tracking-[0.2em] uppercase inline-flex items-center gap-2 mb-5">
-            <span className="w-6 h-px bg-gold" />
-            Fale com a Gente
-            <span className="w-6 h-px bg-gold" />
-          </span>
-
-          <h2 className="font-heading font-black text-4xl sm:text-5xl md:text-6xl text-white tracking-tight leading-[0.95] mb-6">
-            Pronto para a<br />
-            <span style={{ color: '#D4AF37' }}>próxima viagem?</span>
-          </h2>
-
-          <p className="text-gray-400 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-            Resposta em minutos pelo WhatsApp. Orçamento gratuito, sem compromisso.
-            Atendemos Brasília e todo o Centro-Oeste.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10">
-            <Button
-              as="a"
-              href="https://wa.me/5561984222205?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento."
-              variant="gold"
-              size="lg"
-              leftIcon={<MessageCircle size={18} />}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Falar no WhatsApp
-            </Button>
-            <Button
-              as="a"
-              href="/orcamento"
-              variant="outline"
-              size="lg"
-              rightIcon={<ArrowRight size={18} />}
-            >
-              Solicitar Orçamento
-            </Button>
+          <div
+            className="text-xs font-medium tracking-[0.28em] uppercase mb-6"
+            style={{ color: 'var(--text-dim)' }}
+          >
+            Fale com a gente
           </div>
 
-          {/* Secondary contacts */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
+          <h2 className="font-heading font-semibold tracking-tight leading-[0.95] text-[clamp(2.5rem,7vw,5.5rem)] mb-8">
+            Pronto para a<br />
+            <span className="text-gradient-gold">próxima viagem?</span>
+          </h2>
+
+          <p
+            className="text-lg md:text-xl font-light leading-relaxed max-w-2xl mx-auto mb-12"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Resposta em minutos pelo WhatsApp. Orçamento gratuito, sem
+            compromisso. Atendemos Brasília e todo o Centro-Oeste.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
             <a
-              href="tel:+5561984222205"
-              className="flex items-center gap-2 hover:text-gray-300 transition-colors"
+              href="https://wa.me/5561984222205?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 h-12 px-7 rounded-full text-[15px] font-medium transition-all"
+              style={{ background: 'var(--text)', color: 'var(--bg)' }}
             >
+              <MessageCircle size={16} />
+              Falar no WhatsApp
+            </a>
+            <a
+              href="/orcamento"
+              className="group inline-flex items-center gap-2 h-12 px-7 rounded-full text-[15px] font-medium transition-all"
+              style={{
+                background: 'transparent',
+                color: 'var(--text)',
+                border: '1px solid var(--border-md)',
+              }}
+            >
+              Solicitar orçamento
+              <ArrowRight
+                size={16}
+                className="transition-transform group-hover:translate-x-0.5"
+              />
+            </a>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm" style={{ color: 'var(--text-dim)' }}>
+            <a href="tel:+5561984222205" className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Phone size={14} />
               (61) 98422-2205
             </a>
-            <span className="w-px h-4 bg-white/10" />
+            <span className="w-px h-4" style={{ background: 'var(--border)' }} />
             <a
               href="https://instagram.com/amavsturismo"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 hover:text-gray-300 transition-colors"
+              className="inline-flex items-center gap-2 hover:opacity-80 transition-opacity"
             >
               <Instagram size={14} />
               @amavsturismo
             </a>
-            <span className="w-px h-4 bg-white/10" />
-            <span className="text-gray-600">Base: Brasília, DF</span>
+            <span className="w-px h-4" style={{ background: 'var(--border)' }} />
+            <span>Brasília, DF</span>
           </div>
         </motion.div>
       </div>
-
-      {/* Bottom separator */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
     </section>
   )
 }
