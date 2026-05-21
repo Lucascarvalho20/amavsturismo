@@ -173,9 +173,10 @@ export default function VehicleMaintenance({ vehicle, onClose }: { vehicle: Vehi
   useEffect(() => { load() }, [vehicle.id])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Excluir este registro?')) return
+    if (!confirm('Excluir este registro de manutenção?')) return
     setDeleting(id)
-    await supabase.from('vehicle_maintenance').delete().eq('id', id)
+    const { error } = await supabase.from('vehicle_maintenance').delete().eq('id', id)
+    if (error) { toast.error('Erro ao excluir: ' + error.message); setDeleting(null); return }
     toast.success('Registro removido.')
     setDeleting(null)
     load()

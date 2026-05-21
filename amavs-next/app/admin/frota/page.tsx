@@ -177,10 +177,12 @@ function VehicleModal({
       }
 
       if (isNew) {
-        await supabase.from('vehicles').insert({ ...data, created_at: new Date().toISOString() })
+        const { error: insertErr } = await supabase.from('vehicles').insert({ ...data, created_at: new Date().toISOString() })
+        if (insertErr) throw insertErr
         toast.success('Veículo adicionado!')
       } else {
-        await supabase.from('vehicles').update(data).eq('id', vehicle.id)
+        const { error: updateErr } = await supabase.from('vehicles').update(data).eq('id', vehicle.id)
+        if (updateErr) throw updateErr
         toast.success('Veículo atualizado!')
       }
       onSave()
@@ -268,8 +270,9 @@ export default function FrotaAdminPage() {
   useEffect(() => { load() }, [])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este veículo?')) return
-    await supabase.from('vehicles').delete().eq('id', id)
+    if (!confirm('Tem certeza que deseja excluir este veículo? Esta ação não pode ser desfeita.')) return
+    const { error } = await supabase.from('vehicles').delete().eq('id', id)
+    if (error) { toast.error('Erro ao excluir veículo: ' + error.message); return }
     toast.success('Veículo excluído.')
     load()
   }

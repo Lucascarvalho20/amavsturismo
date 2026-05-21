@@ -132,9 +132,10 @@ export default function VehicleCalendar({ vehicle, onClose }: { vehicle: Vehicle
   useEffect(() => { loadBlocks() }, [vehicle.id])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Excluir este período?')) return
+    if (!confirm('Excluir este período bloqueado?')) return
     setDeletingId(id)
-    await supabase.from('vehicle_blocks').delete().eq('id', id)
+    const { error } = await supabase.from('vehicle_blocks').delete().eq('id', id)
+    if (error) { toast.error('Erro ao excluir período: ' + error.message); setDeletingId(null); return }
     toast.success('Período removido.')
     setDeletingId(null)
     loadBlocks()

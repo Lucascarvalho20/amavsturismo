@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, AlertTriangle, Lock } from 'lucide-react'
+import { Eye, EyeOff, AlertTriangle, Lock, Mail, ArrowLeft, CheckCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase-browser'
 import { Input } from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -28,26 +28,18 @@ export default function AdminLoginPage() {
   const [blockResetAt, setBlockResetAt] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  // Forgot password state
+  const [forgotMode, setForgotMode] = useState(false)
+  const [forgotEmail, setForgotEmail] = useState('')
+  const [forgotLoading, setForgotLoading] = useState(false)
+  const [forgotSent, setForgotSent] = useState(false)
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     getValues,
   } = useForm<FormData>({ resolver: zodResolver(schema) })
-
-  const getClientIP = async (): Promise<string | null> => {
-    try {
-      const res = await fetch('/api/admin/check-rate-limit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: getValues('email'), checkOnly: true }),
-      })
-      const data = await res.json()
-      return data.ip || null
-    } catch {
-      return null
-    }
-  }
 
   const onSubmit = async (data: FormData) => {
     if (blocked) {
@@ -84,16 +76,12 @@ export default function AdminLoginPage() {
       await fetch('/api/admin/log-attempt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: data.email,
-          success: !error,
-        }),
+        body: JSON.stringify({ email: data.email, success: !error }),
       })
 
       if (error) {
         const newAttempts = attempts + 1
         setAttempts(newAttempts)
-        // Show real error to help diagnose
         const msg = error.message?.toLowerCase() ?? ''
         let friendlyMsg = 'E-mail ou senha incorretos.'
         if (msg.includes('email not confirmed') || msg.includes('not confirmed')) {
@@ -124,102 +112,193 @@ export default function AdminLoginPage() {
     }
   }
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!forgotEmail || !forgotEmail.includes('@')) {
+      toast.error('Digite um e-mail válido.')
+      return
+    }
+    setForgotLoading(true)
+    try {
+      // next= garante que o fluxo PKCE (code) também redireciona para a tela de reset
+      const redirectTo = `${window.location.origin}/auth/callback?next=/auth/reset-password`
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail.trim().toLowerCase(), {
+        redirectTo,
+      })
+      if (error) {
+        toast.error(error.message)
+      } else {
+        setForgotSent(true)
+      }
+    } catch {
+      toast.error('Erro ao enviar e-mail. Tente novamente.')
+    } finally {
+      setForgotLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-navy-200 flex items-center justify-center p-4">
-      {/* Background */}
       <div className="absolute inset-0 bg-grid opacity-30" />
       <div className="absolute inset-0 bg-gradient-radial-gold opacity-40" />
 
       <div className="relative z-10 w-full max-w-sm">
-        {/* Logo */}
         <div className="text-center mb-8">
           <Logo variant="full" size="lg" href="/" className="inline-flex justify-center mb-4" />
           <h1 className="font-heading font-bold text-white text-xl">Painel Administrativo</h1>
           <p className="text-gray-400 text-sm mt-1">Acesso restrito a administradores</p>
         </div>
 
-        {/* Card */}
         <div className="glass-dark rounded-2xl p-7 border border-gold/10">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center">
-              <Lock size={16} className="text-gold" />
-            </div>
-            <span className="text-gray-300 text-sm font-medium">Entrar na sua conta</span>
-          </div>
 
-          {/* Blocked warning */}
-          {blocked && (
-            <div className="flex items-start gap-2 bg-wine/20 border border-wine/30 rounded-xl p-3 mb-5">
-              <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-red-400 text-sm font-medium">Conta temporariamente bloqueada</p>
-                <p className="text-gray-400 text-xs mt-0.5">
-                  {blockResetAt
-                    ? `Tente novamente às ${new Date(blockResetAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
-                    : 'Tente novamente em 15 minutos.'}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Warning after 2 fails */}
-          {!blocked && attempts >= 2 && (
-            <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 mb-5">
-              <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />
-              <p className="text-amber-400 text-sm">
-                {5 - attempts} tentativa{5 - attempts !== 1 ? 's' : ''} restante{5 - attempts !== 1 ? 's' : ''} antes do bloqueio.
-              </p>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <Input
-              label="E-mail"
-              type="email"
-              placeholder="admin@amavsturismo.com.br"
-              autoComplete="email"
-              {...register('email')}
-              error={errors.email?.message}
-              required
-              disabled={blocked}
-            />
-            <Input
-              label="Senha"
-              type={showPw ? 'text' : 'password'}
-              placeholder="••••••••"
-              autoComplete="current-password"
-              {...register('password')}
-              error={errors.password?.message}
-              required
-              disabled={blocked}
-              rightElement={
+          {/* ── FORGOT PASSWORD MODE ── */}
+          {forgotMode ? (
+            <>
+              <div className="flex items-center gap-2 mb-6">
                 <button
-                  type="button"
-                  onClick={() => setShowPw((v) => !v)}
-                  className="text-gray-400 hover:text-gold transition-colors p-1"
-                  tabIndex={-1}
+                  onClick={() => { setForgotMode(false); setForgotSent(false); setForgotEmail('') }}
+                  className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
                 >
-                  {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                  <ArrowLeft size={15} className="text-gray-400" />
                 </button>
-              }
-            />
-            <Button
-              type="submit"
-              variant="gold"
-              size="lg"
-              fullWidth
-              loading={loading}
-              disabled={blocked}
-            >
-              Entrar
-            </Button>
-          </form>
+                <span className="text-gray-300 text-sm font-medium">Recuperar senha</span>
+              </div>
+
+              {forgotSent ? (
+                <div className="text-center py-4">
+                  <CheckCircle size={40} className="text-emerald-400 mx-auto mb-3" />
+                  <p className="text-white font-medium mb-1">E-mail enviado!</p>
+                  <p className="text-gray-400 text-sm">
+                    Verifique sua caixa de entrada em <span className="text-gold">{forgotEmail}</span> e clique no link para redefinir sua senha.
+                  </p>
+                  <p className="text-gray-500 text-xs mt-3">Não encontrou? Verifique a pasta de spam.</p>
+                  <button
+                    onClick={() => { setForgotMode(false); setForgotSent(false); setForgotEmail('') }}
+                    className="mt-5 text-gray-400 hover:text-gold text-sm transition-colors"
+                  >
+                    ← Voltar ao login
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div className="flex items-start gap-2 bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 mb-2">
+                    <Mail size={15} className="text-blue-400 shrink-0 mt-0.5" />
+                    <p className="text-blue-300 text-xs">
+                      Insira o e-mail cadastrado no Supabase. Você receberá um link para redefinir sua senha.
+                    </p>
+                  </div>
+                  <Input
+                    label="E-mail"
+                    type="email"
+                    placeholder="admin@amavsturismo.com.br"
+                    autoComplete="email"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    required
+                  />
+                  <Button type="submit" variant="gold" size="lg" fullWidth loading={forgotLoading}>
+                    Enviar link de recuperação
+                  </Button>
+                </form>
+              )}
+            </>
+          ) : (
+            /* ── LOGIN MODE ── */
+            <>
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center">
+                  <Lock size={16} className="text-gold" />
+                </div>
+                <span className="text-gray-300 text-sm font-medium">Entrar na sua conta</span>
+              </div>
+
+              {/* Blocked warning */}
+              {blocked && (
+                <div className="flex items-start gap-2 bg-wine/20 border border-wine/30 rounded-xl p-3 mb-5">
+                  <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-red-400 text-sm font-medium">Conta temporariamente bloqueada</p>
+                    <p className="text-gray-400 text-xs mt-0.5">
+                      {blockResetAt
+                        ? `Tente novamente às ${new Date(blockResetAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+                        : 'Tente novamente em 15 minutos.'}
+                    </p>
+                    <button
+                      onClick={() => { setForgotMode(true); setForgotEmail(getValues('email') || '') }}
+                      className="text-gold text-xs mt-1.5 hover:underline"
+                    >
+                      Redefinir minha senha →
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Warning after 2 fails */}
+              {!blocked && attempts >= 2 && (
+                <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 mb-5">
+                  <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+                  <p className="text-amber-400 text-sm">
+                    {5 - attempts} tentativa{5 - attempts !== 1 ? 's' : ''} restante{5 - attempts !== 1 ? 's' : ''} antes do bloqueio.
+                  </p>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <Input
+                  label="E-mail"
+                  type="email"
+                  placeholder="admin@amavsturismo.com.br"
+                  autoComplete="email"
+                  {...register('email')}
+                  error={errors.email?.message}
+                  required
+                  disabled={blocked}
+                />
+                <div>
+                  <Input
+                    label="Senha"
+                    type={showPw ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    {...register('password')}
+                    error={errors.password?.message}
+                    required
+                    disabled={blocked}
+                    rightElement={
+                      <button
+                        type="button"
+                        onClick={() => setShowPw((v) => !v)}
+                        className="text-gray-400 hover:text-gold transition-colors p-1"
+                        tabIndex={-1}
+                      >
+                        {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() => { setForgotMode(true); setForgotEmail(getValues('email') || '') }}
+                    className="text-gray-500 hover:text-gold text-xs mt-1.5 float-right transition-colors"
+                  >
+                    Esqueceu a senha?
+                  </button>
+                </div>
+                <Button
+                  type="submit"
+                  variant="gold"
+                  size="lg"
+                  fullWidth
+                  loading={loading}
+                  disabled={blocked}
+                >
+                  Entrar
+                </Button>
+              </form>
+            </>
+          )}
 
           <div className="mt-5 pt-5 border-t border-white/10 text-center">
-            <a
-              href="/"
-              className="text-gray-500 hover:text-gray-400 text-xs transition-colors"
-            >
+            <a href="/" className="text-gray-500 hover:text-gray-400 text-xs transition-colors">
               ← Voltar para o site
             </a>
           </div>
