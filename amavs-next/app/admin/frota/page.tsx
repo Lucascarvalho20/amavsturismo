@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, Pencil, Trash2, Search, Bus, Upload, X, Image as ImageIcon, CalendarDays, Wrench } from 'lucide-react'
 import type { Vehicle, VehicleCategory } from '@/lib/types'
-import { cn, categoryLabel, formatCurrency } from '@/lib/utils'
+import { cn, categoryLabel, formatCurrency, validateFileType } from '@/lib/utils'
 import { VehicleStatusBadge } from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import { Input, Select, Textarea } from '@/components/ui/Input'
@@ -40,6 +40,8 @@ function PhotoGallery({
       const uploaded: string[] = []
       for (const file of Array.from(files)) {
         if (file.size > 5 * 1024 * 1024) { toast.error(`${file.name} é muito grande (máx 5MB)`); continue }
+        const mime = validateFileType(file, 'images')
+        if (!mime.ok) { toast.error(`${file.name}: ${mime.error}`); continue }
         const ext  = file.name.split('.').pop()
         const path = `vehicles/${vehicleId ?? Date.now()}/${Date.now()}.${ext}`
         const { error } = await supabase.storage.from('vehicles').upload(path, file, { upsert: true })

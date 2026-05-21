@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase-browser'
 import type { Vehicle } from '@/lib/types'
 import { Input, Select, Textarea } from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-import { formatDate, formatCurrency } from '@/lib/utils'
+import { formatDate, formatCurrency, validateFileType } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
 interface MaintenanceRecord {
@@ -76,6 +76,8 @@ function MaintenanceForm({
       let document_url = record?.document_url ?? null
 
       if (file) {
+        const mime = validateFileType(file, 'images_or_pdf')
+        if (!mime.ok) { toast.error(mime.error!); setSaving(false); return }
         const ext = file.name.split('.').pop()
         const path = `${vehicleId}/${Date.now()}.${ext}`
         const { error: upErr } = await supabase.storage.from('maintenance').upload(path, file, { upsert: true })

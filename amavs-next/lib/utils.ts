@@ -160,3 +160,59 @@ export function truncate(text: string, maxLength: number): string {
 export function pluralize(count: number, singular: string, plural: string): string {
   return count === 1 ? singular : plural
 }
+
+// ── File Upload Security ───────────────────────────────────────────────────
+
+const ALLOWED_IMAGE_TYPES = new Set([
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+])
+
+const ALLOWED_DOCUMENT_TYPES = new Set([
+  'application/pdf',
+])
+
+const ALLOWED_IMAGE_OR_DOC_TYPES = new Set([
+  ...ALLOWED_IMAGE_TYPES,
+  ...ALLOWED_DOCUMENT_TYPES,
+])
+
+/**
+ * Validates a file's MIME type against an allowed set.
+ * Checks both file.type (reported by browser) and the file extension,
+ * since file.type can be empty on some browsers.
+ */
+export function validateFileType(
+  file: File,
+  allowed: 'images' | 'pdf' | 'images_or_pdf'
+): { ok: boolean; error?: string } {
+  const typeSet =
+    allowed === 'images'
+      ? ALLOWED_IMAGE_TYPES
+      : allowed === 'pdf'
+      ? ALLOWED_DOCUMENT_TYPES
+      : ALLOWED_IMAGE_OR_DOC_TYPES
+
+  // Check MIME type if provided by browser
+  if (file.type && !typeSet.has(file.type)) {
+    const expected =
+      allowed === 'images'
+        ? 'JPG, PNG, WEBP ou GIF'
+        : allowed === 'pdf'
+        ? 'PDF'
+        : 'JPG, PNG, WEBP, GIF ou PDF'
+    return { ok: false, error: `Tipo de arquivo inválido. Permitido: ${expected}.` }
+  }
+
+  // Also validate extension as a secondary check
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
+  const ALLOWED_EXTENSIONS: Record<string, Set<string>> = {
+    images: new Set(['jpg', 'jpeg', 'png', 'webp', 'gif']),
+    pdf: new Set(['pdf']),
+    images_or_pdf: new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf']),
+  }
+  if (!ALLOWED_EXTENSIONS[allowed].has(ext)) {
+    return { ok: false, error: `Extensão não permitida: .${ext}` }
+  }
+
+  return { ok: true }
+}

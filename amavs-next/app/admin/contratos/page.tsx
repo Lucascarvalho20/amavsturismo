@@ -7,7 +7,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase-browser'
 import type { Contract, ContractStatus, ContractModality } from '@/lib/types'
-import { formatCurrency, formatDate, modalityLabel } from '@/lib/utils'
+import { formatCurrency, formatDate, modalityLabel, validateFileType } from '@/lib/utils'
 import { ContractStatusBadge } from '@/components/ui/Badge'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
@@ -160,6 +160,8 @@ function ContractModal({
       let document_url = contract?.document_url ?? null
 
       if (pdfFile) {
+        const mime = validateFileType(pdfFile, 'pdf')
+        if (!mime.ok) { toast.error(mime.error!); setSaving(false); return }
         const ext = pdfFile.name.split('.').pop()
         const path = `${form.code.replace(/[^a-zA-Z0-9-_]/g, '_')}/${Date.now()}.${ext}`
         const { error: uploadError } = await supabase.storage
