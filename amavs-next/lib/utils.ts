@@ -172,8 +172,8 @@ const ALLOWED_DOCUMENT_TYPES = new Set([
 ])
 
 const ALLOWED_IMAGE_OR_DOC_TYPES = new Set([
-  ...ALLOWED_IMAGE_TYPES,
-  ...ALLOWED_DOCUMENT_TYPES,
+  ...Array.from(ALLOWED_IMAGE_TYPES),
+  ...Array.from(ALLOWED_DOCUMENT_TYPES),
 ])
 
 /**

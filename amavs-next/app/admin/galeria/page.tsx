@@ -53,7 +53,7 @@ function ItemModal({
       for (const file of Array.from(files)) {
         if (file.size > 10 * 1024 * 1024) { toast.error(`${file.name} muito grande (máx 10MB)`); continue }
         const mime = validateFileType(file, 'images')
-        if (!mime.ok) { toast.error(mime.error); continue }
+        if (!mime.ok) { toast.error(mime.error ?? 'Arquivo inválido'); continue }
         const ext = file.name.split('.').pop()
         const path = `trips/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
         const { error } = await supabase.storage.from('trip-media').upload(path, file, { upsert: false })
