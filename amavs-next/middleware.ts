@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isAdminLogin = pathname === '/admin/login'
+  const isAdminRoot = pathname === '/admin'
   const isAdminRoute = pathname.startsWith('/admin')
 
   // Inject pathname into request headers so server components can read it
@@ -53,7 +54,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
 
-    if (user && isAdminLogin) {
+    if (user && (isAdminLogin || isAdminRoot)) {
       return NextResponse.redirect(new URL('/admin/dashboard', request.url))
     }
   } catch {
