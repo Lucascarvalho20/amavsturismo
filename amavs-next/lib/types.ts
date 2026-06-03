@@ -135,6 +135,20 @@ export type AuditAction =
   | 'mfa_disabled'
   | 'profile_updated'
 
+export interface TripGallery {
+  id: string
+  media_type: 'photo' | 'video'
+  url: string
+  thumbnail_url: string | null
+  caption: string | null
+  location: string | null
+  trip_date: string | null
+  display_order: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
 export interface LoginAttempt {
   id: string
   email: string

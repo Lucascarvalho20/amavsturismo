@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Palette,
   Monitor,
+  Images,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -33,6 +34,7 @@ const navItems = [
   { href: '/admin/frota',        icon: Bus,             label: 'Frota' },
   { href: '/admin/orcamentos',   icon: FileText,        label: 'Orçamentos' },
   { href: '/admin/contratos',    icon: ScrollText,      label: 'Contratos' },
+  { href: '/admin/galeria',      icon: Images,          label: 'Galeria' },
   { href: '/admin/relatorios',   icon: BarChart2,       label: 'Relatórios' },
   { href: '/admin/personalizar', icon: Palette,         label: 'Personalizar' },
   { href: '/admin/computadores', icon: Monitor,         label: 'Computadores' },
