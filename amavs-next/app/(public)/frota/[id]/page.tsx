@@ -26,11 +26,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function VehicleDetailPage({ params }: Props) {
   const supabase = createClient()
-  const { data: vehicle } = await supabase
-    .from('vehicles')
-    .select('*')
-    .eq('id', params.id)
-    .single()
+
+  // Aceita tanto UUID (links antigos) quanto slug (QR Codes permanentes)
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id)
+  const { data: vehicle } = isUUID
+    ? await supabase.from('vehicles').select('*').eq('id', params.id).single()
+    : await supabase.from('vehicles').select('*').eq('slug', params.id).single()
 
   if (!vehicle) notFound()
 

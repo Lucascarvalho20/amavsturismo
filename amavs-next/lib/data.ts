@@ -3,6 +3,7 @@ import type { Vehicle, Contract, Testimonial, ChartDataPoint } from './types'
 export const mockVehicles: Vehicle[] = [
   {
     id: 'v1',
+    slug: 'onibus-executivo-gold',
     name: 'Ônibus Executivo Gold',
     model: 'Mercedes-Benz O-500 RS',
     category: 'onibus',
@@ -24,6 +25,7 @@ export const mockVehicles: Vehicle[] = [
   },
   {
     id: 'v2',
+    slug: 'onibus-governo-federal',
     name: 'Ônibus Governo Federal',
     model: 'Scania K-360',
     category: 'onibus',
@@ -45,6 +47,7 @@ export const mockVehicles: Vehicle[] = [
   },
   {
     id: 'v3',
+    slug: 'micro-onibus-premium',
     name: 'Micro-ônibus Premium',
     model: 'Volare W9',
     category: 'micro',
@@ -66,6 +69,7 @@ export const mockVehicles: Vehicle[] = [
   },
   {
     id: 'v4',
+    slug: 'micro-onibus-escolar',
     name: 'Micro-ônibus Escolar',
     model: 'Neobus Thunder',
     category: 'micro',
@@ -87,6 +91,7 @@ export const mockVehicles: Vehicle[] = [
   },
   {
     id: 'v5',
+    slug: 'van-executiva',
     name: 'Van Executiva',
     model: 'Mercedes-Benz Sprinter 416',
     category: 'van',
@@ -108,6 +113,7 @@ export const mockVehicles: Vehicle[] = [
   },
   {
     id: 'v6',
+    slug: 'van-governo',
     name: 'Van Governo',
     model: 'Renault Master 2.3',
     category: 'van',

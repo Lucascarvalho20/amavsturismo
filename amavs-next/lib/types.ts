@@ -6,6 +6,7 @@ export type ContractModality = 'pregao_eletronico' | 'tomada_precos' | 'concorre
 
 export interface Vehicle {
   id: string
+  slug: string
   name: string
   model: string
   category: VehicleCategory
