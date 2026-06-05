@@ -19,11 +19,11 @@ const sizes = {
 }
 
 /**
- * Amav's logo — modernização fiel da identidade original.
+ * Amav's — selo "cena moderna" (identidade nova).
  *
- * Mantém o conceito histórico (oval · céu · montanhas · estrada · avião)
- * com linhas refinadas, gradientes suaves e um aro dourado sutil que
- * conecta a marca à paleta do site.
+ * Círculo com céu, sol, montanhas (verde + navio), estrada e avião de papel.
+ * Geometria fiel ao logo novo; o único acento vermelho original (a estrada)
+ * foi convertido para o dourado da marca (#D4AF37).
  */
 function LogoIcon({ size = 44 }: { size?: number }) {
   return (
@@ -32,120 +32,63 @@ function LogoIcon({ size = 44 }: { size?: number }) {
       height={size}
       viewBox="0 0 100 100"
       xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
+      role="img"
+      aria-label="Amav's Turismo"
     >
       <defs>
-        <linearGradient id="amavs-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#82B8DD" />
-          <stop offset="55%" stopColor="#A8CFE4" />
-          <stop offset="100%" stopColor="#F1D5AA" />
-        </linearGradient>
-        <linearGradient id="amavs-mtn-front" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#D8662F" />
-          <stop offset="100%" stopColor="#B14B20" />
-        </linearGradient>
-        <linearGradient id="amavs-mtn-back" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#E18654" />
-          <stop offset="100%" stopColor="#C66838" />
-        </linearGradient>
-        <linearGradient id="amavs-road" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#A8472B" />
-          <stop offset="100%" stopColor="#7E331E" />
-        </linearGradient>
-        <linearGradient id="amavs-ring" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#B68A1F" />
-          <stop offset="50%" stopColor="#F5D97A" />
-          <stop offset="100%" stopColor="#B68A1F" />
-        </linearGradient>
-        <clipPath id="amavs-oval-clip">
-          <ellipse cx="50" cy="50" rx="46" ry="40" />
+        <clipPath id="amavs-circle-clip">
+          <circle cx="50" cy="50" r="47" />
         </clipPath>
       </defs>
 
-      {/* Conteúdo da insígnia (clipado dentro do oval) */}
-      <g clipPath="url(#amavs-oval-clip)">
-        {/* Céu com leve gradiente para o pôr-do-sol */}
-        <rect x="0" y="0" width="100" height="100" fill="url(#amavs-sky)" />
+      {/* Base escura do selo */}
+      <circle cx="50" cy="50" r="47" fill="#1A1820" />
 
-        {/* Nuvens */}
-        <g opacity="0.9">
-          <ellipse cx="24" cy="24" rx="7" ry="2.2" fill="#FFFFFF" />
-          <ellipse cx="30" cy="22" rx="4" ry="1.5" fill="#FFFFFF" opacity="0.7" />
-          <ellipse cx="74" cy="28" rx="8" ry="2.6" fill="#FFFFFF" />
-          <ellipse cx="68" cy="26" rx="4" ry="1.4" fill="#FFFFFF" opacity="0.7" />
+      {/* Cena (clipada dentro do círculo) */}
+      <g clipPath="url(#amavs-circle-clip)">
+        {/* Céu e chão */}
+        <rect x="0" y="0" width="100" height="60" fill="#8FB6CE" />
+        <rect x="0" y="60" width="100" height="40" fill="#F5F2EA" />
+
+        {/* Sol */}
+        <circle cx="32" cy="34" r="8.5" fill="#F0C24A" />
+
+        {/* Montanha verde (fundo) */}
+        <path d="M-2 60 L24 24 L52 60 Z" fill="#5F7E57" />
+        {/* Montanha navy (frente) */}
+        <path d="M36 60 L66 28 L100 60 Z" fill="#1A1820" opacity="0.88" />
+
+        {/* Estrada (vermelho original → dourado da marca) */}
+        <path d="M47 60 L53 60 L64 96 L36 96 Z" fill="#D4AF37" />
+        {/* Faixa central tracejada */}
+        <g
+          stroke="#F5F2EA"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray="3 5"
+        >
+          <line x1="50" y1="62" x2="50" y2="96" />
         </g>
 
-        {/* Montanhas do fundo */}
-        <path
-          d="M-4 72 L18 44 L36 60 L54 38 L72 56 L88 42 L104 72 Z"
-          fill="url(#amavs-mtn-back)"
-        />
-
-        {/* Montanhas da frente */}
-        <path
-          d="M-4 82 L10 60 L26 78 L42 52 L58 76 L74 56 L92 80 L104 82 L104 100 L-4 100 Z"
-          fill="url(#amavs-mtn-front)"
-        />
-
-        {/* Estrada / chão */}
-        <rect x="0" y="80" width="100" height="20" fill="url(#amavs-road)" />
-
-        {/* Faixa central da estrada (tracejada) */}
-        <g fill="#F5D97A" opacity="0.75">
-          <rect x="16" y="89" width="10" height="2" rx="1" />
-          <rect x="34" y="89" width="10" height="2" rx="1" />
-          <rect x="52" y="89" width="10" height="2" rx="1" />
-          <rect x="70" y="89" width="10" height="2" rx="1" />
-        </g>
-
-        {/* Avião estilizado em vôo (subindo para a direita) */}
-        <g transform="translate(48 36) rotate(-14)">
-          {/* Fuselagem */}
+        {/* Avião de papel subindo */}
+        <g transform="translate(80 22) rotate(14) scale(0.9)">
           <path
-            d="M-16 0 L9 -1.5 L18 -6 L15 0.5 L21 2.5 L15 4.5 L9 11 L4 3 L-16 3 Z"
-            fill="#FFFFFF"
-            stroke="#FFFFFF"
-            strokeWidth="0.4"
+            d="M0 0 L-22 7 L-13 11 L-15 22 Z"
+            fill="#F5F2EA"
             strokeLinejoin="round"
-          />
-          {/* Trilho/estela */}
-          <path
-            d="M-20 1 L-12 1"
-            stroke="#FFFFFF"
-            strokeWidth="0.8"
-            strokeLinecap="round"
-            opacity="0.55"
-          />
-          <path
-            d="M-26 1 L-22 1"
-            stroke="#FFFFFF"
-            strokeWidth="0.6"
-            strokeLinecap="round"
-            opacity="0.35"
           />
         </g>
       </g>
 
-      {/* Aro externo dourado (assinatura do site) */}
-      <ellipse
+      {/* Aro interno claro */}
+      <circle
         cx="50"
         cy="50"
-        rx="46"
-        ry="40"
+        r="45.5"
         fill="none"
-        stroke="url(#amavs-ring)"
+        stroke="#F5F2EA"
         strokeWidth="2"
-      />
-      {/* Sombra interna sutil pra dar profundidade */}
-      <ellipse
-        cx="50"
-        cy="50"
-        rx="44.5"
-        ry="38.5"
-        fill="none"
-        stroke="#000000"
-        strokeOpacity="0.08"
-        strokeWidth="0.8"
+        opacity="0.85"
       />
     </svg>
   )
@@ -168,10 +111,13 @@ export default function Logo({
       {variant === 'full' && (
         <span className="flex flex-col leading-tight">
           <span
-            className={cn('font-heading font-semibold tracking-tight', s.text)}
+            className={cn(
+              'font-heading font-bold uppercase tracking-tight',
+              s.text,
+            )}
             style={{ color: primaryColor }}
           >
-            Amav&apos;s
+            AMAV<span style={{ color: 'var(--gold)' }}>&apos;</span>S
           </span>
           <span
             className={cn(
