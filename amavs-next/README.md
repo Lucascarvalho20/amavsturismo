@@ -46,16 +46,21 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJ...
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_WHATSAPP_NUMBER=5561984222205
 NEXT_PUBLIC_WHATSAPP_NUMBER_2=5561984064241
+ADMIN_EMAILS=seu-email@exemplo.com
+REQUIRE_ADMIN_MFA=false
 ```
 
 ---
 
 ### Passo 4 — Criar o usuário administrador
 
-1. No Supabase, vá em **Authentication → Users**
-2. Clique em **"Invite a user"** ou **"Add user"**
-3. Insira SEU e-mail e uma senha forte
-4. Guarde essas credenciais — são usadas no `/admin/login`
+1. No Supabase, vá em **Authentication → Users → Add user** e crie o usuário com SEU e-mail e uma senha forte
+2. Abra `supabase/migrations/2026-10-27_security_hardening.sql`, troque `seu-email@exemplo.com` pelo seu e-mail e rode no **SQL Editor**
+3. Em **Authentication → Sign In / Providers**, **desligue "Allow new users to sign up"**
+4. Coloque o mesmo e-mail em `ADMIN_EMAILS` (no `.env.local` e nas variáveis da Vercel)
+5. Depois do primeiro login, ative o 2FA em **/admin/perfil**
+
+> Sem os passos 2 e 3, qualquer pessoa que criar uma conta no Supabase teria acesso aos dados do painel.
 
 ---
 
@@ -106,12 +111,14 @@ amavs-next/
 
 | Proteção | Como funciona |
 |----------|--------------|
-| Middleware | Toda rota `/admin/*` verifica sessão antes de carregar |
-| Rate Limiting | Bloqueia por 15 min após 5 tentativas erradas |
-| Audit Log | Registra todos os logins no banco |
+| Banco (RLS) | Só usuários em `admin_users` leem/alteram dados do painel (`is_admin()`) |
+| Middleware | Toda rota `/admin/*` exige sessão, e-mail em `ADMIN_EMAILS` e 2FA validado (se cadastrado) |
+| APIs públicas | Formulários gravam via servidor com validação Zod, rate limit e honeypot; disponibilidade devolve só datas |
+| Rate Limiting | Bloqueio de 15 min após 5 erros do mesmo IP no mesmo e-mail (20 no total por e-mail) |
+| Audit Log | Registra logins; só o servidor grava |
 | Session Timeout | Logout automático após 30 min sem uso |
-| 2FA (opcional) | Configure em `/admin/perfil` → ativar 2FA |
-| HTTP Headers | X-Frame-Options, CSP, HSTS em produção |
+| 2FA | Cadastre em `/admin/perfil`; com `REQUIRE_ADMIN_MFA=true` vira obrigatório |
+| HTTP Headers | CSP, HSTS, X-Frame-Options, noindex no painel |
 
 ---
 
@@ -128,9 +135,15 @@ amavs-next/
 
 ---
 
-## Substituir fotos dos ônibus
+## Fotos dos ônibus e uso do painel
 
-1. Acesse `/admin/login`
-2. Vá em **Frota → Editar** em cada veículo
-3. Faça upload das fotos reais
-4. Elas são salvas no **Supabase Storage** e aparecem no site automaticamente
+O passo a passo completo (fotos, dados de cada veículo, agenda, galeria, licitações) está dentro do próprio painel em **/admin/ajuda**.
+
+Enquanto um veículo não tem foto cadastrada, o site usa fotos reais da frota (em `public/images/frota/`, recuperadas do site antigo e sem metadados de GPS) com a etiqueta "Foto ilustrativa".
+
+## Testes
+
+```bash
+npm test
+npm run typecheck
+```
