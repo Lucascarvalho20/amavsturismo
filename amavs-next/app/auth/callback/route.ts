@@ -1,13 +1,15 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { safeRedirectPath } from '@/lib/validation'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
   const token_hash = searchParams.get('token_hash')
   const type = searchParams.get('type')
-  const next = searchParams.get('next') ?? '/'
+  // Só caminhos internos: "//evil.com" ou "https://evil.com" virariam redirect aberto (phishing)
+  const next = safeRedirectPath(searchParams.get('next'))
 
   const cookieStore = cookies()
 

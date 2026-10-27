@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase-server'
+import { createAdminClient } from '@/lib/supabase-admin'
 import StatsClient from './StatsClient'
 
 export interface SiteStat {
@@ -11,6 +12,9 @@ export interface SiteStat {
 
 export default async function StatsSection() {
   const supabase = createClient()
+  // Valores de contratos e leads são lidos com service_role SOMENTE no servidor;
+  // ao navegador chegam apenas os números agregados.
+  const admin = createAdminClient() ?? supabase
 
   const [
     { data: configRows },
@@ -24,8 +28,8 @@ export default async function StatsSection() {
       .eq('is_active', true)
       .order('display_order', { ascending: true }),
     supabase.from('vehicles').select('capacity,status'),
-    supabase.from('contracts').select('status,value'),
-    supabase.from('leads').select('status,travel_date'),
+    admin.from('contracts').select('status,value'),
+    admin.from('leads').select('status,travel_date'),
   ])
 
   const fleetSize = vehiclesData?.length ?? 0

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase-browser'
 import type { CalendarBlock } from '@/components/ui/MonthCalendar'
 import MonthCalendar from '@/components/ui/MonthCalendar'
 
@@ -9,20 +8,33 @@ interface Props {
   vehicleId: string
 }
 
+interface BusyPeriod {
+  id: string
+  start_date: string
+  end_date: string | null
+  is_indefinite: boolean
+  block_type: string
+}
+
 export default function AvailabilityCalendar({ vehicleId }: Props) {
   const [blocks, setBlocks] = useState<CalendarBlock[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const supabase = createClient()
-    supabase
-      .from('vehicle_blocks')
-      .select('id, start_date, end_date, is_indefinite, block_type, title, notes')
-      .eq('vehicle_id', vehicleId)
-      .then(({ data }) => {
-        setBlocks((data ?? []) as CalendarBlock[])
-        setLoading(false)
+    // API pública devolve só datas ocupadas — títulos e observações ficam no admin.
+    fetch(`/api/disponibilidade?vehicle=${encodeURIComponent(vehicleId)}`)
+      .then((r) => (r.ok ? r.json() : { busy: [] }))
+      .then(({ busy }: { busy: BusyPeriod[] }) => {
+        setBlocks(
+          (busy ?? []).map((b) => ({
+            ...b,
+            title: b.block_type === 'manutencao' ? 'Em manutenção' : 'Indisponível',
+            notes: null,
+          })),
+        )
       })
+      .catch(() => {})
+      .finally(() => setLoading(false))
   }, [vehicleId])
 
   if (loading) {

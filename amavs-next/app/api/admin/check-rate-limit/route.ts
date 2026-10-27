@@ -1,67 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
 import { isSameOrigin } from '@/lib/csrf'
+import { createAdminClient, clientIp } from '@/lib/supabase-admin'
+
+// Bloqueio de força bruta no login do admin.
+//  - 5 falhas do MESMO IP para o mesmo e-mail em 15 min → bloqueia esse IP para esse e-mail
+//  - 20 falhas de qualquer IP para o mesmo e-mail em 15 min → bloqueia o e-mail (ataque distribuído)
+// Contar só por e-mail (como antes) deixava qualquer pessoa trancar o dono da conta fora do painel.
+
+const WINDOW_MS = 15 * 60 * 1000
+const PER_IP_LIMIT = 5
+const GLOBAL_LIMIT = 20
 
 export async function POST(request: NextRequest) {
   if (!isSameOrigin(request)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  try {
-    const body = await request.json()
-    const { email, checkOnly } = body
+  const body = await request.json().catch(() => null)
+  const email = typeof body?.email === 'string' ? body.email.toLowerCase().trim().slice(0, 254) : ''
+  if (!email) return NextResponse.json({ blocked: false })
 
-    if (!email || typeof email !== 'string') {
-      return NextResponse.json({ blocked: false })
-    }
+  const supabase = createAdminClient()
+  if (!supabase) return NextResponse.json({ blocked: false })
 
-    const ip =
-      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-      request.headers.get('x-real-ip') ??
-      'unknown'
+  const ip = clientIp(request.headers)
+  const windowStart = new Date(Date.now() - WINDOW_MS).toISOString()
 
-    if (checkOnly) {
-      return NextResponse.json({ ip })
-    }
+  const { data: attempts, error } = await supabase
+    .from('login_attempts')
+    .select('created_at, ip_address')
+    .eq('email', email)
+    .eq('success', false)
+    .gte('created_at', windowStart)
+    .order('created_at', { ascending: false })
+    .limit(GLOBAL_LIMIT + 1)
 
-    // Use service role to bypass RLS for rate limit checks
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (error) return NextResponse.json({ blocked: false })
 
-    if (!serviceRoleKey || !supabaseUrl) {
-      // If not configured, allow login (fail open)
-      return NextResponse.json({ blocked: false })
-    }
+  const fromThisIp = (attempts ?? []).filter((a) => a.ip_address === ip)
+  const blockedRows =
+    fromThisIp.length >= PER_IP_LIMIT ? fromThisIp : (attempts ?? []).length >= GLOBAL_LIMIT ? attempts! : null
 
-    const supabase = createServerClient(supabaseUrl, serviceRoleKey, {
-      cookies: { getAll: () => [], setAll: () => {} },
-    })
-
-    const windowStart = new Date(Date.now() - 15 * 60 * 1000).toISOString()
-
-    const { data: attempts } = await supabase
-      .from('login_attempts')
-      .select('created_at')
-      .eq('email', email.toLowerCase().trim())
-      .eq('success', false)
-      .gte('created_at', windowStart)
-      .order('created_at', { ascending: false })
-      .limit(10)
-
-    const failCount = attempts?.length ?? 0
-
-    if (failCount >= 5) {
-      const lastAttempt = new Date(attempts![0].created_at).getTime()
-      const resetAt = new Date(lastAttempt + 15 * 60 * 1000).toISOString()
-      return NextResponse.json({
-        blocked: true,
-        resetAt,
-        failCount,
-      })
-    }
-
-    return NextResponse.json({ blocked: false, failCount })
-  } catch {
-    return NextResponse.json({ blocked: false })
+  if (blockedRows) {
+    const resetAt = new Date(new Date(blockedRows[0].created_at).getTime() + WINDOW_MS).toISOString()
+    return NextResponse.json({ blocked: true, resetAt })
   }
+  return NextResponse.json({ blocked: false })
 }

@@ -8,12 +8,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import CityAutocomplete from '@/components/ui/CityAutocomplete'
-import { createClient } from '@/lib/supabase-browser'
 import {
   categoryLabel,
   buildWhatsAppMessage,
   buildWhatsAppURL,
-  generateLeadCode,
   formatDate,
 } from '@/lib/utils'
 import type { Vehicle, VehicleBlock, Reservation } from '@/lib/types'
@@ -146,17 +144,24 @@ export default function OrcamentoForm() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const supabase = createClient()
-    Promise.all([
-      supabase.from('vehicles').select('*').order('capacity'),
-      supabase.from('vehicle_blocks').select('*'),
-      supabase.from('reservations').select('*'),
-    ]).then(([v, b, r]) => {
-      setVehicles((v.data ?? []) as Vehicle[])
-      setBlocks((b.data ?? []) as VehicleBlock[])
-      setReservations((r.data ?? []) as Reservation[])
-      setLoading(false)
-    })
+    // Só períodos ocupados chegam ao navegador — sem nomes/observações de clientes.
+    fetch('/api/disponibilidade')
+      .then((r) => (r.ok ? r.json() : { vehicles: [], busy: [] }))
+      .then(({ vehicles: v, busy }: { vehicles: Vehicle[]; busy: Array<Omit<VehicleBlock, 'title' | 'notes' | 'created_at' | 'updated_at'>> }) => {
+        setVehicles(v ?? [])
+        setBlocks(
+          (busy ?? []).map((b) => ({
+            ...b,
+            title: b.block_type === 'manutencao' ? 'Em manutenção' : 'Indisponível',
+            notes: null,
+            created_at: '',
+            updated_at: '',
+          })),
+        )
+        setReservations([])
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
   }, [])
 
   const form1 = useForm<Step1Data>({
@@ -232,27 +237,27 @@ export default function OrcamentoForm() {
     const data2 = form2.getValues()
     const chosen = vehicles.find((v) => v.id === step1Data.vehicle_id)
 
-    try {
-      const supabase = createClient()
-      await supabase.from('leads').insert({
-        code: generateLeadCode(),
+    // Registro no painel via API (validação no servidor). Não aguarda a resposta para
+    // que o window.open abaixo continue sendo um gesto do usuário (evita bloqueio de pop-up).
+    fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
         name: data2.name,
-        phone: data2.phone.replace(/\D/g, ''),
-        email: data2.email || null,
+        phone: data2.phone,
+        email: data2.email || '',
         origin: step1Data.origin,
-        destination: step1Data.destination || step1Data.origin,
+        destination: step1Data.destination || '',
         travel_date: step1Data.travel_date,
-        return_date: step1Data.return_date || null,
+        return_date: step1Data.return_date || '',
         passengers: step1Data.passengers,
-        vehicle_category: chosen?.category ?? null,
-        vehicle_id: step1Data.vehicle_id || null,
-        message: step1Data.message || null,
-        status: 'em_contato',
-        source: 'site',
-      })
-    } catch {
+        vehicle_id: step1Data.vehicle_id || '',
+        message: step1Data.message || '',
+      }),
+    }).catch(() => {
       // não bloqueia WhatsApp se falhar
-    }
+    })
 
     const msg = buildWhatsAppMessage({
       name: data2.name,

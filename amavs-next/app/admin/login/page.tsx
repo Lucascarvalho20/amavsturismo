@@ -1,11 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Eye, EyeOff, AlertTriangle, Lock, Mail, ArrowLeft, CheckCircle } from 'lucide-react'
+import { Eye, EyeOff, AlertTriangle, Lock, Mail, ArrowLeft, CheckCircle, ShieldCheck } from 'lucide-react'
 import { createClient } from '@/lib/supabase-browser'
 import { Input } from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -20,8 +20,60 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <AdminLoginForm />
+    </Suspense>
+  )
+}
+
+function AdminLoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
+
+  // Segunda etapa (2FA TOTP)
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null)
+  const [mfaCode, setMfaCode] = useState('')
+  const [mfaLoading, setMfaLoading] = useState(false)
+  const notAuthorized = searchParams.get('motivo') === 'nao_autorizado'
+
+  // Retorna o id do fator TOTP se a sessão atual ainda precisa do código 2FA.
+  const pendingMfaFactor = async (): Promise<string | null> => {
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+    if (!aal || aal.nextLevel !== 'aal2' || aal.currentLevel === 'aal2') return null
+    const { data: factors } = await supabase.auth.mfa.listFactors()
+    return factors?.totp?.find((f) => f.status === 'verified')?.id ?? null
+  }
+
+  // Usuário que já passou pela senha e foi devolvido pelo middleware para validar o 2FA
+  useEffect(() => {
+    if (searchParams.get('motivo') !== '2fa') return
+    pendingMfaFactor().then((id) => id && setMfaFactorId(id))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const verifyMfa = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!mfaFactorId || mfaCode.length !== 6) return
+    setMfaLoading(true)
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: mfaFactorId, code: mfaCode })
+    setMfaLoading(false)
+    if (error) {
+      setMfaCode('')
+      toast.error('Código inválido ou expirado.')
+      return
+    }
+    toast.success('Login realizado com sucesso!')
+    router.replace('/admin/dashboard')
+    router.refresh()
+  }
+
+  const cancelMfa = async () => {
+    await supabase.auth.signOut()
+    setMfaFactorId(null)
+    setMfaCode('')
+  }
   const [showPw, setShowPw] = useState(false)
   const [attempts, setAttempts] = useState(0)
   const [blocked, setBlocked] = useState(false)
@@ -90,8 +142,6 @@ export default function AdminLoginPage() {
           friendlyMsg = 'E-mail ou senha incorretos.'
         } else if (msg.includes('too many')) {
           friendlyMsg = 'Muitas tentativas. Aguarde alguns minutos.'
-        } else if (error.message) {
-          friendlyMsg = error.message
         }
         if (newAttempts >= 5) {
           setBlocked(true)
@@ -99,6 +149,13 @@ export default function AdminLoginPage() {
         } else {
           toast.error(friendlyMsg)
         }
+        setLoading(false)
+        return
+      }
+
+      const factorId = await pendingMfaFactor()
+      if (factorId) {
+        setMfaFactorId(factorId)
         setLoading(false)
         return
       }
@@ -151,8 +208,44 @@ export default function AdminLoginPage() {
 
         <div className="glass-dark rounded-2xl p-7 border border-gold/10">
 
-          {/* ── FORGOT PASSWORD MODE ── */}
-          {forgotMode ? (
+          {notAuthorized && !mfaFactorId && (
+            <div className="flex items-start gap-2 bg-wine/20 border border-wine/30 rounded-xl p-3 mb-5">
+              <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
+              <p className="text-red-300 text-sm">Esta conta não tem permissão de administrador.</p>
+            </div>
+          )}
+
+          {/* ── 2FA STEP ── */}
+          {mfaFactorId ? (
+            <form onSubmit={verifyMfa} className="space-y-5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center">
+                  <ShieldCheck size={16} className="text-gold" />
+                </div>
+                <span className="text-gray-300 text-sm font-medium">Verificação em duas etapas</span>
+              </div>
+              <p className="text-gray-400 text-sm">
+                Digite o código de 6 dígitos do seu aplicativo autenticador (Google Authenticator, Authy…).
+              </p>
+              <input
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                autoFocus
+                maxLength={6}
+                value={mfaCode}
+                onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                className="w-full text-center tracking-[0.6em] text-2xl font-mono bg-navy-100 border border-white/10 rounded-xl py-3 text-white focus:outline-none focus:ring-2 focus:ring-gold/40"
+                placeholder="000000"
+                aria-label="Código 2FA"
+              />
+              <Button type="submit" variant="gold" size="lg" fullWidth loading={mfaLoading} disabled={mfaCode.length !== 6}>
+                Verificar
+              </Button>
+              <button type="button" onClick={cancelMfa} className="w-full text-gray-500 hover:text-gray-300 text-xs">
+                Cancelar e sair
+              </button>
+            </form>
+          ) : forgotMode ? (
             <>
               <div className="flex items-center gap-2 mb-6">
                 <button

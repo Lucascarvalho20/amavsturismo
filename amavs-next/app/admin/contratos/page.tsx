@@ -120,7 +120,7 @@ function ContractModal({
     end_date: contract?.end_date ?? '',
     value: contract?.value != null ? String(contract.value) : '',
     vehicles: '',
-    is_public: contract?.is_public ?? true,
+    is_public: contract?.is_public ?? false,
     notes: '',
   })
 
