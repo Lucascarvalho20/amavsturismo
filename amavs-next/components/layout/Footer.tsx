@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Instagram, MessageCircle, Phone, MapPin, Mail, Clock } from 'lucide-react'
 import Logo from '@/components/Logo'
+import { companyInfo } from '@/lib/atestados'
 
 const footerLinks = {
   empresa: [
@@ -10,11 +11,11 @@ const footerLinks = {
     { href: '/contato', label: 'Contato' },
   ],
   servicos: [
-    { href: '/orcamento', label: 'Solicitar Orçamento' },
+    { href: '/licitacoes#proposta', label: 'Proposta para licitação' },
+    { href: '/orcamento', label: 'Orçamento particular' },
     { href: '/frota?categoria=onibus', label: 'Fretamento de Ônibus' },
     { href: '/frota?categoria=micro', label: 'Micro-ônibus' },
     { href: '/frota?categoria=van', label: 'Vans Executivas' },
-    { href: '/licitacoes', label: 'Contratos Governamentais' },
   ],
   legal: [
     { href: '/privacidade', label: 'Política de Privacidade' },
@@ -32,8 +33,8 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Logo size="md" className="mb-5" />
             <p className="text-sm leading-relaxed mb-6 font-light max-w-xs" style={{ color: 'var(--text-muted)' }}>
-              Fretamento de ônibus, micro-ônibus e vans em Brasília. Atendemos
-              órgãos públicos, empresas e grupos no Distrito Federal e Centro-Oeste.
+              Transporte de passageiros para órgãos públicos e empresas, com base em
+              Brasília. Ônibus, micro-ônibus e vans.
             </p>
             <div className="flex items-center gap-3">
               <a
@@ -137,7 +138,7 @@ export default function Footer() {
       <div className="py-6" style={{ borderTop: '1px solid var(--border)' }}>
         <div className="container mx-auto px-6 md:px-10 max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs" style={{ color: 'var(--text-dim)' }}>
-            © {currentYear} Amav's Turismo. Todos os direitos reservados.
+            © {currentYear} {companyInfo.legalName} · CNPJ {companyInfo.cnpj}
           </p>
           <div className="flex items-center gap-5">
             {footerLinks.legal.map((link) => (

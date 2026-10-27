@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { ArrowRight, Bus, MapPin, CheckCircle2, ShieldCheck, Users } from 'lucide-react'
 import { categoryLabel } from '@/lib/utils'
+import { publicAtestados, firstPublicContractYear } from '@/lib/atestados'
 import type { Vehicle } from '@/lib/types'
 
 interface HeroSlide {
@@ -17,24 +18,24 @@ interface HeroSlide {
 interface Props {
   slides: HeroSlide[]
   vehiclesFallback: Vehicle[]
-  fleetCount: number
-  availableNow: number
-  activeContracts: number
 }
 
 const trustBadges = [
-  'SICAF Regularizado',
+  'SICAF regularizado',
   'RNTRC / ANTT',
-  'CNH categoria E',
-  'Seguro de Passageiros',
+  'Atestados de capacidade técnica',
+  'Seguro de passageiros',
+]
+
+const proofStats = [
+  { value: `${firstPublicContractYear}`, label: 'Primeiro contrato público atestado' },
+  { value: '132', label: 'Veículos em um único evento (CFC)' },
+  { value: '80+', label: 'Veículos em comboio (Exército)' },
 ]
 
 export default function HeroClient({
   slides,
   vehiclesFallback,
-  fleetCount,
-  availableNow,
-  activeContracts,
 }: Props) {
   const { scrollY } = useScroll()
   const textY = useTransform(scrollY, [0, 500], [0, -60])
@@ -112,15 +113,15 @@ export default function HeroClient({
             <div className="flex items-center gap-3 mb-7">
               <MapPin size={14} strokeWidth={1.5} className="text-white/70" />
               <span className="text-[11px] font-medium tracking-[0.28em] uppercase text-white/70">
-                Brasília · Distrito Federal
+                Transporte para o setor público · Brasília
               </span>
               <span className="w-12 h-px bg-gradient-to-r from-[#D4AF37] to-transparent" />
             </div>
 
             {/* Headline */}
             <h1 className="font-heading font-semibold text-white tracking-tight leading-[0.95] text-[clamp(2.5rem,6.5vw,5.25rem)] mb-6">
-              A frota certa<br />
-              para{' '}
+              Transporte oficial<br />
+              com histórico{' '}
               <span
                 style={{
                   background: 'linear-gradient(135deg, #D4AF37 0%, #F5D97A 50%, #D4AF37 100%)',
@@ -128,33 +129,33 @@ export default function HeroClient({
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                cada viagem.
+                comprovado.
               </span>
             </h1>
 
             <p className="text-white/70 text-lg md:text-xl font-light leading-relaxed max-w-xl mb-9">
-              Atendimento corporativo, contratos públicos e excursões em
-              ônibus, micro-ônibus e vans com documentação regularizada.
+              Desde 2010 em contratos com o Exército, conselhos federais e ministérios.
+              Ônibus, micro-ônibus e vans com documentação pronta para habilitação.
             </p>
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3 mb-9">
               <a
-                href="/orcamento"
+                href="/licitacoes#proposta"
                 className="group inline-flex items-center gap-2 bg-white text-black px-7 h-12 rounded-full text-[15px] font-medium hover:bg-white/90 transition-all"
               >
-                Solicitar orçamento
+                Solicitar proposta
                 <ArrowRight
                   size={16}
                   className="transition-transform group-hover:translate-x-0.5"
                 />
               </a>
               <a
-                href="/frota"
+                href="/licitacoes#atestados"
                 className="group inline-flex items-center gap-2 text-white px-7 h-12 rounded-full text-[15px] font-medium hover:bg-white/10 transition-all"
                 style={{ border: '1px solid rgba(255,255,255,0.2)' }}
               >
-                Conheça a frota
+                Ver atestados
                 <ArrowRight
                   size={16}
                   className="transition-transform group-hover:translate-x-0.5"
@@ -175,35 +176,16 @@ export default function HeroClient({
               ))}
             </div>
 
-            {/* Real stats strip */}
+            {/* Números comprovados por atestados de capacidade técnica */}
             <div className="flex gap-8 md:gap-10 pt-7" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-              <div>
-                <div
-                  className="font-heading font-semibold text-2xl md:text-3xl tracking-tight"
-                  style={{ color: '#D4AF37' }}
-                >
-                  {fleetCount}
+              {proofStats.map((st) => (
+                <div key={st.label}>
+                  <div className="font-heading font-semibold text-2xl md:text-3xl tracking-tight" style={{ color: '#D4AF37' }}>
+                    {st.value}
+                  </div>
+                  <div className="text-white/50 text-[11px] mt-1 font-light max-w-[9rem]">{st.label}</div>
                 </div>
-                <div className="text-white/50 text-[11px] mt-1 font-light">Veículos na frota</div>
-              </div>
-              <div>
-                <div
-                  className="font-heading font-semibold text-2xl md:text-3xl tracking-tight"
-                  style={{ color: '#D4AF37' }}
-                >
-                  {availableNow}
-                </div>
-                <div className="text-white/50 text-[11px] mt-1 font-light">Disponíveis hoje</div>
-              </div>
-              <div>
-                <div
-                  className="font-heading font-semibold text-2xl md:text-3xl tracking-tight"
-                  style={{ color: '#D4AF37' }}
-                >
-                  {activeContracts}
-                </div>
-                <div className="text-white/50 text-[11px] mt-1 font-light">Contratos ativos</div>
-              </div>
+              ))}
             </div>
           </motion.div>
 
@@ -321,13 +303,13 @@ export default function HeroClient({
               }}
             >
               <div className="text-[10px] text-white/60 font-medium tracking-widest uppercase">
-                Contratos ativos
+                Órgãos públicos atendidos
               </div>
               <div
                 className="font-heading font-semibold text-2xl tracking-tight"
                 style={{ color: '#D4AF37' }}
               >
-                {activeContracts}
+                {publicAtestados.length}+
               </div>
             </motion.div>
 
@@ -384,7 +366,7 @@ function BrandFallback() {
       <div className="relative flex flex-col items-center gap-3 text-white/40">
         <Bus size={56} strokeWidth={1} />
         <span className="text-[11px] tracking-[0.3em] uppercase font-medium">
-          Cadastre fotos no admin
+          Amav&apos;s Turismo
         </span>
       </div>
     </div>

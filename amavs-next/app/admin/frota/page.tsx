@@ -198,6 +198,12 @@ function PhotoGallery({
     }
   }
 
+  const makeMain = (url: string) => {
+    const updated = [url, ...photos.filter((p) => p !== url)]
+    setPhotos(updated)
+    onPhotosChange(updated)
+  }
+
   const removePhoto = (url: string) => {
     const updated = photos.filter((p) => p !== url)
     setPhotos(updated)
@@ -222,9 +228,22 @@ function PhotoGallery({
                   Principal
                 </span>
               )}
+              {i > 0 && (
+                <button
+                  type="button"
+                  onClick={() => makeMain(url)}
+                  className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-black/70 rounded text-[10px] text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-gold hover:text-black"
+                  title="Usar como foto principal no site"
+                >
+                  Tornar principal
+                </button>
+              )}
               <button
+                type="button"
                 onClick={() => removePhoto(url)}
-                className="absolute top-1 right-1 p-1 bg-black/70 rounded-md text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-wine/80"
+                className="absolute top-1 right-1 p-1 bg-black/70 rounded-md text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity hover:bg-wine/80"
+                title="Remover foto"
+                aria-label="Remover foto"
               >
                 <X size={12} />
               </button>
@@ -261,7 +280,8 @@ function PhotoGallery({
 
       {photos.length > 0 && (
         <p className="text-xs text-gray-500 mt-1.5">
-          A primeira foto é exibida como principal no site. Arraste para reordenar (em breve).
+          A foto marcada como <strong className="text-gray-300">Principal</strong> aparece nos cards e no topo da página do veículo.
+          Passe o mouse sobre outra foto e clique em “Tornar principal” para trocar. As alterações só valem depois de clicar em Salvar.
         </p>
       )}
     </div>

@@ -1,13 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Bus, Building2, Mountain, Briefcase, ArrowUpRight } from 'lucide-react'
+import { Landmark, Flag, Users, Briefcase, ArrowUpRight } from 'lucide-react'
 
 const services = [
-  { icon: Bus,        label: 'Fretamento Corporativo', desc: 'Transporte regular de colaboradores com contrato mensal ou anual.' },
-  { icon: Building2,  label: 'Contratos Públicos',     desc: 'Pregão eletrônico, SICAF regularizado e documentação completa.' },
-  { icon: Mountain,   label: 'Excursões e Turismo',    desc: 'Pacotes para grupos, passeios regionais e viagens de lazer.' },
-  { icon: Briefcase,  label: 'Eventos e Traslados',    desc: 'Transporte para eventos, feiras e congressos em Brasília.' },
+  { icon: Landmark,  label: 'Licitações e pregões',        desc: 'Pregão eletrônico, dispensa, adesão a ata e cotações para pesquisa de preços. Proposta e documentação de habilitação prontas.' },
+  { icon: Flag,      label: 'Eventos oficiais e comboios', desc: 'Desfiles, jogos militares, congressos e operações eleitorais com dezenas de veículos coordenados.' },
+  { icon: Users,     label: 'Transporte de servidores',    desc: 'Deslocamento de servidores, delegações e comitivas no DF e entre estados, com motoristas habilitados.' },
+  { icon: Briefcase, label: 'Fretamento corporativo',      desc: 'Empresas, entidades de classe e grupos. Orçamento rápido pelo site ou WhatsApp.' },
 ]
 
 export default function ServicesStrip() {
@@ -26,13 +26,13 @@ export default function ServicesStrip() {
               O que fazemos
             </div>
             <h2 className="font-heading font-semibold tracking-tight leading-[1.05] text-[clamp(2.25rem,5vw,4rem)]">
-              Fretamento, sob<br />
-              medida.
+              Do edital<br />
+              à execução.
             </h2>
           </div>
           <p className="text-lg font-light leading-relaxed max-w-md" style={{ color: 'var(--text-muted)' }}>
-            Do contrato federal de longo prazo ao traslado pontual de um congresso —
-            atendemos pessoas e organizações em Brasília e Centro-Oeste.
+            A maior parte do nosso trabalho hoje é com órgãos públicos. Também atendemos
+            empresas e entidades em Brasília e em todo o país.
           </p>
         </motion.div>
 

@@ -4,13 +4,18 @@ import { Toaster } from 'react-hot-toast'
 import './globals.css'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.amavsturismo.com'),
   title: {
-    default: "Amav's Turismo — Fretamento em Brasília",
+    default: "Amav's Turismo — Transporte para órgãos públicos em Brasília",
     template: "%s | Amav's Turismo",
   },
   description:
-    'Fretamento de ônibus, micro-ônibus e vans em Brasília. Especialistas em contratos governamentais, eventos corporativos e excursões. Frota moderna e motoristas habilitados.',
+    'Transporte de passageiros para órgãos públicos em Brasília: pregão eletrônico, dispensa e adesão a ata. Atestados de capacidade técnica do Exército, CFC, MPT e Ministério da Saúde. Ônibus, micro-ônibus e vans.',
   keywords: [
+    'transporte de passageiros licitação',
+    'pregão transporte ônibus DF',
+    'locação de ônibus órgão público Brasília',
+    'atestado de capacidade técnica transporte',
     'fretamento Brasília',
     'aluguel ônibus Brasília',
     'micro-ônibus Brasília',
@@ -24,10 +29,11 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://amavsturismo.com.br',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.amavsturismo.com',
     siteName: "Amav's Turismo",
-    title: "Amav's Turismo — Fretamento em Brasília",
-    description: 'Fretamento de ônibus, micro-ônibus e vans em Brasília. Especialistas em contratos governamentais.',
+    title: "Amav's Turismo — Transporte para órgãos públicos",
+    description: 'Transporte de passageiros para órgãos públicos em Brasília, com atestados de capacidade técnica desde 2010.',
+    images: [{ url: '/images/frota/frota-garagem.jpg', width: 1600, height: 1200 }],
   },
   robots: { index: true, follow: true },
   icons: { icon: '/favicon.svg', shortcut: '/favicon.svg' },

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, Users, Calendar, Gauge, DollarSign, Check, MessageCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase-server'
 import { categoryLabel, formatCurrency, formatDate } from '@/lib/utils'
+import { fallbackPhotoFor } from '@/lib/fleet-photos'
 import Badge from '@/components/ui/Badge'
 import Button from '@/components/ui/Button'
 import AvailabilityCalendar from '@/components/AvailabilityCalendar'
@@ -39,7 +40,8 @@ export default async function VehicleDetailPage({ params }: Props) {
 
   const statusVariant = v.status === 'disponivel' ? 'green' : v.status === 'em_uso' ? 'blue' : 'amber'
   const statusLabel = v.status === 'disponivel' ? 'Disponível' : v.status === 'em_uso' ? 'Em Uso' : 'Manutenção'
-  const mainPhoto = v.images?.[0] ?? v.photo_url
+  const ownPhoto = v.images?.[0] ?? v.photo_url
+  const mainPhoto = ownPhoto ?? (v.category ? fallbackPhotoFor(v.category)?.replace('-sm.jpg', '.jpg') : null)
 
   const specs = [
     { icon: Users, label: 'Capacidade', value: `${v.capacity} passageiros` },
@@ -66,7 +68,14 @@ export default async function VehicleDetailPage({ params }: Props) {
             {/* Photo gallery */}
             <div className="glass-dark rounded-2xl overflow-hidden">
               {mainPhoto ? (
-                <img src={mainPhoto} alt={v.name} className="w-full h-72 object-cover" />
+<div className="relative">
+                  <img src={mainPhoto} alt={v.name} className="w-full h-72 object-cover" />
+                  {!ownPhoto && mainPhoto && (
+                    <span className="absolute bottom-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/55 text-white/85">
+                      Foto ilustrativa
+                    </span>
+                  )}
+                </div>
               ) : (
                 <div className="h-72 bg-navy-300 flex items-center justify-center">
                   <svg viewBox="0 0 200 80" className="w-48 h-28 opacity-30" xmlns="http://www.w3.org/2000/svg">

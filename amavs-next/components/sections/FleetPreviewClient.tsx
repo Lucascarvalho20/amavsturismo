@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Users, ArrowRight, Bus } from 'lucide-react'
 import { formatCurrency, categoryLabel } from '@/lib/utils'
+import { fallbackPhotoFor } from '@/lib/fleet-photos'
 import type { Vehicle, VehicleCategory } from '@/lib/types'
 
 type Tab = 'todos' | VehicleCategory
@@ -107,15 +108,20 @@ export default function FleetPreviewClient({ vehicles }: Props) {
                 className="group block surface-card rounded-3xl overflow-hidden card-hover"
               >
                 <div className="relative w-full aspect-[4/3] overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
-                  {vehicle.photo_url ? (
+                  {(vehicle.photo_url || fallbackPhotoFor(vehicle.category, i)) ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={vehicle.photo_url}
+                      src={(vehicle.photo_url || fallbackPhotoFor(vehicle.category, i))!}
                       alt={vehicle.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   ) : (
                     <VehiclePlaceholder name={vehicle.name} category={vehicle.category} />
+                  )}
+                  {!vehicle.photo_url && fallbackPhotoFor(vehicle.category, i) && (
+                    <span className="absolute bottom-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/55 text-white/85 backdrop-blur-sm">
+                      Foto ilustrativa
+                    </span>
                   )}
                   <div className="absolute top-4 left-4">
                     <span
@@ -161,9 +167,11 @@ export default function FleetPreviewClient({ vehicles }: Props) {
                       <Users size={14} strokeWidth={1.5} />
                       {vehicle.capacity} passageiros
                     </span>
-                    <span className="font-medium" style={{ color: 'var(--text)' }}>
-                      {formatCurrency(vehicle.price_km)}/km
-                    </span>
+                    {vehicle.price_km > 0 && (
+                      <span className="font-medium" style={{ color: 'var(--text)' }}>
+                        {formatCurrency(vehicle.price_km)}/km
+                      </span>
+                    )}
                   </div>
 
                   <div className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium group/cta" style={{ color: 'var(--gold-strong)' }}>

@@ -21,28 +21,27 @@ export default function CTASection() {
           </div>
 
           <h2 className="font-heading font-semibold tracking-tight leading-[0.95] text-[clamp(2.5rem,7vw,5.5rem)] mb-8">
-            Pronto para a<br />
-            <span className="text-gradient-gold">próxima viagem?</span>
+            Tem um edital<br />
+            <span className="text-gradient-gold">em andamento?</span>
           </h2>
 
           <p
             className="text-lg md:text-xl font-light leading-relaxed max-w-2xl mx-auto mb-12"
             style={{ color: 'var(--text-muted)' }}
           >
-            Resposta em minutos pelo WhatsApp. Orçamento gratuito, sem
-            compromisso. Atendemos Brasília e todo o Centro-Oeste.
+            Envie o objeto ou o número do processo. Respondemos com proposta,
+            documentação de habilitação e atestados. Para fretamento particular,
+            o orçamento sai pelo site ou WhatsApp.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
             <a
-              href="https://wa.me/5561984222205?text=Olá!%20Gostaria%20de%20solicitar%20um%20orçamento."
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/licitacoes#proposta"
               className="group inline-flex items-center gap-2 h-12 px-7 rounded-full text-[15px] font-medium transition-all"
               style={{ background: 'var(--text)', color: 'var(--bg)' }}
             >
-              <MessageCircle size={16} />
-              Falar no WhatsApp
+              Solicitar proposta
+              <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
             </a>
             <a
               href="/orcamento"
@@ -53,11 +52,8 @@ export default function CTASection() {
                 border: '1px solid var(--border-md)',
               }}
             >
-              Solicitar orçamento
-              <ArrowRight
-                size={16}
-                className="transition-transform group-hover:translate-x-0.5"
-              />
+              <MessageCircle size={16} />
+              Orçamento particular
             </a>
           </div>
 

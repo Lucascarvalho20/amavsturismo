@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Users, ArrowRight, Bus } from 'lucide-react'
 import { categoryLabel, formatCurrency } from '@/lib/utils'
+import { fallbackPhotoFor } from '@/lib/fleet-photos'
 import type { Vehicle, VehicleCategory } from '@/lib/types'
 
 type Tab = 'todos' | VehicleCategory
@@ -157,7 +158,8 @@ export default function FrotaClient({ vehicles }: { vehicles: Vehicle[] }) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {filtered.map((vehicle, i) => {
-              const mainPhoto = vehicle.images?.[0] ?? vehicle.photo_url
+              const ownPhoto = vehicle.images?.[0] ?? vehicle.photo_url
+              const mainPhoto = ownPhoto ?? fallbackPhotoFor(vehicle.category, i)
               return (
                 <motion.a
                   key={vehicle.id}
@@ -178,6 +180,11 @@ export default function FrotaClient({ vehicles }: { vehicles: Vehicle[] }) {
                     ) : (
                       <VehiclePlaceholder name={vehicle.name} category={vehicle.category} />
                     )}
+                    {!ownPhoto && mainPhoto && (
+                    <span className="absolute bottom-3 right-3 px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/55 text-white/85 backdrop-blur-sm">
+                      Foto ilustrativa
+                    </span>
+                  )}
                     <div className="absolute top-4 left-4">
                       <span
                         className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full text-[11px] font-medium backdrop-blur-md"

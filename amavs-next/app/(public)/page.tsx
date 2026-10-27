@@ -1,7 +1,9 @@
 import HeroSection from '@/components/sections/HeroSection'
 import ServicesStrip from '@/components/sections/ServicesStrip'
+import AtestadosSection from '@/components/sections/AtestadosSection'
 import StorytellingSection from '@/components/sections/StorytellingSection'
 import FleetPreviewSection from '@/components/sections/FleetPreviewSection'
+import FrotaFotosSection from '@/components/sections/FrotaFotosSection'
 import StatsSection from '@/components/sections/StatsSection'
 import WhyUsSection from '@/components/sections/WhyUsSection'
 import GaleriaSection from '@/components/sections/GaleriaSection'
@@ -13,7 +15,9 @@ export default function HomePage() {
     <>
       <HeroSection />
       <ServicesStrip />
+      <AtestadosSection />
       <StorytellingSection />
+      <FrotaFotosSection />
       <FleetPreviewSection />
       <StatsSection />
       <WhyUsSection />

@@ -4,12 +4,12 @@ import { motion } from 'framer-motion'
 import { FileCheck, Award, Clock, ShieldCheck, Headphones, MapPin } from 'lucide-react'
 
 const reasons = [
-  { icon: Award,       title: 'Licitações públicas',  desc: 'SICAF regularizado e operação conforme a Lei 14.133/2021.' },
+  { icon: Award,       title: 'Experiência comprovada', desc: 'Atestados de capacidade técnica do Exército, CFC, MPT e Ministério da Saúde.' },
   { icon: FileCheck,   title: 'Documentação completa', desc: 'ANTT, RNTRC, seguro de passageiros e CRLV sempre em dia.' },
   { icon: ShieldCheck, title: 'Motoristas habilitados', desc: 'CNH categoria D ou E com cursos de transporte coletivo.' },
   { icon: Clock,       title: 'Pontualidade',          desc: 'GPS embarcado e controle de rotas em tempo real.' },
-  { icon: MapPin,      title: 'Base em Brasília',      desc: 'Atendimento em todo o DF e Centro-Oeste.' },
-  { icon: Headphones,  title: 'Suporte direto',        desc: 'WhatsApp para orçamentos, emergências e ajustes.' },
+  { icon: MapPin,      title: 'Base em Brasília',      desc: 'Garagem no DF e operações já realizadas no Ceará, Paraná e Tocantins.' },
+  { icon: Headphones,  title: 'Fiscal de contrato atendido', desc: 'Contato direto com a coordenação para ajustes de rota, horário e frota durante a execução.' },
 ]
 
 export default function WhyUsSection() {
@@ -27,10 +27,8 @@ export default function WhyUsSection() {
             Por que a Amav's
           </div>
           <h2 className="font-heading font-semibold tracking-tight leading-[1.05] text-[clamp(2.25rem,5vw,4rem)]">
-            Confiança<br />
-            construída por
-            <br />
-            <span className="text-gradient-gold">cada viagem.</span>
+            Pronto para<br />
+            <span className="text-gradient-gold">o seu processo.</span>
           </h2>
         </motion.div>
 

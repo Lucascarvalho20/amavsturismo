@@ -42,10 +42,10 @@ export default function WhatsAppFAB() {
               <X size={10} />
             </button>
             <p className="text-white text-sm font-medium leading-snug">
-              Solicite seu orçamento agora! 🚌
+              Proposta ou orçamento? 🚌
             </p>
             <p className="text-gray-400 text-xs mt-0.5">
-              Atendimento imediato pelo WhatsApp
+              Fale direto com a equipe pelo WhatsApp
             </p>
           </motion.div>
         )}
