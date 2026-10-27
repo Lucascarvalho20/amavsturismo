@@ -141,21 +141,21 @@ export default function HeroClient({
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3 mb-9">
               <a
-                href="/licitacoes#proposta"
+                href="/licitacoes"
                 className="group inline-flex items-center gap-2 bg-white text-black px-7 h-12 rounded-full text-[15px] font-medium hover:bg-white/90 transition-all"
               >
-                Solicitar proposta
+                Serviços prestados
                 <ArrowRight
                   size={16}
                   className="transition-transform group-hover:translate-x-0.5"
                 />
               </a>
               <a
-                href="/licitacoes#atestados"
+                href="/frota"
                 className="group inline-flex items-center gap-2 text-white px-7 h-12 rounded-full text-[15px] font-medium hover:bg-white/10 transition-all"
                 style={{ border: '1px solid rgba(255,255,255,0.2)' }}
               >
-                Ver atestados
+                Conheça a frota
                 <ArrowRight
                   size={16}
                   className="transition-transform group-hover:translate-x-0.5"

@@ -19,6 +19,8 @@ import {
   Images,
   Landmark,
   HelpCircle,
+  Trophy,
+  FolderCheck,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -33,11 +35,13 @@ interface SidebarProps {
 
 const navItems = [
   { href: '/admin/dashboard',    icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/admin/frota',        icon: Bus,             label: 'Frota' },
   { href: '/admin/licitacoes',   icon: Landmark,        label: 'Licitações' },
-  { href: '/admin/orcamentos',   icon: FileText,        label: 'Orçamentos' },
+  { href: '/admin/documentos',   icon: FolderCheck,     label: 'Documentos' },
+  { href: '/admin/portfolio',    icon: Trophy,          label: 'Portfólio' },
   { href: '/admin/contratos',    icon: ScrollText,      label: 'Contratos' },
+  { href: '/admin/frota',        icon: Bus,             label: 'Frota' },
   { href: '/admin/galeria',      icon: Images,          label: 'Galeria' },
+  { href: '/admin/orcamentos',   icon: FileText,        label: 'Orçamentos' },
   { href: '/admin/relatorios',   icon: BarChart2,       label: 'Relatórios' },
   { href: '/admin/personalizar', icon: Palette,         label: 'Personalizar' },
   { href: '/admin/computadores', icon: Monitor,         label: 'Computadores' },

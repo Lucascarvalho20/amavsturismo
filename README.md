@@ -1,8 +1,11 @@
 # Amav's Turismo
 
-Site e painel administrativo de uma empresa de transporte de passageiros de Brasília que hoje trabalha principalmente com **contratos públicos** (pregões, dispensas e adesões a ata).
+Sistema de uma empresa de transporte de passageiros de Brasília que vive principalmente de **licitações**: ela disputa pregões e dispensas do governo e presta o serviço para órgãos como o Exército e conselhos federais.
 
-O projeto substituiu um WordPress de 2019. A parte pública apresenta a empresa para pregoeiros e setores de compras (atestados de capacidade técnica, documentação e formulário de pedido de proposta). O painel é a ferramenta da equipe para frota, agenda dos veículos, contratos, pedidos de proposta, orçamentos e galeria.
+O projeto substituiu um WordPress de 2019 e tem duas partes:
+
+- **Painel (uso interno):** controle das licitações em disputa (sessões, propostas, resultado e taxa de sucesso), certidões de habilitação com alerta de vencimento, portfólio de serviços prestados, contratos, frota com agenda e QR Code, e orçamentos de fretamento.
+- **Site público:** vitrine dos serviços já prestados ao governo, com fotos e atestados de capacidade técnica, frota e contato para pregoeiros e fiscais de contrato.
 
 **Stack:** Next.js 14 (App Router) · TypeScript · Node.js · PostgreSQL (Supabase) · Row Level Security · Zod · Vitest · Tailwind · Vercel · GitHub Actions
 
@@ -31,9 +34,9 @@ Três formas de acessar o banco, cada uma com um nível de confiança:
 
 | Quem | Credencial | O que consegue |
 |---|---|---|
-| Visitante (navegador) | chave `anon` | Ler catálogo (veículos, galeria, contratos marcados como públicos, só colunas não sensíveis). Nada mais. |
+| Visitante (navegador) | chave `anon` | Ler catálogo (veículos, galeria, portfólio publicado, contratos marcados como públicos com só colunas não sensíveis). Nada mais. |
 | Admin (navegador) | `anon` + JWT da sessão | Tudo, mas **só se** o usuário estiver em `admin_users` (função `is_admin()` nas policies). |
-| Servidor (Route Handlers) | `service_role` | Grava formulários públicos depois de validar e devolve ao navegador apenas dados já filtrados. A chave nunca chega ao cliente. |
+| Servidor (Route Handlers e Server Components) | `service_role` | Grava formulários públicos depois de validar e calcula números agregados (ex.: licitações vencidas). Ao navegador só chega o resultado. A chave nunca sai do servidor. |
 
 ---
 
@@ -42,13 +45,33 @@ Três formas de acessar o banco, cada uma com um nível de confiança:
 | Método | Rota | Acesso | O que faz |
 |---|---|---|---|
 | `GET` | `/api/disponibilidade` | público | Veículos e **períodos ocupados** (só datas e tipo). Usada pelo formulário de orçamento e pelo calendário de cada veículo. Cache de 60 s na CDN. |
-| `POST` | `/api/licitacoes` | público | Pedido de proposta de um órgão. Valida com Zod, aplica rate limit por IP e honeypot, grava em `bid_requests` e devolve um protocolo (`LIC-20261027-K3F9`). |
-| `POST` | `/api/leads` | público | Pedido de orçamento particular. Mesmo esquema de validação. |
+| `POST` | `/api/leads` | público | Pedido de orçamento de fretamento. Valida com Zod, rate limit por IP e honeypot antes de gravar. |
 | `POST` | `/api/admin/check-rate-limit` | login | Verifica bloqueio por força bruta antes de tentar o login. |
 | `POST` | `/api/admin/log-attempt` | login | Registra tentativa. Sucesso só é gravado se a requisição tiver sessão válida do mesmo e-mail. |
 | `GET` | `/auth/callback` | público | Troca o código do Supabase Auth por sessão (recuperação de senha). |
 
 Todas as rotas que escrevem verificam a origem da requisição (proteção extra contra CSRF além do cookie `SameSite=Lax`).
+
+As telas do painel falam direto com o Postgres pelo SDK do Supabase, com o JWT do admin. Quem autoriza é o banco (RLS), não o front-end: mesmo que alguém chame a API REST do Supabase na mão, sem estar em `admin_users` recebe lista vazia.
+
+## Modelo de dados (principais tabelas)
+
+```mermaid
+erDiagram
+    bids }o--o| portfolio_items : "ganha → publicada"
+    contracts ||--o{ vehicle_blocks : "reserva veículos"
+    vehicles ||--o{ vehicle_blocks : ""
+    vehicles ||--o{ reservations : ""
+    admin_users ||--|| auth_users : ""
+
+    bids { text organization  text status  timestamptz session_at  numeric proposed_value  numeric awarded_value }
+    portfolio_items { text slug  text summary  text_array photos  bool is_published }
+    company_documents { text name  date expires_at  text file_path }
+    contracts { text client  numeric value  bool is_public }
+    vehicles { text slug  int capacity  text status }
+```
+
+`company_documents.file_path` aponta para um bucket **privado**; o arquivo só abre por URL assinada de 60 segundos gerada para um admin logado.
 
 ---
 
@@ -87,22 +110,38 @@ A migration com tudo isso está em [`supabase/migrations/2026-10-27_security_har
 
 Cada veículo tem um QR Code colado na lataria, que vai ficar lá por anos. O QR aponta para `/frota/{slug}` e não para o UUID. O slug é gerado uma vez e nunca muda, então o código impresso continua funcionando mesmo se o banco for migrado ou o veículo for recadastrado.
 
-### Pedidos de proposta
+### Gestão de licitações
 
-Órgãos públicos raramente usam formulário de orçamento comum: eles têm número de processo, data de sessão e edital. Por isso existe um fluxo separado (`bid_requests`) com modalidade da Lei 14.133/2021, data da sessão e link do edital. No painel, pedidos com sessão em até 5 dias aparecem destacados.
+O ciclo de vida de uma licitação é uma máquina de estados simples (`prospeccao → em_analise → proposta_enviada → aguardando_resultado → ganha | perdida`, além de `desistencia` e `cancelada`), validada por `CHECK` no banco. Os indicadores do painel (em andamento, sessões nos próximos 7 dias, taxa de sucesso e valor ganho no ano) saem de uma função pura, `bidStats` em [`lib/licitacoes.ts`](amavs-next/lib/licitacoes.ts), coberta por testes. Uma escolha consciente: a taxa de sucesso é `ganhas / (ganhas + perdidas)`. Desistências e licitações em aberto não entram, e sem nenhum resultado ela é `null`, não 0%.
+
+Quando uma licitação é ganha, um clique cria o rascunho do item de portfólio, que a equipe completa com fotos antes de publicar no site.
+
+### Certidões com validade
+
+Em licitação, certidão vencida no dia da sessão inabilita a empresa. `documentStatus` em [`lib/documents.ts`](amavs-next/lib/documents.ts) classifica cada documento em válido, vencendo (15 dias antes) ou vencido, comparando só datas de calendário para não depender de fuso horário.
+
+### Um bug de fuso horário
+
+`new Date('2016-10-24')` é meia-noite **UTC**; formatado em Brasília (UTC-3), vira 23/10. Isso deslocava em um dia todas as datas puras do sistema (contratos, viagens, atestados). A correção trata `YYYY-MM-DD` como data local, e o teste roda com `TZ=America/Sao_Paulo` fixo, porque em UTC (o fuso do CI) o bug não aparece.
 
 ---
 
 ## Testes e CI
 
 ```bash
-npm test          # Vitest: disponibilidade, validação das APIs, redirect, rate limit
+npm test          # Vitest: disponibilidade, indicadores de licitação, validade de certidões, validação, datas
 npm run typecheck
 ```
 
 O GitHub Actions roda typecheck, testes e build a cada push e PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
 
 ---
+
+## Documentação
+
+- [`docs/GUIA_DE_ESTUDO.md`](docs/GUIA_DE_ESTUDO.md): como o sistema funciona por dentro, camada por camada.
+- [`docs/NOVA_MAQUINA.md`](docs/NOVA_MAQUINA.md): rodar o projeto em outro computador.
+- [`amavs-next/README.md`](amavs-next/README.md): instalação completa e primeiro admin.
 
 ## Rodando localmente
 
@@ -124,16 +163,18 @@ Banco: rode `supabase/schema.sql` e depois os arquivos de `supabase/migrations/`
 ```
 amavs-next/
 ├── app/
-│   ├── (public)/          páginas do site (home, licitações, frota, orçamento…)
-│   ├── admin/             painel (protegido pelo middleware)
+│   ├── (public)/          site (home, setor público, frota, orçamento…)
+│   ├── admin/             painel: licitações, documentos, portfólio, frota…
 │   └── api/               route handlers
 ├── components/            seções do site, layout e componentes do painel
 ├── lib/
-│   ├── availability.ts    regra de disponibilidade e ranking
+│   ├── licitacoes.ts      etapas e indicadores das licitações (bidStats)
+│   ├── documents.ts       validade das certidões (documentStatus)
+│   ├── portfolio.ts       serviços prestados + fallback estático
+│   ├── availability.ts    regra de disponibilidade e ranking da frota
 │   ├── validation.ts      schemas Zod das rotas públicas
 │   ├── supabase-admin.ts  cliente service_role (só servidor)
 │   ├── rate-limit.ts
-│   ├── atestados.ts       atestados de capacidade técnica da empresa
 │   └── __tests__/
 ├── middleware.ts          sessão, lista de admins e 2FA
 └── supabase/              schema e migrations
@@ -146,5 +187,5 @@ amavs-v2/                  versão anterior em PHP 8 + MySQL, mantida como hist�
 
 - **Rate limit em memória.** Cada instância serverless tem seu contador. Para o volume atual é suficiente; o próximo passo seria um store compartilhado (Redis/Upstash) ou uma tabela com janela deslizante no Postgres.
 - **Testes cobrem a lógica pura.** As rotas e as policies RLS ainda não têm testes de integração. A ideia é subir um Postgres em container no CI e testar as policies com os papéis `anon` e `authenticated`.
-- **E-mail de notificação.** Hoje o pedido de proposta aparece no painel e o órgão é direcionado ao WhatsApp. Falta notificar a equipe por e-mail quando chega um pedido novo.
-- **Monitoramento de editais.** Consultar a API do PNCP (Portal Nacional de Contratações Públicas) por pregões de transporte no DF e listar oportunidades no painel.
+- **Monitoramento de editais.** Consultar a API pública do PNCP (Portal Nacional de Contratações Públicas) num job agendado, filtrar pregões de transporte de passageiros e criar licitações em `prospeccao` automaticamente.
+- **Alertas por e-mail.** Um cron diário avisando sessões do dia seguinte e certidões que vencem na semana.

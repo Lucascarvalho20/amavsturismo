@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 const navLinks = [
   { href: '/', label: 'Início' },
-  { href: '/licitacoes', label: 'Licitações' },
+  { href: '/licitacoes', label: 'Setor público' },
   {
     label: 'Frota',
     href: '/frota',
@@ -151,14 +151,14 @@ export default function Navbar() {
               </a>
               <ThemeToggle size="sm" />
               <Link
-                href="/licitacoes#proposta"
+                href="/contato"
                 className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full text-sm font-medium transition-all hover:opacity-90"
                 style={{
                   background: useDarkText ? 'var(--text)' : '#ffffff',
                   color: useDarkText ? 'var(--bg)' : '#000000',
                 }}
               >
-                Solicitar proposta
+                Fale conosco
                 <ArrowRight size={14} />
               </Link>
             </div>
@@ -245,11 +245,11 @@ export default function Navbar() {
                   <span>(61) 98422-2205</span>
                 </a>
                 <Link
-                  href="/licitacoes#proposta"
+                  href="/contato"
                   className="inline-flex items-center justify-center gap-2 w-full h-12 px-6 rounded-full text-base font-medium"
                   style={{ background: 'var(--text)', color: 'var(--bg)' }}
                 >
-                  Solicitar proposta
+                  Fale conosco
                   <ArrowRight size={16} />
                 </Link>
               </div>

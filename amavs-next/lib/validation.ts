@@ -1,7 +1,6 @@
 import { z } from 'zod'
-import { BID_MODALITIES } from './licitacoes'
 
-// Schemas das rotas públicas que gravam no banco. Ficam fora dos route handlers
+// Schemas de entrada das rotas públicas. Ficam fora dos route handlers
 // para poderem ser testados isoladamente (lib/__tests__/validation.test.ts).
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/)
@@ -24,29 +23,6 @@ export const leadSchema = z.object({
   passengers: z.coerce.number().int().min(1).max(500),
   vehicle_id: z.string().uuid().optional().or(z.literal('')),
   message: optionalText(1500),
-  website: honeypot,
-})
-
-export const bidSchema = z.object({
-  organization: z.string().trim().min(2).max(200),
-  contact_name: z.string().trim().min(2).max(120),
-  role: optionalText(120),
-  email: z.string().trim().email().max(160),
-  phone,
-  modality: z.enum(BID_MODALITIES),
-  process_number: optionalText(80),
-  session_date: isoDate.optional().or(z.literal('')),
-  service_start: isoDate.optional().or(z.literal('')),
-  vehicles_needed: optionalText(200),
-  object: z.string().trim().min(10).max(3000),
-  edital_url: z
-    .string()
-    .trim()
-    .max(500)
-    .url()
-    .refine((u) => /^https?:\/\//i.test(u), 'Somente http(s)')
-    .optional()
-    .or(z.literal('')),
   website: honeypot,
 })
 

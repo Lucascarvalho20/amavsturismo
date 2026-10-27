@@ -7,11 +7,11 @@ const footerLinks = {
   empresa: [
     { href: '/sobre', label: 'Sobre Nós' },
     { href: '/frota', label: 'Nossa Frota' },
-    { href: '/licitacoes', label: 'Licitações' },
+    { href: '/licitacoes', label: 'Setor público' },
     { href: '/contato', label: 'Contato' },
   ],
   servicos: [
-    { href: '/licitacoes#proposta', label: 'Proposta para licitação' },
+    { href: '/licitacoes', label: 'Serviços prestados' },
     { href: '/orcamento', label: 'Orçamento particular' },
     { href: '/frota?categoria=onibus', label: 'Fretamento de Ônibus' },
     { href: '/frota?categoria=micro', label: 'Micro-ônibus' },

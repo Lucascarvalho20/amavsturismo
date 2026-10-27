@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import {
-  Bus, Camera, CalendarX, QrCode, Images, Palette, Landmark, ScrollText, ShieldCheck, FileText, ArrowRight,
+  Bus, Camera, CalendarX, QrCode, Images, Palette, Landmark, ScrollText, ShieldCheck, FileText, ArrowRight, Trophy, FolderCheck,
 } from 'lucide-react'
 
 export const metadata = { title: "Ajuda — Admin Amav's Turismo" }
@@ -20,6 +20,49 @@ interface Topic {
 }
 
 const topics: Topic[] = [
+  {
+    id: 'licitacoes',
+    icon: Landmark,
+    title: 'Controlar as licitações que estamos disputando',
+    where: { href: '/admin/licitacoes', label: 'Licitações' },
+    intro: 'Cada edital que a empresa vai disputar vira um cartão. Só a equipe vê esta tela.',
+    steps: [
+      { text: <>Achou um edital interessante? Clique em <b>Nova licitação</b> e preencha órgão, objeto e, se já souber, número do pregão, plataforma e <b>data e hora da sessão</b>.</> },
+      { text: <>Conforme avança, mude a <b>etapa</b> direto na lista: Analisando edital → Proposta enviada → Aguardando resultado → Ganha ou Perdida.</> },
+      { text: <>Sessões em até 3 dias ficam com <b>borda vermelha</b>. O Dashboard também mostra as sessões dos próximos 14 dias.</> },
+      { text: <>Registre o <b>nosso lance</b> e, quando ganhar, o <b>valor homologado</b>. Isso alimenta a taxa de sucesso e o valor ganho no ano.</> },
+      { text: <>Ganhou? Clique em <b>Publicar no site</b>: o sistema cria um rascunho no Portfólio para você completar com fotos.</> },
+    ],
+    tips: ['Use o campo Anotações para registrar por que perdeu (preço, documento, concorrente). Com o tempo isso vira aprendizado.'],
+  },
+  {
+    id: 'documentos',
+    icon: FolderCheck,
+    title: 'Certidões e documentos de habilitação',
+    where: { href: '/admin/documentos', label: 'Documentos' },
+    intro: 'Certidão vencida no dia da sessão tira a empresa da disputa. Aqui ficam todas, com aviso de vencimento.',
+    steps: [
+      { text: <>Clique em <b>Novo documento</b>, escolha da lista (CND Federal, FGTS, CNDT, GDF, SICAF…) e informe <b>Válido até</b>.</> },
+      { text: <>Anexe o PDF. O arquivo fica <b>privado</b>: só abre para administradores logados, por um link que expira em 60 segundos.</> },
+      { text: <>15 dias antes de vencer, o documento fica <b>amarelo</b> aqui e no Dashboard. Vencido fica <b>vermelho</b>.</> },
+      { text: <>Ao emitir a certidão nova, clique no lápis, troque a data e anexe o arquivo novo. O antigo é substituído.</> },
+    ],
+  },
+  {
+    id: 'portfolio',
+    icon: Trophy,
+    title: 'Mostrar no site um serviço prestado (com fotos)',
+    where: { href: '/admin/portfolio', label: 'Portfólio' },
+    intro: 'É o que aparece em “Setor público” e na página inicial. Os 10 atestados antigos já estão cadastrados; falta colocar fotos.',
+    steps: [
+      { text: <>Clique em <b>Editar e fotos</b> no serviço (ou em <b>Novo serviço</b>).</> },
+      { text: <>Em <b>Fotos da operação</b>, envie as fotos do evento ou contrato. A primeira é a <b>capa</b>; troque com “Usar como capa”.</> },
+      { text: <>Preencha o <b>resumo</b> (aparece no card) e, se quiser, a <b>descrição completa</b> (aparece na página do serviço).</> },
+      { text: <><b>Número em destaque</b> é opcional, mas chama atenção: “40 veículos em operação”, “12 dias de evento”.</> },
+      { text: <>Marque <b>Publicar no site</b> e salve. Para tirar do ar sem apagar, use o ícone de olho.</> },
+    ],
+    tips: ['Só publique o que pode ser divulgado. Na dúvida, pergunte ao órgão contratante.'],
+  },
   {
     id: 'foto-onibus',
     icon: Camera,
@@ -108,23 +151,11 @@ const topics: Topic[] = [
     ],
   },
   {
-    id: 'licitacoes',
-    icon: Landmark,
-    title: 'Pedidos de proposta de órgãos públicos',
-    where: { href: '/admin/licitacoes', label: 'Licitações' },
-    intro: 'Quando um pregoeiro ou setor de compras preenche o formulário de /licitacoes, o pedido cai aqui.',
-    steps: [
-      { text: <>Pedidos com sessão em até 5 dias ficam com <b>borda vermelha</b>.</> },
-      { text: <>Abra o pedido para ver o objeto, o contato e o link do edital.</> },
-      { text: <>Atualize o <b>andamento</b> (em análise, proposta enviada, vencida, perdida) e use as <b>anotações internas</b>. Elas nunca aparecem no site.</> },
-    ],
-  },
-  {
     id: 'contratos',
     icon: ScrollText,
-    title: 'Contratos exibidos em /licitacoes',
+    title: 'Contratos em vigência no site',
     where: { href: '/admin/contratos', label: 'Contratos' },
-    intro: 'A tabela “Contratos em vigência” do site mostra só os contratos com “Mostrar no site público” ligado.',
+    intro: 'Contratos assinados (com valor, documento e veículos). A tabela “Contratos em vigência” do site mostra só os que têm “Mostrar no site público” ligado.',
     steps: [
       { text: <>Ao cadastrar, deixe <b>Mostrar no site público</b> desligado até ter certeza de que pode divulgar.</> },
       { text: <>Valor, observações e documento do contrato <b>nunca</b> aparecem no site, mesmo para contratos públicos.</> },
@@ -133,7 +164,7 @@ const topics: Topic[] = [
   {
     id: 'orcamentos',
     icon: FileText,
-    title: 'Orçamentos (clientes particulares e empresas)',
+    title: 'Orçamentos de fretamento particular',
     where: { href: '/admin/orcamentos', label: 'Orçamentos' },
     intro: 'Pedidos do formulário /orcamento. O cliente também é levado ao WhatsApp com a mensagem pronta.',
     steps: [{ text: <>Ao aprovar, você pode bloquear o veículo no calendário automaticamente.</> }],

@@ -1,39 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { bidSchema, leadSchema, safeRedirectPath } from '../validation'
+import { leadSchema, safeRedirectPath } from '../validation'
 import { hitRateLimit } from '../rate-limit'
-
-const validBid = {
-  organization: 'Comando Militar do Planalto',
-  contact_name: 'Fulano de Tal',
-  email: 'compras@exemplo.gov.br',
-  phone: '(61) 98422-2205',
-  modality: 'pregao_eletronico',
-  object: 'Locação de 4 ônibus executivos com motorista por 10 diárias.',
-}
-
-describe('bidSchema', () => {
-  it('aceita um pedido mínimo e normaliza o telefone', () => {
-    const r = bidSchema.safeParse(validBid)
-    expect(r.success).toBe(true)
-    expect(r.success && r.data.phone).toBe('61984222205')
-  })
-
-  it('rejeita modalidade fora da lista', () => {
-    expect(bidSchema.safeParse({ ...validBid, modality: 'qualquer' }).success).toBe(false)
-  })
-
-  it('rejeita link de edital com esquema perigoso', () => {
-    expect(bidSchema.safeParse({ ...validBid, edital_url: 'javascript:alert(1)' }).success).toBe(false)
-  })
-
-  it('rejeita quando o honeypot vem preenchido (robô)', () => {
-    expect(bidSchema.safeParse({ ...validBid, website: 'http://spam' }).success).toBe(false)
-  })
-
-  it('limita o tamanho do objeto', () => {
-    expect(bidSchema.safeParse({ ...validBid, object: 'x'.repeat(3001) }).success).toBe(false)
-  })
-})
 
 describe('leadSchema', () => {
   const lead = { name: 'Maria', phone: '61 98422-2205', origin: 'Brasília', travel_date: '2026-12-01', passengers: '20' }
@@ -77,5 +44,12 @@ describe('hitRateLimit', () => {
     hitRateLimit(a, 1, 60_000)
     hitRateLimit(a, 1, 60_000)
     expect(hitRateLimit(b, 1, 60_000)).toBe(false)
+  })
+})
+
+describe('formatDate', () => {
+  it('data pura do banco não volta um dia em fusos negativos (Brasília)', async () => {
+    const { formatDate } = await import('../utils')
+    expect(formatDate('2016-10-24')).toBe('24/10/2016')
   })
 })

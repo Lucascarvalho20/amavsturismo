@@ -182,9 +182,10 @@ function PhotoGallery({
         if (file.size > 5 * 1024 * 1024) { toast.error(`${file.name} é muito grande (máx 5MB)`); continue }
         const mime = validateFileType(file, 'images')
         if (!mime.ok) { toast.error(`${file.name}: ${mime.error}`); continue }
-        const ext  = file.name.split('.').pop()
-        const path = `vehicles/${vehicleId ?? Date.now()}/${Date.now()}.${ext}`
-        const { error } = await supabase.storage.from('vehicles').upload(path, file, { upsert: true })
+        const ext  = file.name.split('.').pop()?.toLowerCase()
+        // nome aleatório: dois arquivos no mesmo milissegundo não se sobrescrevem
+        const path = `vehicles/${vehicleId ?? 'novo'}/${crypto.randomUUID()}.${ext}`
+        const { error } = await supabase.storage.from('vehicles').upload(path, file)
         if (error) { toast.error(`Erro ao enviar ${file.name}`); continue }
         const { data: { publicUrl } } = supabase.storage.from('vehicles').getPublicUrl(path)
         uploaded.push(publicUrl)

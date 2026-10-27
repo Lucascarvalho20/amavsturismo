@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase-server'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { LeadStatusBadge, ContractStatusBadge } from '@/components/ui/Badge'
 import { DemandChart, RevenueChart, VehicleMixChart } from './DashboardCharts'
+import LicitacoesAlerts from './LicitacoesAlerts'
 
 // ── Real Supabase data fetchers ────────────────────────────────────────────
 
@@ -107,6 +108,10 @@ export default async function DashboardPage() {
         <h1 className="font-heading font-bold text-2xl text-white">Dashboard</h1>
         <p className="text-gray-400 text-sm mt-0.5">Bem-vindo ao painel da Amav&apos;s Turismo</p>
       </div>
+
+      <Suspense fallback={<div className="h-[140px] animate-pulse bg-white/5 rounded-2xl" />}>
+        <LicitacoesAlerts />
+      </Suspense>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">

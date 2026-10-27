@@ -55,7 +55,7 @@ REQUIRE_ADMIN_MFA=false
 ### Passo 4 — Criar o usuário administrador
 
 1. No Supabase, vá em **Authentication → Users → Add user** e crie o usuário com SEU e-mail e uma senha forte
-2. Abra `supabase/migrations/2026-10-27_security_hardening.sql`, troque `seu-email@exemplo.com` pelo seu e-mail e rode no **SQL Editor**
+2. Abra `supabase/migrations/2026-10-27_security_hardening.sql`, confira o e-mail de administrador na seção 1 (troque se for outro) e rode no **SQL Editor**
 3. Em **Authentication → Sign In / Providers**, **desligue "Allow new users to sign up"**
 4. Coloque o mesmo e-mail em `ADMIN_EMAILS` (no `.env.local` e nas variáveis da Vercel)
 5. Depois do primeiro login, ative o 2FA em **/admin/perfil**

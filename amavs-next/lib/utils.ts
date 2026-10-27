@@ -13,12 +13,22 @@ export function formatCurrency(value: number): string {
   }).format(value)
 }
 
+/**
+ * Converte a string do banco em Date sem deslocar o dia.
+ * `new Date('2016-10-24')` é meia-noite UTC — em Brasília (UTC-3) vira 23/10.
+ * Datas puras (YYYY-MM-DD) são tratadas como data local; timestamps completos seguem normais.
+ */
+export function parseDbDate(value: string): Date {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(value)
+}
+
 export function formatDate(dateString: string): string {
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
-  }).format(new Date(dateString))
+  }).format(parseDbDate(dateString))
 }
 
 export function formatDateLong(dateString: string): string {
@@ -26,7 +36,7 @@ export function formatDateLong(dateString: string): string {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
-  }).format(new Date(dateString))
+  }).format(parseDbDate(dateString))
 }
 
 export function formatPhone(phone: string): string {

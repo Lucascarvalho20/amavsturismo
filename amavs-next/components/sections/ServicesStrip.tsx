@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { Landmark, Flag, Users, Briefcase, ArrowUpRight } from 'lucide-react'
 
 const services = [
-  { icon: Landmark,  label: 'Licitações e pregões',        desc: 'Pregão eletrônico, dispensa, adesão a ata e cotações para pesquisa de preços. Proposta e documentação de habilitação prontas.' },
+  { icon: Landmark,  label: 'Contratos públicos',          desc: 'Participamos de pregões, dispensas e adesões a ata de transporte de passageiros, com a habilitação sempre em dia.' },
   { icon: Flag,      label: 'Eventos oficiais e comboios', desc: 'Desfiles, jogos militares, congressos e operações eleitorais com dezenas de veículos coordenados.' },
   { icon: Users,     label: 'Transporte de servidores',    desc: 'Deslocamento de servidores, delegações e comitivas no DF e entre estados, com motoristas habilitados.' },
   { icon: Briefcase, label: 'Fretamento corporativo',      desc: 'Empresas, entidades de classe e grupos. Orçamento rápido pelo site ou WhatsApp.' },
@@ -26,12 +26,12 @@ export default function ServicesStrip() {
               O que fazemos
             </div>
             <h2 className="font-heading font-semibold tracking-tight leading-[1.05] text-[clamp(2.25rem,5vw,4rem)]">
-              Do edital<br />
-              à execução.
+              Transporte<br />
+              para o governo.
             </h2>
           </div>
           <p className="text-lg font-light leading-relaxed max-w-md" style={{ color: 'var(--text-muted)' }}>
-            A maior parte do nosso trabalho hoje é com órgãos públicos. Também atendemos
+            Hoje a maior parte do trabalho vem de licitações vencidas. Também atendemos
             empresas e entidades em Brasília e em todo o país.
           </p>
         </motion.div>

@@ -21,26 +21,27 @@ export default function CTASection() {
           </div>
 
           <h2 className="font-heading font-semibold tracking-tight leading-[0.95] text-[clamp(2.5rem,7vw,5.5rem)] mb-8">
-            Tem um edital<br />
-            <span className="text-gradient-gold">em andamento?</span>
+            Pregoeiro ou<br />
+            <span className="text-gradient-gold">fiscal de contrato?</span>
           </h2>
 
           <p
             className="text-lg md:text-xl font-light leading-relaxed max-w-2xl mx-auto mb-12"
             style={{ color: 'var(--text-muted)' }}
           >
-            Envie o objeto ou o número do processo. Respondemos com proposta,
-            documentação de habilitação e atestados. Para fretamento particular,
-            o orçamento sai pelo site ou WhatsApp.
+            Atestados, documentos de habilitação e cotação para pesquisa de preços
+            direto com a equipe. Empresas e grupos também podem pedir orçamento de fretamento.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
             <a
-              href="/licitacoes#proposta"
+              href="https://wa.me/5561984222205"
+              target="_blank"
+              rel="noopener noreferrer"
               className="group inline-flex items-center gap-2 h-12 px-7 rounded-full text-[15px] font-medium transition-all"
               style={{ background: 'var(--text)', color: 'var(--bg)' }}
             >
-              Solicitar proposta
+              Falar com a equipe
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
             </a>
             <a
