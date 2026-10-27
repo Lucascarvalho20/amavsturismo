@@ -41,8 +41,9 @@ O CI (`.github/workflows/ci.yml`) roda typecheck, testes e build. Push na `main`
 
 ## Pendências conhecidas (out/2026)
 
-- Rodar `amavs-next/supabase/migrations/2026-10-27_security_hardening.sql` no Supabase (se o painel mostrar aviso de "tabela não existe", ainda não foi rodado).
-- Supabase → Authentication: desligar "Allow new users to sign up".
+- `2026-10-27_security_hardening.sql` já rodado no Supabase (conferido em 27/10/2026).
+- Rodar `amavs-next/supabase/migrations/2026-10-27_featured_clients_atestados.sql` (troca "Quem confia no nosso trabalho" pelos clientes com atestado; PMDF fica oculta por não ter atestado).
+- Supabase → Authentication: desligar "Allow new users to sign up" (em 27/10/2026 ainda estava ligado: `disable_signup: false`).
 - Vercel: definir `ADMIN_EMAILS` (e opcionalmente `REQUIRE_ADMIN_MFA=true`).
 - Os 6 veículos do banco são dados de demonstração (placas fictícias); a empresa vai cadastrar os reais. Vans ficam sem foto até haver fotos reais.
 - Domínio oficial `www.amavsturismo.com` ainda aponta para o WordPress antigo.
