@@ -89,15 +89,18 @@ amavs-next/
 ├── components/
 │   ├── layout/            # Navbar, Footer, WhatsApp FAB
 │   ├── sections/          # Seções da landing page
-│   ├── ui/                # Button, Badge, Input, Section
+│   ├── ui/                # Button, Badge, Input, calendário
 │   └── admin/             # Sidebar, SessionGuard
 ├── lib/
-│   ├── types.ts           # Tipos TypeScript
-│   ├── utils.ts           # Formatação, WhatsApp URL
-│   ├── supabase-server.ts # Cliente server-side (seguro)
-│   ├── supabase-browser.ts# Cliente browser
-│   ├── audit.ts           # Registro de ações
-│   └── data.ts            # Dados mock (antes do Supabase)
+│   ├── types.ts           # Tipos das tabelas
+│   ├── utils.ts           # Formatação, mensagem do WhatsApp, validação de upload
+│   ├── availability.ts    # Disponibilidade e ranking da frota
+│   ├── licitacoes.ts      # Etapas e indicadores das licitações
+│   ├── documents.ts       # Validade das certidões
+│   ├── supabase-server.ts # Cliente do banco no servidor (sessão do usuário)
+│   ├── supabase-admin.ts  # Cliente service_role, só no servidor
+│   ├── supabase-browser.ts# Cliente do banco no navegador
+│   └── data.ts            # Dados de exemplo dos gráficos do dashboard
 ├── middleware.ts           # Proteção das rotas /admin/*
 ├── supabase/
 │   └── schema.sql         # Banco de dados completo

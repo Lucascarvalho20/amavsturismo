@@ -46,10 +46,8 @@ function MediaCard({ item, index, onClick }: { item: TripGallery; index: number;
         </div>
       )}
 
-      {/* Dark overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      {/* Play button overlay for videos */}
       {item.media_type === 'video' && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div
@@ -65,7 +63,6 @@ function MediaCard({ item, index, onClick }: { item: TripGallery; index: number;
         </div>
       )}
 
-      {/* Caption on hover */}
       {(item.caption || item.location) && (
         <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-1 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
           {item.caption && (
@@ -93,7 +90,6 @@ export default function GaleriaClient({ items }: { items: TripGallery[] }) {
   return (
     <section className="py-32 md:py-40 surface" id="galeria">
       <div className="container mx-auto px-6 md:px-10 max-w-7xl">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -110,7 +106,6 @@ export default function GaleriaClient({ items }: { items: TripGallery[] }) {
           </h2>
         </motion.div>
 
-        {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
           {items.map((item, i) => (
             <MediaCard
@@ -123,7 +118,6 @@ export default function GaleriaClient({ items }: { items: TripGallery[] }) {
         </div>
       </div>
 
-      {/* Lightbox */}
       <AnimatePresence>
         {lightbox && (
           <motion.div
@@ -181,7 +175,6 @@ export default function GaleriaClient({ items }: { items: TripGallery[] }) {
                 </div>
               )}
 
-              {/* Meta */}
               {(lightbox.caption || lightbox.location || lightbox.trip_date) && (
                 <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
                   {lightbox.caption && (

@@ -80,7 +80,7 @@ function AdminLoginForm() {
   const [blockResetAt, setBlockResetAt] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Forgot password state
+  // Recuperação de senha
   const [forgotMode, setForgotMode] = useState(false)
   const [forgotEmail, setForgotEmail] = useState('')
   const [forgotLoading, setForgotLoading] = useState(false)
@@ -102,7 +102,7 @@ function AdminLoginForm() {
     setLoading(true)
 
     try {
-      // Check rate limit
+      // 1. E-mail bloqueado por excesso de tentativas?
       const rlRes = await fetch('/api/admin/check-rate-limit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,13 +118,13 @@ function AdminLoginForm() {
         return
       }
 
-      // Attempt login
+      // 2. Senha
       const { error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       })
 
-      // Log attempt
+      // 3. Registra a tentativa, com sucesso ou não
       await fetch('/api/admin/log-attempt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -215,7 +215,6 @@ function AdminLoginForm() {
             </div>
           )}
 
-          {/* ── 2FA STEP ── */}
           {mfaFactorId ? (
             <form onSubmit={verifyMfa} className="space-y-5">
               <div className="flex items-center gap-2">
@@ -296,7 +295,6 @@ function AdminLoginForm() {
               )}
             </>
           ) : (
-            /* ── LOGIN MODE ── */
             <>
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center">
@@ -305,7 +303,6 @@ function AdminLoginForm() {
                 <span className="text-gray-300 text-sm font-medium">Entrar na sua conta</span>
               </div>
 
-              {/* Blocked warning */}
               {blocked && (
                 <div className="flex items-start gap-2 bg-wine/20 border border-wine/30 rounded-xl p-3 mb-5">
                   <AlertTriangle size={16} className="text-red-400 shrink-0 mt-0.5" />
@@ -326,7 +323,6 @@ function AdminLoginForm() {
                 </div>
               )}
 
-              {/* Warning after 2 fails */}
               {!blocked && attempts >= 2 && (
                 <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 mb-5">
                   <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />

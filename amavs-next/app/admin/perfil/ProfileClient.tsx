@@ -60,7 +60,6 @@ export default function ProfileClient({ userEmail, userId, createdAt }: Props) {
         <p className="text-gray-400 text-sm mt-0.5">Configurações e segurança da conta</p>
       </div>
 
-      {/* Account info */}
       <div className="glass-dark rounded-2xl p-6">
         <h2 className="font-heading font-semibold text-white mb-4">Informações da Conta</h2>
         <div className="space-y-3">
@@ -81,7 +80,6 @@ export default function ProfileClient({ userEmail, userId, createdAt }: Props) {
         </div>
       </div>
 
-      {/* Password */}
       <div className="glass-dark rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl">
@@ -127,7 +125,6 @@ export default function ProfileClient({ userEmail, userId, createdAt }: Props) {
         )}
       </div>
 
-      {/* 2FA — optional */}
       <div className="glass-dark rounded-2xl p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-gold/10 border border-gold/20 rounded-xl">
@@ -147,7 +144,6 @@ export default function ProfileClient({ userEmail, userId, createdAt }: Props) {
         </Button>
       </div>
 
-      {/* Logout */}
       <div className="glass-dark rounded-2xl p-6">
         <div className="flex items-center justify-between">
           <div>

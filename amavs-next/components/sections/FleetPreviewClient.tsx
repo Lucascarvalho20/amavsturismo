@@ -73,7 +73,6 @@ export default function FleetPreviewClient({ vehicles }: Props) {
           </p>
         </motion.div>
 
-        {/* Tabs */}
         <div className="flex items-center gap-2 mb-12 md:mb-16 overflow-x-auto scrollbar-hide -mx-6 px-6">
           {tabs.map((tab) => {
             const active = activeTab === tab.id
@@ -94,7 +93,6 @@ export default function FleetPreviewClient({ vehicles }: Props) {
           })}
         </div>
 
-        {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           <AnimatePresence mode="wait">
             {filtered.map((vehicle, i) => (

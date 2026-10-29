@@ -14,7 +14,7 @@ export default function ThemeToggle({ className, size = 'md' }: ThemeToggleProps
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
-  // Avoid hydration mismatch
+  // O tema só é conhecido no navegador; renderizar antes daria HTML diferente do servidor
   useEffect(() => setMounted(true), [])
 
   if (!mounted) {

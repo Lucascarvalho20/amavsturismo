@@ -1,7 +1,14 @@
 import type { Vehicle, VehicleBlock, Reservation } from './types'
 
+const CONFLICT_KINDS = ['manutencao', 'reserva', 'contrato_privado', 'outro'] as const
+type ConflictKind = (typeof CONFLICT_KINDS)[number]
+
+function isConflictKind(value: string): value is ConflictKind {
+  return (CONFLICT_KINDS as readonly string[]).includes(value)
+}
+
 export type Conflict = {
-  kind: 'manutencao' | 'reserva' | 'contrato_privado' | 'outro'
+  kind: ConflictKind
   title?: string
   start: string
   end: string | null
@@ -20,7 +27,7 @@ function rangesOverlap(
   bEnd: string | null,
   bIndefinite: boolean,
 ): boolean {
-  // a = [aStart, aEnd]; b = [bStart, bEnd or infinity]
+  // a = [aStart, aEnd]; b = [bStart, bEnd], sem fim quando indefinido
   const aS = new Date(aStart).getTime()
   const aE = new Date(aEnd).getTime()
   const bS = new Date(bStart).getTime()
@@ -29,7 +36,7 @@ function rangesOverlap(
   return aS <= bE && aE >= bS
 }
 
-/** Check whether a single vehicle is available across the requested range. */
+/** Verifica se um veículo está livre em todo o período pedido. */
 export function checkVehicleAvailability(
   vehicle: Vehicle,
   travelDate: string,
@@ -43,7 +50,7 @@ export function checkVehicleAvailability(
 
   const conflicts: Conflict[] = []
 
-  // Maintenance hard-lock (manual)
+  // Status "manutenção" no cadastro bloqueia o veículo sem data de fim
   if (vehicle.status === 'manutencao') {
     conflicts.push({
       kind: 'manutencao',
@@ -58,11 +65,7 @@ export function checkVehicleAvailability(
     if (b.vehicle_id !== vehicle.id) continue
     if (rangesOverlap(start, end, b.start_date, b.end_date, b.is_indefinite)) {
       conflicts.push({
-        kind: (['manutencao', 'reserva', 'contrato_privado', 'outro'] as const).includes(
-          b.block_type as 'manutencao' | 'reserva' | 'contrato_privado' | 'outro',
-        )
-          ? (b.block_type as Conflict['kind'])
-          : 'outro',
+        kind: isConflictKind(b.block_type) ? b.block_type : 'outro',
         title: b.title,
         start: b.start_date,
         end: b.end_date,
@@ -91,16 +94,13 @@ export function checkVehicleAvailability(
 export interface VehicleSuggestion {
   vehicle: Vehicle
   availability: AvailabilityResult
-  /** capacity gap: how many seats spare (negative = too small) */
+  /** Lugares sobrando; negativo quando o veículo não comporta o grupo. */
   capacityGap: number
-  /** score lower = better fit (smaller capacity that still fits + available preferred) */
+  /** Menor é melhor: livre, comporta o grupo e sobra pouco lugar. */
   score: number
 }
 
-/**
- * Suggest best vehicle for a given passenger count + date range.
- * Returns ranked list. Top is best fit.
- */
+/** Ordena a frota do mais para o menos adequado ao pedido; o primeiro é a sugestão. */
 export function rankVehicles(
   vehicles: Vehicle[],
   passengers: number,
@@ -113,14 +113,12 @@ export function rankVehicles(
     .map((v) => {
       const availability = checkVehicleAvailability(v, travelDate, returnDate, blocks, reservations)
       const capacityGap = v.capacity - passengers
-      // Score: vehicles that fit and are available rank highest.
-      //  - Penalize unavailable heavily (+1000)
-      //  - Penalize too-small heavily (+500)
-      //  - Among fitting+available, prefer smallest capacity gap (less wasted seats)
+      // Ocupado: +1000. Pequeno demais: +500 mais os lugares que faltam.
+      // Entre os que servem, vence o que deixa menos lugares vazios.
       let score = 0
       if (capacityGap < 0) score += 500 + Math.abs(capacityGap)
       if (!availability.available) score += 1000
-      score += Math.abs(capacityGap) // smaller gap = better
+      score += Math.abs(capacityGap)
       return { vehicle: v, availability, capacityGap, score }
     })
     .sort((a, b) => a.score - b.score)

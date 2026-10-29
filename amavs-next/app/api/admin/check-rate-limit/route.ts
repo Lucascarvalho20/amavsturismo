@@ -13,7 +13,7 @@ const GLOBAL_LIMIT = 20
 
 export async function POST(request: NextRequest) {
   if (!isSameOrigin(request)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    return NextResponse.json({ error: 'Origem não permitida' }, { status: 403 })
   }
 
   const body = await request.json().catch(() => null)

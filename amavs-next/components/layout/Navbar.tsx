@@ -33,7 +33,7 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
-  // Home page has the dark hero — navbar text should be white until scrolled
+  // Na página inicial o hero é escuro: o texto do menu fica branco até rolar a página
   const isHome = pathname === '/'
   const useDarkText = !isHome || scrolled
 

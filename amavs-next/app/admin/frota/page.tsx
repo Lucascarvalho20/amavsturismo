@@ -30,7 +30,6 @@ const CATEGORY_TABS: { label: string; value: 'all' | VehicleCategory }[] = [
   { label: 'Vans', value: 'van' },
 ]
 
-// ── QR Code Modal ──────────────────────────────────────────────────────────
 function QRCodeModal({ vehicle, onClose }: { vehicle: Vehicle; onClose: () => void }) {
   const qrRef = useRef<HTMLDivElement>(null)
   // Sempre usa o domínio oficial — é o que vai para o QR Code impresso
@@ -100,7 +99,6 @@ function QRCodeModal({ vehicle, onClose }: { vehicle: Vehicle; onClose: () => vo
           </button>
         </div>
 
-        {/* QR Code */}
         <div ref={qrRef} className="flex justify-center bg-white rounded-xl p-5 mb-4">
           <QRCode
             value={qrUrl}
@@ -111,7 +109,6 @@ function QRCodeModal({ vehicle, onClose }: { vehicle: Vehicle; onClose: () => vo
           />
         </div>
 
-        {/* URL preview */}
         <div className="bg-navy-200 rounded-lg px-3 py-2 mb-3 flex items-center gap-2">
           <span className="text-xs text-gray-300 font-mono break-all flex-1">{qrUrl}</span>
           <button onClick={copyUrl} className="text-gray-400 hover:text-gold flex-shrink-0 transition-colors" title="Copiar URL">
@@ -119,7 +116,6 @@ function QRCodeModal({ vehicle, onClose }: { vehicle: Vehicle; onClose: () => vo
           </button>
         </div>
 
-        {/* Domain override */}
         <div className="mb-3">
           <label className="block text-xs text-gray-400 mb-1">Domínio do QR Code</label>
           <input
@@ -130,7 +126,6 @@ function QRCodeModal({ vehicle, onClose }: { vehicle: Vehicle; onClose: () => vo
           />
         </div>
 
-        {/* Warning */}
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2.5 mb-4 flex gap-2">
           <AlertTriangle size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
           <div className="text-xs text-amber-300 space-y-1">
@@ -139,13 +134,11 @@ function QRCodeModal({ vehicle, onClose }: { vehicle: Vehicle; onClose: () => vo
           </div>
         </div>
 
-        {/* Slug lock info */}
         <div className="bg-navy-200/50 rounded-lg px-3 py-2 mb-4 flex items-center gap-2">
           <Lock size={12} className="text-gray-500 flex-shrink-0" />
           <p className="text-xs text-gray-500">Identificador permanente: <span className="text-gray-300 font-mono">{vehicle.slug}</span></p>
         </div>
 
-        {/* Download buttons */}
         <div className="grid grid-cols-2 gap-2">
           <Button variant="navy" size="sm" onClick={downloadSVG} leftIcon={<Download size={14} />}>
             SVG (vetorial)
@@ -159,7 +152,6 @@ function QRCodeModal({ vehicle, onClose }: { vehicle: Vehicle; onClose: () => vo
   )
 }
 
-// ── Photo Gallery Component ────────────────────────────────────────────────
 function PhotoGallery({
   vehicleId,
   existingPhotos = [],
@@ -218,7 +210,6 @@ function PhotoGallery({
         <span className="text-gray-500 font-normal ml-1">({photos.length} foto{photos.length !== 1 ? 's' : ''})</span>
       </label>
 
-      {/* Photo grid */}
       {photos.length > 0 && (
         <div className="grid grid-cols-3 gap-2 mb-3">
           {photos.map((url, i) => (
@@ -253,7 +244,6 @@ function PhotoGallery({
         </div>
       )}
 
-      {/* Upload area */}
       <label className="block">
         <div className="border-2 border-dashed border-white/10 rounded-xl p-5 text-center hover:border-gold/30 transition-colors cursor-pointer bg-navy-200/50">
           {uploading ? (
@@ -289,7 +279,6 @@ function PhotoGallery({
   )
 }
 
-// ── Vehicle Modal ──────────────────────────────────────────────────────────
 function VehicleModal({
   vehicle,
   onClose,
@@ -380,7 +369,6 @@ function VehicleModal({
           </button>
         </div>
         <div className="p-6 space-y-4">
-          {/* Photos */}
           <PhotoGallery vehicleId={vehicle?.id} existingPhotos={photos} onPhotosChange={setPhotos} />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -388,7 +376,6 @@ function VehicleModal({
             <Input label="Modelo *" value={form.model} onChange={(e) => set('model', e.target.value)} placeholder="Ex: Mercedes-Benz O-500" required />
           </div>
 
-          {/* Slug — URL permanente do QR Code */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Slug — URL permanente *
@@ -446,7 +433,6 @@ function VehicleModal({
   )
 }
 
-// ── Page ───────────────────────────────────────────────────────────────────
 export default function FrotaAdminPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([])
   const [loading, setLoading]   = useState(true)
@@ -498,7 +484,6 @@ export default function FrotaAdminPage() {
         </Button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1 max-w-xs">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -523,7 +508,6 @@ export default function FrotaAdminPage() {
         </div>
       </div>
 
-      {/* Content */}
       {loading ? (
         <div className="glass-dark rounded-2xl p-12 text-center">
           <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-3" />

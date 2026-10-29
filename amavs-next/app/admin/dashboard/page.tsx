@@ -6,8 +6,6 @@ import { LeadStatusBadge, ContractStatusBadge } from '@/components/ui/Badge'
 import { DemandChart, RevenueChart, VehicleMixChart } from './DashboardCharts'
 import LicitacoesAlerts from './LicitacoesAlerts'
 
-// ── Real Supabase data fetchers ────────────────────────────────────────────
-
 async function getStats() {
   try {
     const supabase = createClient()
@@ -53,8 +51,6 @@ async function getActiveContracts() {
     return data ?? []
   } catch { return [] }
 }
-
-// ── Page ───────────────────────────────────────────────────────────────────
 
 export default async function DashboardPage() {
   const [stats, recentLeads, activeContracts] = await Promise.all([
@@ -113,7 +109,6 @@ export default async function DashboardPage() {
         <LicitacoesAlerts />
       </Suspense>
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {kpis.map(({ label, value, sub, icon: Icon, color, bg, href }) => (
           <a key={label} href={href} className="glass-dark rounded-2xl p-5 hover:border-gold/20 transition-all duration-200 group block">
@@ -130,7 +125,6 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Charts — client components wrapped in Suspense */}
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
         <div className="xl:col-span-3 glass-dark rounded-2xl p-5">
           <h3 className="font-heading font-semibold text-white text-sm mb-1">Demanda por Veículo</h3>
@@ -148,7 +142,6 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Revenue chart */}
       <div className="glass-dark rounded-2xl p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -164,9 +157,7 @@ export default async function DashboardPage() {
         </Suspense>
       </div>
 
-      {/* Bottom grid */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        {/* Recent leads */}
         <div className="glass-dark rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-heading font-semibold text-white text-sm">Últimos Orçamentos</h3>
@@ -198,7 +189,6 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* Active contracts */}
         <div className="glass-dark rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-heading font-semibold text-white text-sm">Contratos Ativos</h3>

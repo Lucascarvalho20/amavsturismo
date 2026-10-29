@@ -234,14 +234,12 @@ function PortfolioModal({ item, onClose, onSaved }: { item: PortfolioItem | null
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Fotos */}
           <section>
             <div className="text-sm font-medium text-gray-300 mb-2">Fotos da operação <span className="text-gray-500 font-normal">({photos.length})</span></div>
             {photos.length > 0 && (
               <div className="grid grid-cols-3 md:grid-cols-4 gap-2 mb-3">
                 {photos.map((url, i) => (
                   <div key={url} className="relative group aspect-video rounded-lg overflow-hidden border border-white/10">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={url} alt="" className="w-full h-full object-cover" />
                     {i === 0 && <span className="absolute top-1 left-1 text-[10px] bg-gold text-black font-bold px-1.5 py-0.5 rounded">Capa</span>}
                     {i > 0 && (

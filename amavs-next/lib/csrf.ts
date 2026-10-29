@@ -1,20 +1,17 @@
 import { NextRequest } from 'next/server'
 
 /**
- * Verifies that the request originates from the same site.
- * Supabase SSR cookies are SameSite=Lax, which already blocks most CSRF,
- * but this explicit origin check adds a second layer for admin API routes.
- *
- * Returns true if the origin is trusted, false otherwise.
+ * Confere se a requisição veio do próprio site.
+ * Os cookies do Supabase já são SameSite=Lax, o que barra a maior parte dos
+ * ataques CSRF; conferir o cabeçalho Origin é uma segunda camada.
  */
 export function isSameOrigin(request: NextRequest): boolean {
   const origin = request.headers.get('origin')
   const host = request.headers.get('host')
 
-  // Server-to-server calls (no Origin header) are allowed — e.g. Vercel cron jobs
+  // Chamada de servidor para servidor (sem Origin), como um cron da Vercel, é aceita
   if (!origin) return true
 
-  // Strip protocol and compare with host
   try {
     const originHost = new URL(origin).host
     return originHost === host

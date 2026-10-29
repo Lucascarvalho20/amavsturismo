@@ -193,14 +193,14 @@ export default function OrcamentoForm() {
     )
   }, [vehicles, watchedPassengers, watchedTravelDate, watchedReturnDate, blocks, reservations])
 
-  // Best suggestion = top ranked that fits AND is available
+  // Sugestão principal: o primeiro do ranking que comporta o grupo e está livre
   const smartPick = useMemo<VehicleSuggestion | null>(() => {
     if (ranked.length === 0) return null
     const ok = ranked.find((r) => r.capacityGap >= 0 && r.availability.available)
     return ok ?? ranked[0] ?? null
   }, [ranked])
 
-  // When user selects a specific vehicle, evaluate it
+  // Veículo escolhido pelo cliente, avaliado fora do ranking
   const selectedSuggestion = useMemo<VehicleSuggestion | null>(() => {
     if (!watchedVehicleId) return null
     const v = vehicles.find((vv) => vv.id === watchedVehicleId)
@@ -215,7 +215,7 @@ export default function OrcamentoForm() {
     return { vehicle: v, availability, capacityGap: v.capacity - watchedPassengers, score: 0 }
   }, [watchedVehicleId, vehicles, watchedTravelDate, watchedReturnDate, watchedPassengers, blocks, reservations])
 
-  // Top 3 alternatives when the selected vehicle is unavailable or too small
+  // Até 3 alternativas quando o veículo escolhido está ocupado ou é pequeno demais
   const alternatives = useMemo<VehicleSuggestion[]>(() => {
     if (!selectedSuggestion) return []
     if (selectedSuggestion.availability.available && selectedSuggestion.capacityGap >= 0) return []
@@ -277,7 +277,6 @@ export default function OrcamentoForm() {
   return (
     <div className="surface min-h-screen pt-32 md:pt-40 pb-24">
       <div className="container mx-auto px-6 md:px-10 max-w-3xl">
-        {/* Header */}
         <div className="text-center mb-12 md:mb-16">
           <div className="text-xs font-medium tracking-[0.28em] uppercase mb-5" style={{ color: 'var(--text-dim)' }}>
             Orçamento grátis
@@ -290,7 +289,6 @@ export default function OrcamentoForm() {
           </p>
         </div>
 
-        {/* Stepper */}
         <div className="flex items-center justify-center mb-12">
           {stepTitles.map((title, i) => (
             <div key={i} className="flex items-center">
@@ -322,7 +320,6 @@ export default function OrcamentoForm() {
         </div>
 
         <AnimatePresence mode="wait">
-          {/* ── STEP 1 ───────────────────────────────────────── */}
           {currentStep === 0 && (
             <motion.div key="step1" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.3 }}>
               <form onSubmit={form1.handleSubmit(onStep1Submit)} className="rounded-3xl p-6 md:p-8 space-y-6" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
@@ -392,7 +389,6 @@ export default function OrcamentoForm() {
                   )}
                 </div>
 
-                {/* SMART PICK CARD */}
                 {watchedTravelDate && watchedPassengers > 0 && smartPick && !loading && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
@@ -431,13 +427,11 @@ export default function OrcamentoForm() {
                   </motion.div>
                 )}
 
-                {/* VEHICLE PICKER */}
                 <div>
                   <label className="block text-xs font-medium uppercase tracking-wider mb-3" style={{ color: 'var(--text-dim)' }}>
                     Veículo de preferência (opcional)
                   </label>
 
-                  {/* No-preference option */}
                   <button
                     type="button"
                     onClick={() => form1.setValue('vehicle_id', '')}
@@ -460,7 +454,6 @@ export default function OrcamentoForm() {
                     </div>
                   </button>
 
-                  {/* All vehicles list */}
                   {ranked.length > 0 ? (
                     <div className="space-y-2.5">
                       {ranked.map((s) => (
@@ -479,7 +472,6 @@ export default function OrcamentoForm() {
                   )}
                 </div>
 
-                {/* CONFLICT BANNER + ALTERNATIVES */}
                 {selectedSuggestion &&
                   (!selectedSuggestion.availability.available || selectedSuggestion.capacityGap < 0) && (
                     <motion.div
@@ -554,7 +546,6 @@ export default function OrcamentoForm() {
             </motion.div>
           )}
 
-          {/* ── STEP 2 ───────────────────────────────────────── */}
           {currentStep === 1 && (
             <motion.div key="step2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.3 }}>
               <form onSubmit={form2.handleSubmit(onStep2Submit)} className="rounded-3xl p-6 md:p-8 space-y-5" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
@@ -623,7 +614,6 @@ export default function OrcamentoForm() {
             </motion.div>
           )}
 
-          {/* ── STEP 3 ───────────────────────────────────────── */}
           {currentStep === 2 && step1Data && (
             <motion.div key="step3" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.3 }}>
               <div className="rounded-3xl p-6 md:p-8" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>

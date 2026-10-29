@@ -24,11 +24,3 @@ export function createAdminClient(): SupabaseClient | null {
 export function clientIp(headers: Headers): string {
   return headers.get('x-forwarded-for')?.split(',')[0]?.trim() || headers.get('x-real-ip') || 'unknown'
 }
-
-/** Lista de e-mails autorizados no painel (env ADMIN_EMAILS, separados por vírgula). */
-export function adminEmailAllowlist(): string[] {
-  return (process.env.ADMIN_EMAILS ?? '')
-    .split(',')
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean)
-}

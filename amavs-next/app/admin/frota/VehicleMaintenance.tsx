@@ -132,7 +132,6 @@ function MaintenanceForm({
       </div>
       <Textarea label="Observações" value={form.notes} onChange={(e) => set('notes', e.target.value)} rows={2} />
 
-      {/* Document upload */}
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-1.5">Documento (NF, Laudo, PDF)</label>
         <div
@@ -207,7 +206,6 @@ export default function VehicleMaintenance({ vehicle, onClose }: { vehicle: Vehi
         </div>
 
         <div className="p-6 space-y-5">
-          {/* Summary */}
           {records.length > 0 && (
             <div className="grid grid-cols-2 gap-3">
               <div className="glass-dark rounded-xl p-4 text-center">
@@ -221,7 +219,6 @@ export default function VehicleMaintenance({ vehicle, onClose }: { vehicle: Vehi
             </div>
           )}
 
-          {/* Add button */}
           {!showForm && !editing && (
             <Button variant="outline" size="sm" leftIcon={<Plus size={14} />} onClick={() => setShowForm(true)} fullWidth>
               Adicionar registro de manutenção
@@ -235,7 +232,6 @@ export default function VehicleMaintenance({ vehicle, onClose }: { vehicle: Vehi
             <MaintenanceForm vehicleId={vehicle.id} record={editing} onSave={() => { setEditing(null); load() }} onCancel={() => setEditing(null)} />
           )}
 
-          {/* Records list */}
           <div>
             <h3 className="text-white font-semibold text-sm mb-3">Histórico ({records.length})</h3>
             {loading ? (

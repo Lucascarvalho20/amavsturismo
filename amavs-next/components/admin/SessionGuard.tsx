@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
 
 const INACTIVE_TIMEOUT_MS = 30 * 60 * 1000  // 30 min
-const WARNING_BEFORE_MS = 2 * 60 * 1000     // Show warning 2 min before
+const WARNING_BEFORE_MS = 2 * 60 * 1000     // aviso 2 min antes
 
 export default function SessionGuard() {
   const router = useRouter()
@@ -58,7 +58,7 @@ export default function SessionGuard() {
 
     events.forEach((e) => window.addEventListener(e, handleActivity, { passive: true }))
 
-    // Check session on window focus
+    // Ao voltar para a aba, confere se a sessão ainda vale
     const handleFocus = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {

@@ -8,7 +8,7 @@ interface LogoProps {
   className?: string
   href?: string
   size?: 'sm' | 'md' | 'lg'
-  /** Force light text (use when overlay on a dark background — eg hero) */
+  /** Texto claro, para usar sobre fundo escuro (ex.: hero da página inicial). */
   onDark?: boolean
 }
 

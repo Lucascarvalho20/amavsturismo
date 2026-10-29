@@ -24,7 +24,6 @@ export default function WhatsAppFAB() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-      {/* Tooltip bubble */}
       <AnimatePresence>
         {showTooltip && !dismissed && (
           <motion.div
@@ -51,7 +50,6 @@ export default function WhatsAppFAB() {
         )}
       </AnimatePresence>
 
-      {/* FAB button */}
       <a
         href="https://wa.me/5561984222205?text=Ol%C3%A1%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento%20de%20fretamento!"
         target="_blank"
@@ -63,7 +61,6 @@ export default function WhatsAppFAB() {
           background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
         }}
       >
-        {/* Ping animation */}
         <span className="absolute inset-0 rounded-full bg-green-500 animate-ping-slow opacity-30" />
         <MessageCircle size={26} className="text-white relative z-10" fill="white" />
       </a>

@@ -128,7 +128,6 @@ export default function ComputerDetailPage({ params }: { params: { id: string } 
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <Link
           href="/admin/computadores"
@@ -173,7 +172,6 @@ export default function ComputerDetailPage({ params }: { params: { id: string } 
         </div>
       </div>
 
-      {/* Cost summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-3xl overflow-hidden" style={{ background: 'var(--border)' }}>
         <KpiCard label="Valor de compra" value={computer.purchase_value ? formatCurrency(computer.purchase_value) : '—'} />
         <KpiCard label="Peças adicionadas" value={parts.length.toString()} sub={totalPartsCost > 0 ? `${formatCurrency(totalPartsCost)} em peças` : ''} />
@@ -181,7 +179,6 @@ export default function ComputerDetailPage({ params }: { params: { id: string } 
         <KpiCard label="Custo total acumulado" value={formatCurrency(totalCost)} highlight />
       </div>
 
-      {/* Tabs */}
       <div className="flex items-center gap-1 border-b" style={{ borderColor: 'var(--border)' }}>
         {(['info', 'partes', 'manutencoes'] as Tab[]).map((t) => {
           const label = t === 'info' ? 'Informações' : t === 'partes' ? 'Peças' : 'Manutenções'
@@ -220,8 +217,6 @@ export default function ComputerDetailPage({ params }: { params: { id: string } 
     </div>
   )
 }
-
-// ─────────────────────────────────────────────────────────────────
 
 function KpiCard({ label, value, sub, highlight }: { label: string; value: string; sub?: string; highlight?: boolean }) {
   return (

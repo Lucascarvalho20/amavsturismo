@@ -22,7 +22,7 @@ export function createClient() {
               cookieStore.set(name, value, options as Parameters<typeof cookieStore.set>[2])
             )
           } catch {
-            // Server Component — cookies can only be set from Server Actions or Route Handlers
+            // Em Server Component não dá para gravar cookie; o middleware renova a sessão
           }
         },
       },
@@ -30,20 +30,3 @@ export function createClient() {
   )
 }
 
-export async function getAuthUser() {
-  const supabase = createClient()
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
-  if (error || !user) return null
-  return user
-}
-
-export async function getSession() {
-  const supabase = createClient()
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  return session
-}

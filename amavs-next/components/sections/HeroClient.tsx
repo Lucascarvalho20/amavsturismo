@@ -74,7 +74,6 @@ export default function HeroClient({
         background: 'linear-gradient(180deg, #0A0A0C 0%, #111114 100%)',
       }}
     >
-      {/* Gold radial accents */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -82,7 +81,6 @@ export default function HeroClient({
             'radial-gradient(ellipse 50% 60% at 100% 50%, rgba(212,175,55,0.10) 0%, transparent 60%), radial-gradient(ellipse 40% 40% at 0% 100%, rgba(212,175,55,0.06) 0%, transparent 50%)',
         }}
       />
-      {/* Faint grid */}
       <div
         className="absolute inset-0 opacity-[0.06] pointer-events-none"
         style={{
@@ -93,7 +91,6 @@ export default function HeroClient({
           WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 80%)',
         }}
       />
-      {/* Top gold hairline */}
       <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.3) 50%, transparent 100%)' }} />
 
       <motion.div
@@ -101,7 +98,7 @@ export default function HeroClient({
         className="relative z-10 w-full container mx-auto px-6 md:px-10 max-w-7xl py-24 lg:py-32"
       >
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-16 items-center min-h-[calc(100vh-12rem)]">
-          {/* ── LEFT: Text (mobile: ordem 2, desktop: ordem 1) ────────────────────────────── */}
+          {/* Texto: no celular aparece depois da foto */}
           <motion.div
             style={{ y: textY }}
             initial={{ opacity: 0, x: -40 }}
@@ -109,7 +106,6 @@ export default function HeroClient({
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col justify-center order-2 lg:order-1"
           >
-            {/* Eyebrow */}
             <div className="flex items-center gap-3 mb-7">
               <MapPin size={14} strokeWidth={1.5} className="text-white/70" />
               <span className="text-[11px] font-medium tracking-[0.28em] uppercase text-white/70">
@@ -118,7 +114,6 @@ export default function HeroClient({
               <span className="w-12 h-px bg-gradient-to-r from-[#D4AF37] to-transparent" />
             </div>
 
-            {/* Headline */}
             <h1 className="font-heading font-semibold text-white tracking-tight leading-[0.95] text-[clamp(2.5rem,6.5vw,5.25rem)] mb-6">
               Transporte oficial<br />
               com histórico{' '}
@@ -138,7 +133,6 @@ export default function HeroClient({
               Ônibus, micro-ônibus e vans com documentação pronta para habilitação.
             </p>
 
-            {/* CTAs */}
             <div className="flex flex-wrap items-center gap-3 mb-9">
               <a
                 href="/licitacoes"
@@ -163,7 +157,6 @@ export default function HeroClient({
               </a>
             </div>
 
-            {/* Trust strip */}
             <div className="flex flex-wrap gap-x-5 gap-y-2 mb-10">
               {trustBadges.map((t) => (
                 <span
@@ -189,7 +182,7 @@ export default function HeroClient({
             </div>
           </motion.div>
 
-          {/* ── RIGHT: Photo carousel (mobile: ordem 1, desktop: ordem 2) ────────────────── */}
+          {/* Carrossel de fotos: no celular aparece primeiro */}
           <motion.div
             style={{ y: photoY }}
             initial={{ opacity: 0, x: 40 }}
@@ -205,7 +198,6 @@ export default function HeroClient({
                 boxShadow: '0 30px 80px rgba(0,0,0,0.5)',
               }}
             >
-              {/* Gold top edge */}
               <div className="absolute top-0 left-0 right-0 h-px z-20" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(212,175,55,0.6) 50%, transparent 100%)' }} />
 
               <AnimatePresence mode="wait">
@@ -218,7 +210,6 @@ export default function HeroClient({
                     transition={{ duration: 1.0, ease: 'easeOut' }}
                     className="absolute inset-0"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={current.image_url}
                       alt={current.title ?? 'Amavs Turismo'}
@@ -231,7 +222,6 @@ export default function HeroClient({
                 )}
               </AnimatePresence>
 
-              {/* Caption overlay */}
               {current && (current.title || current.meta) && (
                 <motion.div
                   key={`cap-${index}`}
@@ -271,7 +261,6 @@ export default function HeroClient({
                 </motion.div>
               )}
 
-              {/* Slide dots */}
               {effectiveSlides.length > 1 && (
                 <div className="absolute top-5 right-5 z-20 flex gap-1.5">
                   {effectiveSlides.map((_, i) => (
@@ -291,7 +280,6 @@ export default function HeroClient({
               )}
             </div>
 
-            {/* Floating real-data badges */}
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -332,7 +320,6 @@ export default function HeroClient({
           </motion.div>
         </div>
 
-        {/* Scroll cue */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

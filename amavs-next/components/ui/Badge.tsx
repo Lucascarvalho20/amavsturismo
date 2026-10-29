@@ -32,7 +32,6 @@ export default function Badge({ children, variant = 'gray', className }: BadgePr
   )
 }
 
-// Auto-colored badge based on vehicle status
 export function VehicleStatusBadge({ status }: { status: VehicleStatus }) {
   const map: Record<VehicleStatus, { variant: BadgeVariant; label: string }> = {
     disponivel: { variant: 'green', label: 'Disponível' },
@@ -43,7 +42,6 @@ export function VehicleStatusBadge({ status }: { status: VehicleStatus }) {
   return <Badge variant={variant}>{label}</Badge>
 }
 
-// Auto-colored badge based on contract status
 export function ContractStatusBadge({ status }: { status: ContractStatus }) {
   const map: Record<ContractStatus, { variant: BadgeVariant; label: string }> = {
     ativo: { variant: 'green', label: 'Ativo' },
@@ -55,7 +53,6 @@ export function ContractStatusBadge({ status }: { status: ContractStatus }) {
   return <Badge variant={variant}>{label}</Badge>
 }
 
-// Auto-colored badge based on lead status
 export function LeadStatusBadge({ status }: { status: LeadStatus }) {
   const map: Record<LeadStatus, { variant: BadgeVariant; label: string }> = {
     pendente: { variant: 'amber', label: 'Pendente' },

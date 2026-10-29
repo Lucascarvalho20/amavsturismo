@@ -8,16 +8,15 @@ function safeEqual(a: string, b: string) {
   return ab.length === bb.length && timingSafeEqual(ab, bb)
 }
 
-// Clears login_attempts for a given email so a blocked user can retry immediately.
-// Protected via Authorization: Bearer <SUPABASE_SERVICE_ROLE_KEY> header.
-// Never expose the key in the request body — headers are less likely to be logged.
+// Apaga as tentativas de login de um e-mail, desbloqueando-o na hora.
+// Exige o cabeçalho Authorization: Bearer <SUPABASE_SERVICE_ROLE_KEY>.
+// A chave vai no cabeçalho e não no corpo, que aparece em logs com mais frequência.
 export async function POST(request: NextRequest) {
   if (!isSameOrigin(request)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    return NextResponse.json({ error: 'Origem não permitida' }, { status: 403 })
   }
 
   try {
-    // Validate caller via Authorization header, not request body
     const authHeader = request.headers.get('authorization') ?? ''
     const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
     const expectedKey = process.env.SUPABASE_SERVICE_ROLE_KEY

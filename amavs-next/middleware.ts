@@ -24,7 +24,7 @@ export async function middleware(request: NextRequest) {
   const isAdminRoot = pathname === '/admin'
   const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/')
 
-  // Inject pathname into request headers so server components can read it
+  // Server Components não leem a URL; o caminho vai num cabeçalho para eles
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-pathname', pathname)
 

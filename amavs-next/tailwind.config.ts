@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Charcoal dark palette (replaces navy)
+        // O nome navy ficou por compatibilidade; a cor hoje é grafite
         navy: {
           DEFAULT: '#111111',
           50:  '#2C2C2C',
@@ -20,7 +20,6 @@ const config: Config = {
           400: '#050505',
           500: '#000000',
         },
-        // Gold stays the same
         gold: {
           DEFAULT: '#D4AF37',
           50:  '#f5e99a',

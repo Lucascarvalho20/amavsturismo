@@ -27,7 +27,6 @@ const values = [
 export default function SobrePage() {
   return (
     <div className="surface min-h-screen pt-32 md:pt-40 pb-32">
-      {/* Header */}
       <section className="container mx-auto px-6 md:px-10 max-w-7xl mb-24 md:mb-32">
         <div className="max-w-3xl">
           <div className="text-xs font-medium tracking-[0.28em] uppercase mb-5" style={{ color: 'var(--text-dim)' }}>
@@ -45,7 +44,6 @@ export default function SobrePage() {
         </div>
       </section>
 
-      {/* Story */}
       <section className="container mx-auto px-6 md:px-10 max-w-5xl mb-24 md:mb-32">
         <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-8 md:gap-16">
           <div className="text-xs font-medium tracking-[0.28em] uppercase pt-2" style={{ color: 'var(--text-dim)' }}>
@@ -73,7 +71,6 @@ export default function SobrePage() {
         </div>
       </section>
 
-      {/* Missão / Visão / Valores */}
       <section className="container mx-auto px-6 md:px-10 max-w-7xl mb-24 md:mb-32">
         <div
           className="grid grid-cols-1 md:grid-cols-3 gap-px rounded-3xl overflow-hidden"
@@ -104,7 +101,6 @@ export default function SobrePage() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="container mx-auto px-6 md:px-10 max-w-5xl text-center">
         <h2 className="font-heading font-semibold tracking-tight leading-[1.05] text-[clamp(2rem,5vw,3.5rem)] mb-6">
           Vamos conversar?

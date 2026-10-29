@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     await supabase.auth.verifyOtp({ token_hash, type: type as 'recovery' | 'email' })
   }
 
-  // After recovery token, redirect to password reset page
+  // Link de recuperação de senha: segue para a tela de nova senha
   if (type === 'recovery') {
     return NextResponse.redirect(new URL('/auth/reset-password', request.url))
   }

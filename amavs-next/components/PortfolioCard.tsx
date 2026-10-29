@@ -14,7 +14,6 @@ export default function PortfolioCard({ item }: { item: PortfolioItem }) {
     >
       {cover && (
         <div className="relative aspect-[16/9] overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={cover} alt={item.organization} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
           {item.photos.length > 1 && (
             <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-black/60" style={{ color: '#fff' }}>

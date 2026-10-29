@@ -55,7 +55,6 @@ export default function ContatoPage() {
 
   return (
     <div className="surface min-h-screen pt-32 md:pt-40 pb-24">
-      {/* Header */}
       <section className="container mx-auto px-6 md:px-10 max-w-7xl mb-16 md:mb-20">
         <div className="max-w-3xl">
           <div className="text-xs font-medium tracking-[0.28em] uppercase mb-5" style={{ color: 'var(--text-dim)' }}>
@@ -72,10 +71,8 @@ export default function ContatoPage() {
         </div>
       </section>
 
-      {/* Cards + Form */}
       <section className="container mx-auto px-6 md:px-10 max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
-          {/* Cards */}
           <div className="lg:col-span-2 space-y-3">
             {contactCards.map((card) => {
               const Icon = card.icon
@@ -113,7 +110,6 @@ export default function ContatoPage() {
             })}
           </div>
 
-          {/* Form */}
           <div className="lg:col-span-3">
             {submitted ? (
               <div
@@ -216,7 +212,6 @@ export default function ContatoPage() {
         </div>
       </section>
 
-      {/* Mapa */}
       <section className="container mx-auto px-6 md:px-10 max-w-7xl mt-20 md:mt-28">
         <div className="flex items-end justify-between flex-wrap gap-4 mb-8">
           <div>

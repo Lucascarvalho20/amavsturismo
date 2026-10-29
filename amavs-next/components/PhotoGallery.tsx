@@ -37,7 +37,6 @@ export default function PhotoGallery({ photos, alt }: { photos: string[]; alt: s
             className={`group relative overflow-hidden rounded-2xl ${i === 0 && n > 2 ? 'col-span-2 row-span-2 aspect-square md:aspect-auto' : 'aspect-[4/3]'}`}
             aria-label={`Ampliar foto ${i + 1}`}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={src} alt={`${alt} — foto ${i + 1}`} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
           </button>
         ))}
@@ -45,7 +44,6 @@ export default function PhotoGallery({ photos, alt }: { photos: string[]; alt: s
 
       {open !== null && (
         <div className="fixed inset-0 z-[60] bg-black/90 flex items-center justify-center p-4" onClick={() => setOpen(null)} role="dialog" aria-modal="true">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={photos[open]} alt={`${alt} — foto ${open + 1}`} className="max-h-[85vh] max-w-full rounded-xl object-contain" onClick={(e) => e.stopPropagation()} />
           <div className="absolute bottom-6 left-0 right-0 text-center text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
             {open + 1} / {n}

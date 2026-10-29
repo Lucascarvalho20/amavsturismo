@@ -20,7 +20,6 @@ function getVideoThumbnail(item: TripGallery): string {
   return ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : ''
 }
 
-// ── Add/Edit Modal ────────────────────────────────────────────────────────────
 function ItemModal({
   item,
   onClose,
@@ -61,7 +60,7 @@ function ItemModal({
         const { data: { publicUrl } } = supabase.storage.from('trip-media').getPublicUrl(path)
         setPhotoUrl(publicUrl)
         toast.success('Foto enviada!')
-        break // one photo per item
+        break // cada item da galeria tem uma foto
       }
     } finally {
       setUploading(false)
@@ -116,7 +115,6 @@ function ItemModal({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div className="relative z-10 w-full sm:max-w-lg bg-navy-100 border border-white/10 rounded-t-2xl sm:rounded-2xl max-h-[92vh] overflow-y-auto scrollbar-thin">
-        {/* Header */}
         <div className="sticky top-0 bg-navy-100 border-b border-white/10 px-6 py-4 flex items-center justify-between z-10">
           <h2 className="font-heading font-bold text-white">
             {isNew ? 'Adicionar à galeria' : 'Editar item'}
@@ -127,7 +125,6 @@ function ItemModal({
         </div>
 
         <div className="p-6 space-y-5">
-          {/* Type tabs — only for new items */}
           {isNew && (
             <div className="flex gap-1 p-1 bg-navy-200 rounded-xl border border-white/5">
               <button
@@ -147,7 +144,6 @@ function ItemModal({
             </div>
           )}
 
-          {/* Photo upload */}
           {tab === 'photo' && (
             <div>
               {photoUrl ? (
@@ -188,7 +184,6 @@ function ItemModal({
             </div>
           )}
 
-          {/* Video URL */}
           {tab === 'video' && (
             <div className="space-y-3">
               <Input
@@ -216,7 +211,6 @@ function ItemModal({
             </div>
           )}
 
-          {/* Metadata */}
           <Textarea
             label="Legenda (opcional)"
             value={form.caption}
@@ -258,7 +252,6 @@ function ItemModal({
   )
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
 export default function GaleriaAdminPage() {
   const [items, setItems] = useState<TripGallery[]>([])
   const [loading, setLoading] = useState(true)
@@ -302,7 +295,6 @@ export default function GaleriaAdminPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-heading font-bold text-2xl text-white">Galeria de Viagens</h1>
@@ -315,7 +307,6 @@ export default function GaleriaAdminPage() {
         </Button>
       </div>
 
-      {/* Info box */}
       <div className="glass-dark rounded-xl p-4 border border-white/5 text-sm text-gray-400">
         <p>
           <span className="text-gold font-medium">Dica:</span> Fotos enviadas ficam salvas no Supabase Storage (bucket <code className="text-xs bg-white/5 px-1.5 py-0.5 rounded">trip-media</code>).
@@ -323,7 +314,6 @@ export default function GaleriaAdminPage() {
         </p>
       </div>
 
-      {/* Grid */}
       {loading ? (
         <div className="glass-dark rounded-2xl p-12 text-center">
           <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-3" />
@@ -352,7 +342,6 @@ export default function GaleriaAdminPage() {
                     : 'border-white/5 opacity-50 hover:opacity-70'
                 )}
               >
-                {/* Thumbnail */}
                 <div className="aspect-[4/3] relative">
                   {thumb ? (
                     <img src={thumb} alt={item.caption ?? ''} className="w-full h-full object-cover" />
@@ -362,7 +351,6 @@ export default function GaleriaAdminPage() {
                     </div>
                   )}
 
-                  {/* Video badge */}
                   {item.media_type === 'video' && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                       <div className="w-10 h-10 rounded-full bg-black/50 border border-white/30 flex items-center justify-center">
@@ -371,7 +359,6 @@ export default function GaleriaAdminPage() {
                     </div>
                   )}
 
-                  {/* Inactive badge */}
                   {!item.is_active && (
                     <div className="absolute top-2 left-2">
                       <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/70 text-gray-400 font-medium">
@@ -380,7 +367,6 @@ export default function GaleriaAdminPage() {
                     </div>
                   )}
 
-                  {/* Order badge */}
                   <div className="absolute top-2 right-2">
                     <div className="flex items-center gap-1 bg-black/60 rounded px-1.5 py-0.5">
                       <GripVertical size={10} className="text-gray-400" />
@@ -389,7 +375,6 @@ export default function GaleriaAdminPage() {
                   </div>
                 </div>
 
-                {/* Info */}
                 <div className="p-3 bg-navy-100 border-t border-white/5">
                   {item.caption ? (
                     <p className="text-white text-xs font-medium truncate">{item.caption}</p>
@@ -401,7 +386,6 @@ export default function GaleriaAdminPage() {
                   )}
                 </div>
 
-                {/* Actions overlay */}
                 <div className="absolute bottom-10 inset-x-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <button
                     onClick={() => setModal(item)}

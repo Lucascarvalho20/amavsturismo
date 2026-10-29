@@ -95,47 +95,6 @@ export interface Lead {
   updated_at: string
 }
 
-export interface Testimonial {
-  id: string
-  client_name: string
-  company: string | null
-  rating: number
-  text: string
-  date: string
-  avatar_url: string | null
-}
-
-export interface AuditLog {
-  id: string
-  user_id: string | null
-  user_email: string | null
-  action: AuditAction
-  resource: string | null
-  resource_id: string | null
-  details: Record<string, unknown> | null
-  ip_address: string | null
-  user_agent: string | null
-  created_at: string
-}
-
-export type AuditAction =
-  | 'login'
-  | 'logout'
-  | 'login_failed'
-  | 'login_blocked'
-  | 'vehicle_created'
-  | 'vehicle_updated'
-  | 'vehicle_deleted'
-  | 'contract_created'
-  | 'contract_updated'
-  | 'contract_deleted'
-  | 'lead_updated'
-  | 'lead_deleted'
-  | 'password_changed'
-  | 'mfa_enrolled'
-  | 'mfa_disabled'
-  | 'profile_updated'
-
 export interface TripGallery {
   id: string
   media_type: 'photo' | 'video'
@@ -148,23 +107,6 @@ export interface TripGallery {
   is_active: boolean
   created_at: string
   updated_at: string
-}
-
-export interface LoginAttempt {
-  id: string
-  email: string
-  ip_address: string | null
-  success: boolean
-  created_at: string
-}
-
-export interface DashboardStats {
-  total_vehicles: number
-  available_vehicles: number
-  active_contracts: number
-  active_contracts_value: number
-  pending_leads: number
-  monthly_revenue: number
 }
 
 export interface ChartDataPoint {

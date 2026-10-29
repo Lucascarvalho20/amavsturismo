@@ -157,7 +157,7 @@ export default function StorytellingSection() {
         background: 'var(--bg-elevated)',
       }}
     >
-      {/* Decorative side rail — always visible so dark mode never looks "empty" */}
+      {/* Linha e brilho de fundo: no tema escuro a seção não parece vazia entre os slides */}
       <div
         className="absolute inset-y-0 left-1/2 w-px pointer-events-none hidden md:block"
         style={{ background: 'var(--border)' }}
@@ -171,7 +171,7 @@ export default function StorytellingSection() {
       />
 
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col">
-        {/* Persistent eyebrow — always visible so the section is never blank */}
+        {/* Título fixo, visível durante toda a rolagem */}
         <div className="container mx-auto px-6 md:px-10 max-w-7xl pt-24 md:pt-32 pb-4">
           <div className="flex items-center gap-3">
             <span className="text-xs font-medium tracking-[0.28em] uppercase" style={{ color: 'var(--text-dim)' }}>
@@ -210,7 +210,6 @@ export default function StorytellingSection() {
           </div>
         </div>
 
-        {/* Persistent progress dots */}
         <div className="container mx-auto px-6 md:px-10 max-w-7xl pb-16 md:pb-20">
           <div className="flex items-center gap-3">
             {beats.map((b, i) => (

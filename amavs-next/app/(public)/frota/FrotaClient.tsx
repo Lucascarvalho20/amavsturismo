@@ -56,7 +56,6 @@ export default function FrotaClient({ vehicles }: { vehicles: Vehicle[] }) {
   return (
     <div className="surface min-h-screen pt-32 md:pt-40 pb-24">
       <div className="container mx-auto px-6 md:px-10 max-w-7xl">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -79,7 +78,6 @@ export default function FrotaClient({ vehicles }: { vehicles: Vehicle[] }) {
 
         {total > 0 && (
           <>
-            {/* Filters */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -122,7 +120,6 @@ export default function FrotaClient({ vehicles }: { vehicles: Vehicle[] }) {
               </label>
             </motion.div>
 
-            {/* Tabs */}
             <div className="flex items-center gap-2 mb-12 md:mb-16 overflow-x-auto scrollbar-hide -mx-6 px-6">
               {tabs.map((tab) => {
                 const active = activeTab === tab.id
@@ -145,7 +142,6 @@ export default function FrotaClient({ vehicles }: { vehicles: Vehicle[] }) {
           </>
         )}
 
-        {/* Grid */}
         {total === 0 ? (
           <div className="text-center py-32" style={{ color: 'var(--text-muted)' }}>
             <p className="text-lg">Nenhum veículo cadastrado ainda.</p>

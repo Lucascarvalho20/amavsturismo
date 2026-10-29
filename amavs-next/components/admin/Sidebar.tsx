@@ -68,7 +68,6 @@ function SidebarContent({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Logo */}
       <div className="flex items-center justify-between p-5 border-b border-white/10">
         <Logo size="md" href="/admin/dashboard" />
         {onClose && (
@@ -81,7 +80,6 @@ function SidebarContent({
         )}
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-thin">
         {navItems.map((item) => {
           const Icon = item.icon
@@ -106,7 +104,6 @@ function SidebarContent({
         })}
       </nav>
 
-      {/* Footer */}
       <div className="p-4 border-t border-white/10">
         <div className="flex items-center gap-3 px-3 py-2 mb-2">
           <div className="w-8 h-8 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center text-gold font-bold text-sm flex-shrink-0">
@@ -138,12 +135,10 @@ export default function Sidebar({ userEmail }: SidebarProps) {
 
   return (
     <>
-      {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-navy-100 border-r border-white/5 h-screen sticky top-0">
         <SidebarContent userEmail={userEmail} />
       </aside>
 
-      {/* Mobile toggle button */}
       <button
         onClick={() => setMobileOpen(true)}
         className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl bg-navy-100 border border-white/10 flex items-center justify-center text-gray-300 hover:text-gold shadow-glass transition-colors"
@@ -152,7 +147,6 @@ export default function Sidebar({ userEmail }: SidebarProps) {
         <Menu size={20} />
       </button>
 
-      {/* Mobile overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <>

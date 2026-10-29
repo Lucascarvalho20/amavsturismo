@@ -134,7 +134,6 @@ export default function MonthCalendar({
         })}
       </div>
 
-      {/* Legend */}
       <div className="flex flex-wrap gap-3 mt-3 text-xs text-gray-400">
         {Object.entries({ reserva: 'Reservado', contrato_privado: 'Contrato', manutencao: 'Manutenção', outro: 'Outro' }).map(([k, label]) => (
           <span key={k} className="flex items-center gap-1">

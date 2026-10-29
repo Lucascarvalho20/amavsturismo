@@ -91,7 +91,6 @@ export default function PersonalizarPage() {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
 function StatsTab() {
   const supabase = createClient()
   const [rows, setRows] = useState<SiteStat[]>([])
@@ -296,7 +295,6 @@ function StatsTab() {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
 function ClientsTab() {
   const supabase = createClient()
   const [rows, setRows] = useState<FeaturedClient[]>([])
@@ -503,7 +501,6 @@ function ClientsTab() {
   )
 }
 
-// ─────────────────────────────────────────────────────────────────
 function HeroTab() {
   const supabase = createClient()
   const [rows, setRows] = useState<HeroImage[]>([])
@@ -628,7 +625,6 @@ function HeroTab() {
             style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
           >
             <div className="relative aspect-[16/9] overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={row.image_url} alt={row.title ?? 'Hero'} className="w-full h-full object-cover" />
               <button
                 onClick={() => remove(row.id)}

@@ -81,7 +81,6 @@ export default async function LicitacoesPage() {
 
   return (
     <div className="surface min-h-screen pt-32 md:pt-40 pb-32">
-      {/* Hero */}
       <section className="container mx-auto px-6 md:px-10 max-w-7xl mb-20 md:mb-24">
         <div className="max-w-3xl">
           <div className="text-xs font-medium tracking-[0.28em] uppercase mb-5" style={{ color: 'var(--text-dim)' }}>
@@ -106,7 +105,6 @@ export default async function LicitacoesPage() {
         </div>
       </section>
 
-      {/* Portfólio */}
       <section id="atestados" className="container mx-auto px-6 md:px-10 max-w-7xl mb-24 md:mb-32 scroll-mt-28">
         <div className="flex items-end justify-between flex-wrap gap-4 mb-12">
           <div>
@@ -129,7 +127,6 @@ export default async function LicitacoesPage() {
         </div>
       </section>
 
-      {/* Habilitação + como atuamos */}
       <section className="container mx-auto px-6 md:px-10 max-w-7xl mb-24 md:mb-32 grid grid-cols-1 lg:grid-cols-2 gap-16">
         <div>
           <div className="text-xs font-medium tracking-[0.28em] uppercase mb-3" style={{ color: 'var(--text-dim)' }}>Habilitação</div>
@@ -210,7 +207,6 @@ export default async function LicitacoesPage() {
         </section>
       )}
 
-      {/* Contato para órgãos */}
       <section id="contato" className="container mx-auto px-6 md:px-10 max-w-5xl mb-24 md:mb-32 scroll-mt-28">
         <div className="rounded-3xl p-8 md:p-12 grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-10 items-center" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
           <div>
@@ -235,7 +231,6 @@ export default async function LicitacoesPage() {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="container mx-auto px-6 md:px-10 max-w-5xl">
         <div className="text-center mb-14">
           <div className="text-xs font-medium tracking-[0.28em] uppercase mb-5" style={{ color: 'var(--text-dim)' }}>FAQ</div>

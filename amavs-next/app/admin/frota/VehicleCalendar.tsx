@@ -155,7 +155,6 @@ export default function VehicleCalendar({ vehicle, onClose }: { vehicle: Vehicle
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div className="relative z-10 w-full sm:max-w-2xl bg-navy-100 border border-white/10 rounded-t-2xl sm:rounded-2xl max-h-[95vh] overflow-y-auto scrollbar-thin">
-        {/* Header */}
         <div className="sticky top-0 bg-navy-100 border-b border-white/10 px-6 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-2">
             <CalendarDays size={18} className="text-gold" />
@@ -168,7 +167,6 @@ export default function VehicleCalendar({ vehicle, onClose }: { vehicle: Vehicle
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Calendar */}
           <div className="glass-dark rounded-xl p-4">
             {loading ? (
               <div className="h-48 flex items-center justify-center">
@@ -179,7 +177,6 @@ export default function VehicleCalendar({ vehicle, onClose }: { vehicle: Vehicle
             )}
           </div>
 
-          {/* Add block button */}
           {!showForm && !editingBlock && (
             <Button
               variant="outline"
@@ -192,7 +189,6 @@ export default function VehicleCalendar({ vehicle, onClose }: { vehicle: Vehicle
             </Button>
           )}
 
-          {/* Add form */}
           {showForm && (
             <BlockForm
               vehicleId={vehicle.id}
@@ -201,7 +197,6 @@ export default function VehicleCalendar({ vehicle, onClose }: { vehicle: Vehicle
             />
           )}
 
-          {/* Edit form */}
           {editingBlock && (
             <BlockForm
               vehicleId={vehicle.id}
@@ -211,7 +206,6 @@ export default function VehicleCalendar({ vehicle, onClose }: { vehicle: Vehicle
             />
           )}
 
-          {/* Block list */}
           <div>
             <h3 className="text-white font-semibold text-sm mb-3">
               Períodos cadastrados ({blocks.length})

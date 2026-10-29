@@ -8,7 +8,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // No user = login page (middleware guarantees only login is reachable unauthenticated)
+  // Sem usuário só pode ser a tela de login: o middleware redireciona o resto
   if (!user) {
     return <>{children}</>
   }

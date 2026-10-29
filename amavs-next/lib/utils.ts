@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import type { VehicleCategory, VehicleStatus, ContractStatus, LeadStatus, ContractModality } from './types'
+import type { VehicleCategory, ContractModality } from './types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -31,77 +31,26 @@ export function formatDate(dateString: string): string {
   }).format(parseDbDate(dateString))
 }
 
-export function formatDateLong(dateString: string): string {
-  return new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  }).format(parseDbDate(dateString))
-}
-
-export function formatPhone(phone: string): string {
-  const cleaned = phone.replace(/\D/g, '')
-  if (cleaned.length === 13) {
-    return `+${cleaned.slice(0, 2)} (${cleaned.slice(2, 4)}) ${cleaned.slice(4, 9)}-${cleaned.slice(9)}`
-  }
-  if (cleaned.length === 11) {
-    return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`
-  }
-  return phone
+const CATEGORY_LABEL: Record<VehicleCategory, string> = {
+  onibus: 'Ônibus',
+  micro: 'Micro-ônibus',
+  van: 'Van',
 }
 
 export function categoryLabel(category: VehicleCategory): string {
-  const labels: Record<VehicleCategory, string> = {
-    onibus: 'Ônibus',
-    micro: 'Micro-ônibus',
-    van: 'Van',
-  }
-  return labels[category]
+  return CATEGORY_LABEL[category]
 }
 
-export function statusLabel(
-  status: VehicleStatus | ContractStatus | LeadStatus,
-  type: 'vehicle' | 'contract' | 'lead' = 'vehicle'
-): string {
-  if (type === 'vehicle') {
-    const labels: Record<VehicleStatus, string> = {
-      disponivel: 'Disponível',
-      em_uso: 'Em Uso',
-      manutencao: 'Manutenção',
-    }
-    return labels[status as VehicleStatus] ?? status
-  }
-  if (type === 'contract') {
-    const labels: Record<ContractStatus, string> = {
-      ativo: 'Ativo',
-      encerrado: 'Encerrado',
-      em_licitacao: 'Em Licitação',
-      suspenso: 'Suspenso',
-    }
-    return labels[status as ContractStatus] ?? status
-  }
-  if (type === 'lead') {
-    const labels: Record<LeadStatus, string> = {
-      pendente: 'Pendente',
-      em_contato: 'Em Contato',
-      aprovado: 'Aprovado',
-      recusado: 'Recusado',
-      convertido: 'Convertido',
-    }
-    return labels[status as LeadStatus] ?? status
-  }
-  return status
+const MODALITY_LABEL: Record<ContractModality, string> = {
+  pregao_eletronico: 'Pregão Eletrônico',
+  tomada_precos: 'Tomada de Preços',
+  concorrencia: 'Concorrência',
+  dispensa: 'Dispensa de Licitação',
+  inexigibilidade: 'Inexigibilidade',
 }
 
 export function modalityLabel(modality: ContractModality): string {
-  const labels: Record<ContractModality, string> = {
-    pregao_eletronico: 'Pregão Eletrônico',
-    tomada_precos: 'Tomada de Preços',
-    concorrencia: 'Concorrência',
-    dispensa: 'Dispensa de Licitação',
-    inexigibilidade: 'Inexigibilidade',
-  }
-  return labels[modality]
+  return MODALITY_LABEL[modality]
 }
 
 export interface WhatsAppMessageParams {
@@ -151,76 +100,42 @@ export function generateLeadCode(): string {
   return `${prefix}-${year}-${random}`
 }
 
-export function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim()
+type UploadKind = 'images' | 'pdf' | 'images_or_pdf'
+
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif']
+
+const UPLOAD_RULES: Record<UploadKind, { types: Set<string>; extensions: Set<string>; label: string }> = {
+  images: {
+    types: new Set(IMAGE_TYPES),
+    extensions: new Set(IMAGE_EXTENSIONS),
+    label: 'JPG, PNG, WEBP ou GIF',
+  },
+  pdf: {
+    types: new Set(['application/pdf']),
+    extensions: new Set(['pdf']),
+    label: 'PDF',
+  },
+  images_or_pdf: {
+    types: new Set([...IMAGE_TYPES, 'application/pdf']),
+    extensions: new Set([...IMAGE_EXTENSIONS, 'pdf']),
+    label: 'JPG, PNG, WEBP, GIF ou PDF',
+  },
 }
-
-export function truncate(text: string, maxLength: number): string {
-  if (text.length <= maxLength) return text
-  return text.slice(0, maxLength).trim() + '...'
-}
-
-export function pluralize(count: number, singular: string, plural: string): string {
-  return count === 1 ? singular : plural
-}
-
-// ── File Upload Security ───────────────────────────────────────────────────
-
-const ALLOWED_IMAGE_TYPES = new Set([
-  'image/jpeg', 'image/png', 'image/webp', 'image/gif',
-])
-
-const ALLOWED_DOCUMENT_TYPES = new Set([
-  'application/pdf',
-])
-
-const ALLOWED_IMAGE_OR_DOC_TYPES = new Set([
-  ...Array.from(ALLOWED_IMAGE_TYPES),
-  ...Array.from(ALLOWED_DOCUMENT_TYPES),
-])
 
 /**
- * Validates a file's MIME type against an allowed set.
- * Checks both file.type (reported by browser) and the file extension,
- * since file.type can be empty on some browsers.
+ * Confere o tipo informado pelo navegador e também a extensão do arquivo,
+ * porque alguns navegadores mandam `file.type` vazio.
  */
-export function validateFileType(
-  file: File,
-  allowed: 'images' | 'pdf' | 'images_or_pdf'
-): { ok: boolean; error?: string } {
-  const typeSet =
-    allowed === 'images'
-      ? ALLOWED_IMAGE_TYPES
-      : allowed === 'pdf'
-      ? ALLOWED_DOCUMENT_TYPES
-      : ALLOWED_IMAGE_OR_DOC_TYPES
+export function validateFileType(file: File, allowed: UploadKind): { ok: boolean; error?: string } {
+  const rule = UPLOAD_RULES[allowed]
 
-  // Check MIME type if provided by browser
-  if (file.type && !typeSet.has(file.type)) {
-    const expected =
-      allowed === 'images'
-        ? 'JPG, PNG, WEBP ou GIF'
-        : allowed === 'pdf'
-        ? 'PDF'
-        : 'JPG, PNG, WEBP, GIF ou PDF'
-    return { ok: false, error: `Tipo de arquivo inválido. Permitido: ${expected}.` }
+  if (file.type && !rule.types.has(file.type)) {
+    return { ok: false, error: `Tipo de arquivo inválido. Permitido: ${rule.label}.` }
   }
 
-  // Also validate extension as a secondary check
   const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
-  const ALLOWED_EXTENSIONS: Record<string, Set<string>> = {
-    images: new Set(['jpg', 'jpeg', 'png', 'webp', 'gif']),
-    pdf: new Set(['pdf']),
-    images_or_pdf: new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'pdf']),
-  }
-  if (!ALLOWED_EXTENSIONS[allowed].has(ext)) {
+  if (!rule.extensions.has(ext)) {
     return { ok: false, error: `Extensão não permitida: .${ext}` }
   }
 

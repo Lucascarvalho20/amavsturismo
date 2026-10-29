@@ -70,7 +70,6 @@ export default function RelatoriosPage() {
     load()
   }, [supabase])
 
-  // Filter by period
   const since = useMemo(() => periodStart(period), [period])
 
   const leadsInPeriod = useMemo(() => {
@@ -83,7 +82,6 @@ export default function RelatoriosPage() {
     return contracts.filter((c) => new Date(c.created_at) >= since)
   }, [contracts, since])
 
-  // KPIs (real)
   const totalLeads = leadsInPeriod.length
   const convertedLeads = leadsInPeriod.filter((l) => l.status === 'convertido').length
   const conversionRate = totalLeads > 0 ? (convertedLeads / totalLeads) * 100 : 0
@@ -92,7 +90,6 @@ export default function RelatoriosPage() {
   const activeValue = activeContracts.reduce((s, c) => s + Number(c.value || 0), 0)
   const availableVehicles = vehicles.filter((v) => v.status === 'disponivel').length
 
-  // Top destinations
   const topDestinations = useMemo(() => {
     const map = new Map<string, { display: string; count: number }>()
     leadsInPeriod.forEach((l) => {
@@ -106,7 +103,6 @@ export default function RelatoriosPage() {
     return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 8)
   }, [leadsInPeriod])
 
-  // Top origins (origem mais comum)
   const topOrigins = useMemo(() => {
     const map = new Map<string, { display: string; count: number }>()
     leadsInPeriod.forEach((l) => {
@@ -120,7 +116,7 @@ export default function RelatoriosPage() {
     return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5)
   }, [leadsInPeriod])
 
-  // Top vehicles (by specific vehicle_id)
+  // Conta só os pedidos em que o cliente escolheu um veículo
   const topVehicles = useMemo(() => {
     const map = new Map<string, { vehicle: Vehicle; count: number }>()
     leadsInPeriod.forEach((l) => {
@@ -134,7 +130,6 @@ export default function RelatoriosPage() {
     return Array.from(map.values()).sort((a, b) => b.count - a.count).slice(0, 5)
   }, [leadsInPeriod, vehicles])
 
-  // Category demand
   const categoryDemand = useMemo(() => {
     const map = new Map<string, number>()
     leadsInPeriod.forEach((l) => {
@@ -153,7 +148,6 @@ export default function RelatoriosPage() {
     })).sort((a, b) => b.count - a.count)
   }, [leadsInPeriod])
 
-  // Fleet mix (real)
   const fleetMix = useMemo(() => {
     const map = new Map<string, number>()
     vehicles.forEach((v) => map.set(v.category, (map.get(v.category) ?? 0) + 1))
@@ -173,7 +167,6 @@ export default function RelatoriosPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <header className="flex items-end justify-between flex-wrap gap-4">
         <div>
           <h1 className="font-heading font-semibold tracking-tight text-3xl md:text-4xl" style={{ color: 'var(--text)' }}>
@@ -183,7 +176,6 @@ export default function RelatoriosPage() {
             Visão consolidada do negócio. Tudo vem direto do banco de dados.
           </p>
         </div>
-        {/* Period filter */}
         <div className="flex items-center gap-2 flex-wrap">
           <Calendar size={14} style={{ color: 'var(--text-dim)' }} />
           {periodOptions.map((p) => {
@@ -215,7 +207,6 @@ export default function RelatoriosPage() {
         </div>
       ) : (
         <>
-          {/* KPI strip */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-3xl overflow-hidden" style={{ background: 'var(--border)' }}>
             <KpiCard
               icon={<FileText size={18} strokeWidth={1.5} />}
@@ -243,7 +234,6 @@ export default function RelatoriosPage() {
             />
           </div>
 
-          {/* Top destinations + Top origins */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title="Destinos mais pedidos" subtitle="Onde os clientes querem ir" icon={<MapPin size={16} />}>
               {topDestinations.length === 0 ? (
@@ -300,7 +290,6 @@ export default function RelatoriosPage() {
             </Card>
           </div>
 
-          {/* Top vehicles + Category demand */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title="Veículos mais solicitados" subtitle="Top 5 por veículo específico" icon={<Bus size={16} />}>
               {topVehicles.length === 0 ? (
@@ -351,7 +340,6 @@ export default function RelatoriosPage() {
             </Card>
           </div>
 
-          {/* Funnel + Fleet mix */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title="Funil de conversão" subtitle="Como os orçamentos progridem" icon={<TrendingUp size={16} />}>
               {funnel[0].count === 0 ? (
@@ -422,8 +410,6 @@ export default function RelatoriosPage() {
     </div>
   )
 }
-
-// ─── Helpers ────────────────────────────────────────────────────────────
 
 function KpiCard({ icon, value, label, sub }: { icon: React.ReactNode; value: string; label: string; sub: string }) {
   return (

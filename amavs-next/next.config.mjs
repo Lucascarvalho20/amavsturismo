@@ -37,7 +37,7 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              // unsafe-eval is only needed in dev (Next.js HMR). Removed in production.
+              // unsafe-eval só em desenvolvimento, para o recarregamento a quente do Next.js
               `script-src 'self' ${isDev ? "'unsafe-eval' " : ""}'unsafe-inline' https://va.vercel-scripts.com`,
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",

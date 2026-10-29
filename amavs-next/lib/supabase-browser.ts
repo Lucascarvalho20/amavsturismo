@@ -1,6 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr'
 
-// Strip any accidental path suffix from the URL (e.g. /rest/v1/ added by mistake)
+// Remove um /rest/v1/ colado por engano no fim da URL
 function cleanUrl(raw: string): string {
   return raw.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '')
 }

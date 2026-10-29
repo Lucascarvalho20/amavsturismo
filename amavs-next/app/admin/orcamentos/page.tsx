@@ -119,7 +119,6 @@ export default function OrcamentosAdminPage() {
         </div>
       </header>
 
-      {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px rounded-3xl overflow-hidden" style={{ background: 'var(--border)' }}>
         <KpiCard label="Pendentes" value={counts.pendente} />
         <KpiCard label="Em contato" value={counts.em_contato} />
@@ -127,7 +126,6 @@ export default function OrcamentosAdminPage() {
         <KpiCard label="Convertidos" value={counts.convertido} highlight />
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         <div className="relative flex-1 max-w-sm">
           <Search size={15} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-dim)' }} />
@@ -161,7 +159,6 @@ export default function OrcamentosAdminPage() {
         </div>
       </div>
 
-      {/* Lead list */}
       {loading ? (
         <div className="py-20 flex items-center justify-center">
           <div
@@ -223,7 +220,6 @@ export default function OrcamentosAdminPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2 shrink-0">
-                    {/* Aprovar */}
                     {(lead.status === 'pendente' || lead.status === 'em_contato') && (
                       <button
                         onClick={() => setApproving(lead)}
@@ -233,7 +229,6 @@ export default function OrcamentosAdminPage() {
                         <Check size={13} /> Aprovar
                       </button>
                     )}
-                    {/* Recusar */}
                     {lead.status !== 'recusado' && lead.status !== 'convertido' && (
                       <button
                         onClick={() => {
@@ -246,7 +241,6 @@ export default function OrcamentosAdminPage() {
                         <X size={13} /> Recusar
                       </button>
                     )}
-                    {/* Marcar convertido */}
                     {lead.status === 'aprovado' && (
                       <button
                         onClick={() => updateStatus(lead.id, 'convertido')}
@@ -257,7 +251,6 @@ export default function OrcamentosAdminPage() {
                         Marcar convertido <ChevronRight size={13} />
                       </button>
                     )}
-                    {/* Mensagem WhatsApp */}
                     <a
                       href={`https://wa.me/55${lead.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Olá ${lead.name}, recebi seu orçamento (${lead.code}) e vou verificar a disponibilidade.`)}`}
                       target="_blank"
@@ -271,7 +264,6 @@ export default function OrcamentosAdminPage() {
                   </div>
                 </div>
 
-                {/* Trip info */}
                 <div className="mt-4 pt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm" style={{ color: 'var(--text-muted)', borderTop: '1px solid var(--border)' }}>
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin size={13} strokeWidth={1.5} />
@@ -310,7 +302,6 @@ export default function OrcamentosAdminPage() {
         </div>
       )}
 
-      {/* Approval modal */}
       {approving && (
         <ApprovalModal
           lead={approving}
@@ -325,8 +316,6 @@ export default function OrcamentosAdminPage() {
     </div>
   )
 }
-
-// ─────────────────────────────────────────────────────────────────
 
 function KpiCard({ label, value, highlight }: { label: string; value: number; highlight?: boolean }) {
   return (
@@ -362,7 +351,6 @@ function ApprovalModal({
     e.preventDefault()
     setSaving(true)
     try {
-      // Update lead status
       const { data: updated, error: leadErr } = await supabase
         .from('leads')
         .update({ status: 'aprovado', updated_at: new Date().toISOString() })
@@ -371,7 +359,7 @@ function ApprovalModal({
         .single()
       if (leadErr || !updated) throw new Error('Erro ao atualizar orçamento')
 
-      // Optionally create vehicle block
+      // Bloqueia a agenda do veículo, se marcado no formulário
       if (vehicle && blockCalendar) {
         const { error: blockErr } = await supabase.from('vehicle_blocks').insert({
           vehicle_id: vehicle.id,
@@ -385,7 +373,7 @@ function ApprovalModal({
         if (blockErr) toast.error('Aprovado, mas o calendário não bloqueou: ' + blockErr.message)
       }
 
-      // Optionally create reservation record
+      // Cria a reserva, se marcado no formulário
       if (vehicle && createReservation) {
         const { error: resErr } = await supabase.from('reservations').insert({
           vehicle_id: vehicle.id,
@@ -441,7 +429,6 @@ function ApprovalModal({
         </div>
 
         <form onSubmit={submit} className="p-6 md:p-7 space-y-5">
-          {/* Resumo */}
           <div className="rounded-2xl p-4 text-sm space-y-2" style={{ background: 'var(--bg-elevated)' }}>
             <div className="flex justify-between"><span style={{ color: 'var(--text-muted)' }}>Rota</span><span style={{ color: 'var(--text)' }} className="font-medium text-right">{lead.origin} → {lead.destination || 'Local'}</span></div>
             <div className="flex justify-between"><span style={{ color: 'var(--text-muted)' }}>Data</span><span style={{ color: 'var(--text)' }} className="font-medium">{formatDate(lead.travel_date)}{lead.return_date && ` – ${formatDate(lead.return_date)}`}</span></div>

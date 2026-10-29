@@ -51,7 +51,6 @@ export default function FrotaFotosSection({ limit = 9 }: { limit?: number }) {
               className={`group relative overflow-hidden rounded-2xl ${i === 0 ? 'col-span-2 row-span-2 aspect-square md:aspect-auto' : 'aspect-[4/3]'}`}
               aria-label={`Ampliar: ${p.caption}`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={i === 0 ? p.src : p.srcSm}
                 alt={p.alt}
@@ -78,7 +77,6 @@ export default function FrotaFotosSection({ limit = 9 }: { limit?: number }) {
             role="dialog"
             aria-modal="true"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={photos[open].src}
               alt={photos[open].alt}

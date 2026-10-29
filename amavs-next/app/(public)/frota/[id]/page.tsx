@@ -63,9 +63,7 @@ export default async function VehicleDetailPage({ params }: Props) {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Photo gallery */}
             <div className="glass-dark rounded-2xl overflow-hidden">
               {mainPhoto ? (
 <div className="relative">
@@ -94,7 +92,6 @@ export default async function VehicleDetailPage({ params }: Props) {
               )}
             </div>
 
-            {/* Info */}
             <div className="glass-dark rounded-2xl p-6">
               <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
                 <div>
@@ -118,7 +115,6 @@ export default async function VehicleDetailPage({ params }: Props) {
               </div>
             </div>
 
-            {/* Features */}
             {v.features.length > 0 && (
               <div className="glass-dark rounded-2xl p-6">
                 <h2 className="font-heading font-semibold text-white text-lg mb-4">Equipamentos e Diferenciais</h2>
@@ -133,7 +129,6 @@ export default async function VehicleDetailPage({ params }: Props) {
               </div>
             )}
 
-            {/* Availability Calendar */}
             <div className="glass-dark rounded-2xl p-6">
               <h2 className="font-heading font-semibold text-white text-lg mb-1">Disponibilidade</h2>
               <p className="text-gray-500 text-sm mb-4">Consulte os períodos disponíveis para locação</p>
@@ -141,7 +136,6 @@ export default async function VehicleDetailPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Right column — quote sidebar */}
           <div className="lg:col-span-1">
             <div className="glass-gold rounded-2xl p-6 sticky top-28">
               <h2 className="font-heading font-bold text-white text-lg mb-1">Solicitar Orçamento</h2>

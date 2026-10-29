@@ -15,8 +15,6 @@ import { Input, Select, Textarea } from '@/components/ui/Input'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
-// ── Types ──────────────────────────────────────────────────────────────────
-
 type ContractType = Contract['contract_type']
 type FormTab = 'licitacao' | 'privado'
 type PrivateClientType = 'particular' | 'pessoa_juridica' | 'fretamento'
@@ -47,8 +45,6 @@ interface PrivadoForm {
   notes: string
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
-
 function contractTypeLabel(type: ContractType): string {
   const labels: Record<ContractType, string> = {
     licitacao: 'Licitação',
@@ -76,8 +72,6 @@ function resolveContractType(
   return privateClientType
 }
 
-// ── PDF handler ────────────────────────────────────────────────────────────
-
 async function openPdfUrl(documentUrl: string) {
   if (documentUrl.startsWith('http')) {
     window.open(documentUrl, '_blank', 'noopener,noreferrer')
@@ -88,8 +82,6 @@ async function openPdfUrl(documentUrl: string) {
   if (data?.signedUrl) window.open(data.signedUrl, '_blank', 'noopener,noreferrer')
   else toast.error('Não foi possível abrir o documento.')
 }
-
-// ── Contract Modal ─────────────────────────────────────────────────────────
 
 function ContractModal({
   contract,
@@ -238,7 +230,6 @@ function ContractModal({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div className="relative z-10 w-full sm:max-w-2xl bg-navy-100 border border-white/10 rounded-t-2xl sm:rounded-2xl max-h-[92vh] overflow-y-auto scrollbar-thin">
-        {/* Header */}
         <div className="sticky top-0 bg-navy-100 border-b border-white/10 px-6 py-4 flex items-center justify-between z-10">
           <h2 className="font-heading font-bold text-white">
             {isNew ? 'Novo Contrato' : `Editar — ${contract.code}`}
@@ -248,7 +239,6 @@ function ContractModal({
           </button>
         </div>
 
-        {/* Tab switcher */}
         <div className="flex gap-1 p-4 pb-0">
           {(['licitacao', 'privado'] as FormTab[]).map((tab) => (
             <button
@@ -273,7 +263,6 @@ function ContractModal({
         </div>
 
         <div className="p-6 space-y-4">
-          {/* PDF upload — shared */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
               Documento do Contrato (PDF)
@@ -317,7 +306,6 @@ function ContractModal({
             />
           </div>
 
-          {/* ── Tab 1: Licitação Pública ─────────────────────────────── */}
           {activeTab === 'licitacao' && (
             <>
               <div className="grid grid-cols-2 gap-4">
@@ -411,7 +399,6 @@ function ContractModal({
                 placeholder="Detalhes, condições especiais..."
               />
 
-              {/* is_public toggle */}
               <div className="flex items-center justify-between p-4 bg-navy-200/50 rounded-xl border border-white/10">
                 <div>
                   <p className="text-sm font-medium text-gray-200">Mostrar no site público</p>
@@ -438,7 +425,6 @@ function ContractModal({
             </>
           )}
 
-          {/* ── Tab 2: Contrato Privado ──────────────────────────────── */}
           {activeTab === 'privado' && (
             <>
               <div className="grid grid-cols-2 gap-4">
@@ -461,7 +447,6 @@ function ContractModal({
                 />
               </div>
 
-              {/* Client type radio */}
               <div>
                 <p className="text-sm font-medium text-gray-300 mb-2">Tipo de Cliente *</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -561,8 +546,6 @@ function ContractModal({
   )
 }
 
-// ── Delete Confirm ─────────────────────────────────────────────────────────
-
 function DeleteConfirm({
   contract,
   onClose,
@@ -612,8 +595,6 @@ function DeleteConfirm({
   )
 }
 
-// ── Main Page ──────────────────────────────────────────────────────────────
-
 type ListTab = 'all' | 'licitacao' | 'privado'
 
 export default function ContratosAdminPage() {
@@ -658,7 +639,6 @@ export default function ContratosAdminPage() {
     return matchSearch && matchStatus && matchListTab && matchDateFrom && matchDateTo
   })
 
-  // Summary stats
   const activeLicitacoes = contracts.filter(
     (c) => c.contract_type === 'licitacao' && c.status === 'ativo'
   ).length
@@ -669,7 +649,6 @@ export default function ContratosAdminPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-heading font-bold text-2xl text-white">Contratos</h1>
@@ -689,9 +668,7 @@ export default function ContratosAdminPage() {
         </Button>
       </div>
 
-      {/* Filters row */}
       <div className="flex flex-col gap-3">
-        {/* Search + Status */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1 max-w-xs">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
@@ -704,7 +681,6 @@ export default function ContratosAdminPage() {
             />
           </div>
 
-          {/* Status filter */}
           <div className="flex gap-1 p-1 bg-navy-100 border border-white/10 rounded-xl">
             {(['all', 'ativo', 'em_licitacao', 'encerrado', 'suspenso'] as const).map((s) => (
               <button
@@ -731,9 +707,7 @@ export default function ContratosAdminPage() {
           </div>
         </div>
 
-        {/* List tab + date range */}
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
-          {/* List tab: Todos / Licitações / Privados */}
           <div className="flex gap-1 p-1 bg-navy-100 border border-white/10 rounded-xl">
             {(['all', 'licitacao', 'privado'] as ListTab[]).map((t) => (
               <button
@@ -755,7 +729,6 @@ export default function ContratosAdminPage() {
             ))}
           </div>
 
-          {/* Date range */}
           <div className="flex items-center gap-2 text-sm text-gray-400">
             <span className="text-xs">De:</span>
             <input
@@ -784,7 +757,6 @@ export default function ContratosAdminPage() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="glass-dark rounded-2xl overflow-hidden">
         {loading ? (
           <div className="py-14 text-center">
