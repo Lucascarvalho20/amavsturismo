@@ -30,6 +30,7 @@ O CI (`.github/workflows/ci.yml`) roda typecheck, testes e build. Push na `main`
 - Datas `YYYY-MM-DD` do banco: formatar com `formatDate`/`parseDbDate` de `lib/utils.ts` (evita voltar um dia em UTC-3).
 - Regras de negócio como funções puras em `lib/` com testes em `lib/__tests__/`.
 - Mudança de banco = novo arquivo em `amavs-next/supabase/migrations/` (idempotente). O usuário roda no SQL Editor do Supabase; não há acesso direto ao banco por CLI.
+- Código: nomes técnicos (variáveis, funções, tipos, colunas) em inglês; valores e termos do negócio em português (`ganha`, `prospeccao`, rotas `/licitacoes`, `/frota`). Comentários sempre em português e só quando explicam o porquê: nada de rótulo óbvio em JSX (`{/* Header */}`) nem divisor decorativo (`// ── Seção ──`).
 - Textos do site em português do Brasil, tom sóbrio e institucional (público: pregoeiros e fiscais de contrato). Nunca inventar números, órgãos ou contratos: dados de atestados vêm de `lib/atestados.ts`, extraídos dos documentos originais.
 
 ## Domínio

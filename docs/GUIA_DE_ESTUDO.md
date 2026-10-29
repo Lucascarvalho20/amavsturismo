@@ -45,7 +45,7 @@ O projeto é escrito em TypeScript, que é JavaScript com tipos. Tudo o que vale
 - **`let` para montar uma consulta em etapas:** em [`app/api/disponibilidade/route.ts:35`](../amavs-next/app/api/disponibilidade/route.ts#L35), `let blocksQ = supabase.from(…)` começa genérica e, se veio um veículo na URL, é reatribuída com mais um filtro (`blocksQ = blocksQ.eq('vehicle_id', vehicleId)`).
 - **`let` no nível do módulo (*singleton*):** em [`lib/supabase-admin.ts:9`](../amavs-next/lib/supabase-admin.ts#L9), `let cached = null` guarda o cliente do banco. Na primeira chamada ele é criado; nas seguintes, reaproveitado.
 
-**[Jr] `const` não significa imutável.** Em [`lib/availability.ts:44`](../amavs-next/lib/availability.ts#L44), `const conflicts: Conflict[] = []` e logo depois `conflicts.push(…)`. Funciona, porque `const` impede **reatribuir a variável** (`conflicts = []` daria erro), não impede **alterar o conteúdo** do array ou do objeto. Para congelar de verdade existe `Object.freeze`, e no TypeScript, `as const` (ver 1.10).
+**[Jr] `const` não significa imutável.** Em [`lib/availability.ts:51`](../amavs-next/lib/availability.ts#L51), `const conflicts: Conflict[] = []` e logo depois `conflicts.push(…)`. Funciona, porque `const` impede **reatribuir a variável** (`conflicts = []` daria erro), não impede **alterar o conteúdo** do array ou do objeto. Para congelar de verdade existe `Object.freeze`, e no TypeScript, `as const` (ver 1.10).
 
 **[Pl] O problema clássico do `var` em laço:**
 
@@ -75,13 +75,13 @@ const c = ++a  // c = 7, a = 7
 
 **[Pl]** Muitos guias de estilo (regra `no-plusplus` do ESLint) preferem `i += 1`, porque `a++` dentro de expressões é fácil de ler errado. Saiba dizer que conhece a regra e por que ela existe.
 
-Outros operadores do projeto: `*` e `+` em `7 * 86_400_000` (o `_` é só separador visual de milhar), `-` e `/` em `(exp - now) / 86_400_000` para contar dias em [`lib/documents.ts:55`](../amavs-next/lib/documents.ts#L55), e `+=` em `score += 1000` em [`lib/availability.ts:122`](../amavs-next/lib/availability.ts#L122).
+Outros operadores do projeto: `*` e `+` em `7 * 86_400_000` (o `_` é só separador visual de milhar), `-` e `/` em `(exp - now) / 86_400_000` para contar dias em [`lib/documents.ts:55`](../amavs-next/lib/documents.ts#L55), e `+=` em `score += 1000` em [`lib/availability.ts:120`](../amavs-next/lib/availability.ts#L120).
 
 ### 1.3 Operadores lógicos: `&&` (E), `||` (OU), `!` (NÃO) e `??`
 
 **`&&` (E):** verdadeiro só se os dois lados forem verdadeiros.
 
-- Sobreposição de datas em [`lib/availability.ts:29`](../amavs-next/lib/availability.ts#L29): `return aS <= bE && aE >= bS`.
+- Sobreposição de datas em [`lib/availability.ts:36`](../amavs-next/lib/availability.ts#L36): `return aS <= bE && aE >= bS`.
 - Sessão nos próximos 7 dias em [`lib/licitacoes.ts:93`](../amavs-next/lib/licitacoes.ts#L93): `t >= now.getTime() && t <= in7`.
 - Três condições de segurança em [`lib/validation.ts:32`](../amavs-next/lib/validation.ts#L32): o caminho começa com `/` **e** não começa com `//` **e** não tem `\`. Se qualquer uma falhar, o redirecionamento é recusado.
 
@@ -96,7 +96,7 @@ Outros operadores do projeto: `*` e `+` em `7 * 86_400_000` (o `_` é só separa
 **`||` e `&&` devolvem um dos valores, não só `true`/`false` [Jr → Pl]:**
 
 ```ts
-const end = returnDate || travelDate   // availability.ts:42 — sem volta, a viagem termina no mesmo dia
+const end = returnDate || travelDate   // availability.ts:49 — sem volta, a viagem termina no mesmo dia
 email: d.email || null                 // app/api/leads/route.ts:39 — '' vira null no banco
 ```
 
@@ -124,11 +124,11 @@ Em um `if`, `&&`, `||` ou `!`, qualquer valor é convertido para verdadeiro ou f
 **No projeto:**
 
 - `if (b.session_at)` em [`lib/licitacoes.ts:91`](../amavs-next/lib/licitacoes.ts#L91): só calcula se a licitação tem data de sessão (`null` é falsy).
-- `if (!travelDate) return …` em [`lib/availability.ts:40`](../amavs-next/lib/availability.ts#L40): sem data, não há o que verificar.
+- `if (!travelDate) return …` em [`lib/availability.ts:47`](../amavs-next/lib/availability.ts#L47): sem data, não há o que verificar.
 - `if (!files?.length) return` em [`app/admin/portfolio/page.tsx`](../amavs-next/app/admin/portfolio/page.tsx): cobre dois casos de uma vez, `files` nulo (`undefined`) e lista vazia (`length` = `0`).
-- `.filter(Boolean)` em [`lib/supabase-admin.ts:29-33`](../amavs-next/lib/supabase-admin.ts#L29-L33): `'a@x.com,'.split(',')` gera `['a@x.com', '']`; o `filter(Boolean)` joga fora o texto vazio.
+- `.filter(Boolean)` em [`middleware.ts:14-19`](../amavs-next/middleware.ts#L14-L19): `'a@x.com,'.split(',')` gera `['a@x.com', '']`; o `filter(Boolean)` joga fora o texto vazio.
 
-**[Pl] O mesmo `filter(Boolean)` com bug.** Em [`lib/utils.ts:120-138`](../amavs-next/lib/utils.ts#L120-L138), a mensagem do WhatsApp é montada como um array de linhas, com `null` nas linhas opcionais e textos vazios (`''`) para criar linhas em branco entre os blocos. No fim, `lines.filter(Boolean)` remove os `null`, mas também remove os `''`, porque texto vazio é falsy. Resultado: as linhas em branco nunca aparecem e a mensagem chega toda junta. É um bug real, que está no ar. A seção 14 mostra, passo a passo, como achar e corrigir esse bug.
+**[Pl] O mesmo `filter(Boolean)` com bug.** Em [`lib/utils.ts:69-87`](../amavs-next/lib/utils.ts#L69-L87), a mensagem do WhatsApp é montada como um array de linhas, com `null` nas linhas opcionais e textos vazios (`''`) para criar linhas em branco entre os blocos. No fim, `lines.filter(Boolean)` remove os `null`, mas também remove os `''`, porque texto vazio é falsy. Resultado: as linhas em branco nunca aparecem e a mensagem chega toda junta. É um bug real, que está no ar. A seção 14 mostra, passo a passo, como achar e corrigir esse bug.
 
 **[Pl] Array vazio é truthy.** `if (data)` passa mesmo quando a consulta devolveu `[]`. Por isso o projeto testa o tamanho: `if (clients.length === 0) return null` em [`components/sections/ClientsSection.tsx`](../amavs-next/components/sections/ClientsSection.tsx). No JSX, `{lista.length && <Componente />}` mostra um **"0"** na tela quando a lista está vazia. O certo é `{lista.length > 0 && …}`.
 
@@ -147,14 +147,32 @@ return { status: 'valido', daysLeft }
 - Como cada `if` termina em `return`, não precisa de `else`: se chegou na linha seguinte, a condição anterior era falsa. Isso evita `if` dentro de `if` e deixa o caminho principal sem recuo.
 - **[Jr] A ordem importa.** Um documento com `daysLeft = -3` também é `<= 15`. Se o teste de "vencendo" viesse antes, um documento vencido apareceria como "vence em breve". Em licitação, isso é inabilitação.
 
-**`if / else if` com tipos diferentes:** `statusLabel` em [`lib/utils.ts:62`](../amavs-next/lib/utils.ts#L62) escolhe a tabela de rótulos conforme `type` (`'vehicle'`, `'contract'`, `'lead'`).
+**`let` + `if / else if`:** na tela de login, em [`app/admin/login/page.tsx:138-145`](../amavs-next/app/admin/login/page.tsx#L138-L145), a mensagem começa com um valor padrão e é trocada conforme o erro que o Supabase devolveu:
+
+```ts
+let friendlyMsg = 'E-mail ou senha incorretos.'
+if (msg.includes('not confirmed')) {
+  friendlyMsg = 'E-mail não confirmado. Verifique sua caixa de entrada.'
+} else if (msg.includes('too many')) {
+  friendlyMsg = 'Muitas tentativas. Aguarde alguns minutos.'
+}
+```
+
+Só o primeiro bloco cuja condição for verdadeira executa. Sem nenhum, fica o valor padrão, e por isso não precisa de `else` no fim.
 
 **Ternário `condição ? valorSeSim : valorSeNão`:** é um `if/else` que **devolve um valor**, então cabe dentro de uma expressão.
 
 - Em [`lib/validation.ts:32`](../amavs-next/lib/validation.ts#L32): `return caminhoSeguro ? raw : fallback`.
 - Em [`lib/licitacoes.ts:109`](../amavs-next/lib/licitacoes.ts#L109): `winRate: won + lost > 0 ? won / (won + lost) : null`, para não dividir por zero.
 
-**[Pl] Ternário encadeado.** Em [`lib/utils.ts:198`](../amavs-next/lib/utils.ts#L198), `validateFileType` usa `a ? x : b ? y : z`. Funciona, mas fica difícil de ler a partir de três opções. A alternativa é um objeto de consulta (ver 1.6): `const typeSets = { images: …, pdf: …, images_or_pdf: … }; const typeSet = typeSets[allowed]`.
+**[Pl] Ternário encadeado e a refatoração.** O `validateFileType` escolhia as regras com dois ternários encadeados, repetidos em dois lugares da função:
+
+```ts
+const typeSet = allowed === 'images' ? IMAGE_TYPES : allowed === 'pdf' ? PDF_TYPES : IMAGE_OR_PDF_TYPES
+const expected = allowed === 'images' ? 'JPG, PNG…' : allowed === 'pdf' ? 'PDF' : 'JPG, PNG… ou PDF'
+```
+
+Funcionava, mas a cada tipo novo seria preciso mexer nos dois ternários sem esquecer nenhum. Hoje as regras ficam numa tabela, em [`lib/utils.ts:108`](../amavs-next/lib/utils.ts#L108), e a função só consulta: `const rule = UPLOAD_RULES[allowed]`. O `Record<UploadKind, …>` obriga cada tipo a ter tipos de arquivo, extensões e texto da mensagem. É a mesma ideia da seção 1.6, e um bom exemplo de "o que você refatoraria": um ternário com mais de duas saídas costuma pedir um objeto de consulta.
 
 ### 1.6 `switch` e quando trocar por um objeto
 
@@ -198,7 +216,7 @@ for (let i = 0; i < firstDay; i++) result.push(null)
 for (let d = 1; d <= daysInMonth; d++) result.push(new Date(year, month, d))
 ```
 
-**`for…of` (percorre os itens):** é o laço mais usado no projeto. Em [`lib/availability.ts:74-86`](../amavs-next/lib/availability.ts#L74-L86):
+**`for…of` (percorre os itens):** é o laço mais usado no projeto. Em [`lib/availability.ts:77-89`](../amavs-next/lib/availability.ts#L77-L89):
 
 ```ts
 for (const r of reservations) {
@@ -262,7 +280,7 @@ Sintaxe mais curta: `(parâmetros) => corpo`.
 | Um parâmetro, retorno implícito | `.map((e) => e.trim().toLowerCase())`, em [`middleware.ts:14-19`](../amavs-next/middleware.ts#L14-L19) |
 | Sem parâmetro | `const prevMonth = () => setCurrentMonth(new Date(year, month - 1, 1))`, em [`MonthCalendar.tsx`](../amavs-next/components/ui/MonthCalendar.tsx) |
 | Corpo com `{ }` e `return` | `const computeAuto = (key: string): number => { switch … }` |
-| Comparador de ordenação | `.sort((a, b) => a.score - b.score)`, em [`lib/availability.ts:126`](../amavs-next/lib/availability.ts#L126) |
+| Comparador de ordenação | `.sort((a, b) => a.score - b.score)`, em [`lib/availability.ts:124`](../amavs-next/lib/availability.ts#L124) |
 | Devolvendo um objeto | `setF((p) => ({ ...p, [k]: v }))`, em [`app/admin/portfolio/page.tsx:170`](../amavs-next/app/admin/portfolio/page.tsx#L170) |
 
 - **[Jr] Retorno implícito:** sem `{ }`, a expressão é devolvida sozinha. Com `{ }`, precisa de `return`.
@@ -291,6 +309,8 @@ export type BidStatus = (typeof BID_STATUSES)[number]
 
 `as const` deixa o array somente leitura e faz o TypeScript guardar os textos exatos. A segunda linha cria o tipo `'prospeccao' | 'em_analise' | …` a partir do array. A lista de status existe **num lugar só** no código e alimenta o tipo e os selects do painel (o `CHECK` do banco repete a mesma lista em SQL).
 
+**[Pl] *Type guard* com a lista.** Em [`lib/availability.ts:3-8`](../amavs-next/lib/availability.ts#L3-L8), a mesma técnica cria a lista de tipos de conflito, e `isConflictKind(value): value is ConflictKind` confere se um texto vindo do banco está nela. Depois do `if (isConflictKind(b.block_type))`, o TypeScript passa a tratar o valor como `ConflictKind`, sem precisar de `as`. Antes, o código fazia três conversões com `as` na mesma expressão, e cada `as` é uma afirmação que o compilador não confere.
+
 **Métodos que aparecem no projeto:**
 
 | Método | O que faz | Onde |
@@ -300,7 +320,7 @@ export type BidStatus = (typeof BID_STATUSES)[number]
 | `map` | transforma cada item, devolve array novo | `vehicles.map((v) => ({ vehicle: v, score }))` em [`availability.ts:112`](../amavs-next/lib/availability.ts#L112) |
 | `filter` | mantém os itens que passam no teste | janela do rate limit em [`lib/rate-limit.ts:9`](../amavs-next/lib/rate-limit.ts#L9) |
 | `every` | todos passam no teste? | limpeza do rate limit em [`lib/rate-limit.ts:15`](../amavs-next/lib/rate-limit.ts#L15) |
-| `sort` | ordena (altera o array) | ranking de veículos em [`availability.ts:126`](../amavs-next/lib/availability.ts#L126) |
+| `sort` | ordena (altera o array) | ranking de veículos em [`availability.ts:124`](../amavs-next/lib/availability.ts#L124) |
 | `split` / `join` | texto ↔ array | `ADMIN_EMAILS.split(',')`; `lines.join('\n')` |
 | `Array.from` | converte "parecido com array" em array | `Array.from(files)`: `FileList` não tem `.map` |
 
@@ -346,12 +366,12 @@ const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
 
 `...p` copia todos os campos do formulário; `[k]: v` sobrescreve o campo cujo **nome está na variável** `k`. Uma única função atualiza qualquer campo: `set('organization', 'CFC')`.
 
-**Objeto como dicionário:** `bidStatusLabel[status]` (seção 1.6) e `ALLOWED_EXTENSIONS[allowed]` em `validateFileType`.
+**Objeto como dicionário:** `bidStatusLabel[status]` (seção 1.6) e `UPLOAD_RULES[allowed]` em `validateFileType`.
 
 **[Pl] `Map` e `Set` no lugar de objeto.**
 
 - O rate limit usa `new Map<string, number[]>()` em [`lib/rate-limit.ts:5`](../amavs-next/lib/rate-limit.ts#L5), não `{}`. O `Map` aceita qualquer texto como chave sem colidir com nomes herdados (`'constructor'`, `'__proto__'`) e tem `.size` e `.delete`, que a limpeza usa.
-- Os tipos de arquivo aceitos são um `Set`, em [`lib/utils.ts:176`](../amavs-next/lib/utils.ts#L176): `ALLOWED_IMAGE_TYPES.has(file.type)` responde se está na lista sem percorrê-la.
+- Os tipos de arquivo aceitos são `Set`s, em [`lib/utils.ts:108`](../amavs-next/lib/utils.ts#L108): `rule.types.has(file.type)` responde se o tipo está na lista sem percorrê-la, como faria um `array.includes`.
 
 **[Pl] Referência × valor.** Números e textos são copiados; objetos e arrays são passados por **referência**. `const b = a` com objeto não cria uma cópia: `a` e `b` são o mesmo objeto. O spread `{ ...p }` faz uma cópia **rasa**: os campos de primeiro nível são novos, mas um array dentro dele (como `photos`) continua compartilhado. Para cópia profunda existe `structuredClone`. Isso explica por que o React exige objetos novos no estado e por que funções puras não devem alterar o que recebem.
 
@@ -359,7 +379,7 @@ const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
 
 ### 1.12 Exercícios de fundamentos
 
-1. **[Jr] Corrigir o bug do WhatsApp.** Em [`lib/utils.ts:138`](../amavs-next/lib/utils.ts#L138), o `filter(Boolean)` apaga as linhas em branco da mensagem. Tente achar e corrigir sozinho; o roteiro completo, com o teste, está na seção 14.
+1. **[Jr] Corrigir o bug do WhatsApp.** Em [`lib/utils.ts:87`](../amavs-next/lib/utils.ts#L87), o `filter(Boolean)` apaga as linhas em branco da mensagem. Tente achar e corrigir sozinho; o roteiro completo, com o teste, está na seção 14.
 2. **[Jr] Reescrever `bidStats` de outros jeitos.** Uma versão com `filter(…).length` para cada contador e outra com `reduce`. Compare: qual é mais legível? Quantas vezes cada uma percorre a lista?
 3. **[Jr] Trocar o `switch` por objeto.** Reescreva `computeAuto` em `StatsSection.tsx` como `const autoValues: Record<string, number> = { fleet_size: fleetSize, … }` e `autoValues[key] ?? 0`.
 4. **[Pl] `switch` exaustivo.** Crie uma função `bidStatusColor(status: BidStatus)` com `switch` e `default` usando `never`. Apague um `case` e veja o `npm run typecheck` falhar.
@@ -816,7 +836,7 @@ npx tsx -e "import { buildWhatsAppMessage } from './lib/utils'; console.log(JSON
 
 O `JSON.stringify` mostra os `\n` de forma visível. Aparece `…Turismo*\n👤 *Nome:*…`: só **um** `\n` entre o título e o nome. Deveriam ser dois (`\n\n`).
 
-**2. Localizar.** Procure quem monta a mensagem: na busca do VS Code (`Ctrl+Shift+F`), procure por `Solicitação de Orçamento`. O resultado leva a `buildWhatsAppMessage`, em [`lib/utils.ts:120`](../amavs-next/lib/utils.ts#L120). Leia a função inteira antes de concluir qualquer coisa:
+**2. Localizar.** Procure quem monta a mensagem: na busca do VS Code (`Ctrl+Shift+F`), procure por `Solicitação de Orçamento`. O resultado leva a `buildWhatsAppMessage`, em [`lib/utils.ts:69`](../amavs-next/lib/utils.ts#L69). Leia a função inteira antes de concluir qualquer coisa:
 
 ```ts
 const lines = [
