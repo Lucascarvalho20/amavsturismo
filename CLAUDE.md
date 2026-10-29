@@ -8,7 +8,7 @@ O dono do repositório (Lucas) usa o projeto também como portfólio para vagas 
 
 - `amavs-next/` — aplicação atual (Next.js 14 App Router, TypeScript, Supabase/Postgres, Tailwind). **Todo trabalho novo é aqui.**
 - `amavs-v2/` — versão antiga em PHP, só histórico. Não alterar.
-- `docs/GUIA_DE_ESTUDO.md` — guia técnico do sistema; atualize quando mudar arquitetura, segurança ou regras de negócio.
+- `docs/GUIA_DE_ESTUDO.md` — **único** guia de estudo e entrevista (o Lucas não quer outros arquivos de guia; acrescente aqui). Atualize quando mudar arquitetura, segurança ou regras de negócio.
 - `docs/NOVA_MAQUINA.md` — como rodar em outro computador.
 
 ## Comandos (dentro de `amavs-next/`)
@@ -42,9 +42,9 @@ O CI (`.github/workflows/ci.yml`) roda typecheck, testes e build. Push na `main`
 ## Pendências conhecidas (out/2026)
 
 - `2026-10-27_security_hardening.sql` já rodado no Supabase (conferido em 27/10/2026).
-- Rodar `amavs-next/supabase/migrations/2026-10-27_featured_clients_atestados.sql` (troca "Quem confia no nosso trabalho" pelos clientes com atestado; PMDF fica oculta por não ter atestado).
+- `2026-10-27_featured_clients_atestados.sql` já rodado (conferido em 29/10/2026): "Quem confia no nosso trabalho" mostra os 10 clientes com atestado.
 - Cadastro público do Supabase desligado (`disable_signup: true`, conferido em 29/10/2026) e `ADMIN_EMAILS` definido na Vercel (informado pelo Lucas).
-- Bug conhecido, deixado como exercício no guia (seção 1.12): `buildWhatsAppMessage` em `lib/utils.ts` usa `filter(Boolean)` e apaga as linhas em branco da mensagem. Não corrigir sem o Lucas pedir.
+- Bug conhecido, deixado como exercício no guia (seções 1.12 e 14): `buildWhatsAppMessage` em `lib/utils.ts` usa `filter(Boolean)` e apaga as linhas em branco da mensagem. Não corrigir sem o Lucas pedir.
 - Os 6 veículos do banco são dados de demonstração (placas fictícias); a empresa vai cadastrar os reais. Vans ficam sem foto até haver fotos reais.
 - Domínio oficial `www.amavsturismo.com` ainda aponta para o WordPress antigo.
 - Ideias priorizadas: monitor de editais via API do PNCP (cron), alertas por e-mail de sessões e certidões, testes de integração das policies RLS.

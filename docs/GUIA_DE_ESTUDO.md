@@ -7,7 +7,7 @@ Marcação de nível:
 - **[Jr]** é o que se espera de uma pessoa júnior: saber explicar o que o código faz e por quê.
 - **[Pl]** é o que diferencia uma pessoa pleno: trade-offs, o que quebra em escala e como você mudaria.
 
-Se você está começando em JavaScript, comece pela seção 1: ela mostra cada fundamento da linguagem (variáveis, operadores, condições, laços, funções, arrays e objetos) no código real do projeto.
+Este é o único guia do projeto: tudo o que serve para estudo e entrevista fica aqui. Se você está começando em JavaScript, comece pela seção 1: ela mostra cada fundamento da linguagem (variáveis, operadores, condições, laços, funções, arrays e objetos) no código real do projeto.
 
 Não decore as respostas. Em entrevista, o que convence é você abrir o código e explicar com as suas palavras.
 
@@ -128,7 +128,7 @@ Em um `if`, `&&`, `||` ou `!`, qualquer valor é convertido para verdadeiro ou f
 - `if (!files?.length) return` em [`app/admin/portfolio/page.tsx`](../amavs-next/app/admin/portfolio/page.tsx): cobre dois casos de uma vez, `files` nulo (`undefined`) e lista vazia (`length` = `0`).
 - `.filter(Boolean)` em [`lib/supabase-admin.ts:29-33`](../amavs-next/lib/supabase-admin.ts#L29-L33): `'a@x.com,'.split(',')` gera `['a@x.com', '']`; o `filter(Boolean)` joga fora o texto vazio.
 
-**[Pl] O mesmo `filter(Boolean)` com bug.** Em [`lib/utils.ts:120-138`](../amavs-next/lib/utils.ts#L120-L138), a mensagem do WhatsApp é montada como um array de linhas, com `null` nas linhas opcionais e textos vazios (`''`) para criar linhas em branco entre os blocos. No fim, `lines.filter(Boolean)` remove os `null`, mas também remove os `''`, porque texto vazio é falsy. Resultado: as linhas em branco nunca aparecem e a mensagem chega toda junta. É um bug real, que está no ar. A correção e o teste estão no exercício 1 da seção 1.12.
+**[Pl] O mesmo `filter(Boolean)` com bug.** Em [`lib/utils.ts:120-138`](../amavs-next/lib/utils.ts#L120-L138), a mensagem do WhatsApp é montada como um array de linhas, com `null` nas linhas opcionais e textos vazios (`''`) para criar linhas em branco entre os blocos. No fim, `lines.filter(Boolean)` remove os `null`, mas também remove os `''`, porque texto vazio é falsy. Resultado: as linhas em branco nunca aparecem e a mensagem chega toda junta. É um bug real, que está no ar. A seção 14 mostra, passo a passo, como achar e corrigir esse bug.
 
 **[Pl] Array vazio é truthy.** `if (data)` passa mesmo quando a consulta devolveu `[]`. Por isso o projeto testa o tamanho: `if (clients.length === 0) return null` em [`components/sections/ClientsSection.tsx`](../amavs-next/components/sections/ClientsSection.tsx). No JSX, `{lista.length && <Componente />}` mostra um **"0"** na tela quando a lista está vazia. O certo é `{lista.length > 0 && …}`.
 
@@ -359,7 +359,7 @@ const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
 
 ### 1.12 Exercícios de fundamentos
 
-1. **[Jr] Corrigir o bug do WhatsApp.** Em [`lib/utils.ts:138`](../amavs-next/lib/utils.ts#L138), troque `lines.filter(Boolean)` por um filtro que remova só `null` (`.filter((l) => l !== null)`). Escreva antes um teste em `lib/__tests__/` que falhe ("a mensagem tem uma linha em branco depois do título") e depois passe. Em entrevista, isso vira: "achei um bug de truthy/falsy no meu próprio código e escrevi o teste primeiro".
+1. **[Jr] Corrigir o bug do WhatsApp.** Em [`lib/utils.ts:138`](../amavs-next/lib/utils.ts#L138), o `filter(Boolean)` apaga as linhas em branco da mensagem. Tente achar e corrigir sozinho; o roteiro completo, com o teste, está na seção 14.
 2. **[Jr] Reescrever `bidStats` de outros jeitos.** Uma versão com `filter(…).length` para cada contador e outra com `reduce`. Compare: qual é mais legível? Quantas vezes cada uma percorre a lista?
 3. **[Jr] Trocar o `switch` por objeto.** Reescreva `computeAuto` em `StatsSection.tsx` como `const autoValues: Record<string, number> = { fleet_size: fleetSize, … }` e `autoValues[key] ?? 0`.
 4. **[Pl] `switch` exaustivo.** Crie uma função `bidStatusColor(status: BidStatus)` com `switch` e `default` usando `never`. Apague um `case` e veja o `npm run typecheck` falhar.
@@ -505,6 +505,113 @@ RLS filtra **linhas**; `GRANT` por coluna filtra **colunas**. Juntos, o visitant
 **[Pl] Migration idempotente:** a migration de segurança apaga **todas** as policies das tabelas e recria do zero (`for r in select … from pg_policies loop drop policy …`). Assim o resultado é o mesmo não importa o estado anterior do banco, e dá para rodar duas vezes sem erro.
 
 **Como testar RLS (resposta de pleno):** subir um Postgres em container no CI, rodar as migrations e executar consultas trocando o papel com `set local role anon` / `set local request.jwt.claims = '{"sub": "…"}'`, verificando que o anônimo recebe zero linhas e o admin recebe todas. Isso ainda não existe no projeto e é um bom próximo passo.
+
+### 4.3 PostgreSQL, MongoDB e Supabase: o que é cada um [Jr → Pl]
+
+Vagas costumam pedir "PostgreSQL", "MongoDB", "SQL e NoSQL". Os três nomes que você mais vai ver estão em **categorias diferentes**:
+
+| Nome | O que é | Categoria |
+|---|---|---|
+| **PostgreSQL** | Um banco de dados (SGBD) | Relacional (SQL) |
+| **MySQL** | Outro banco relacional, usado na versão PHP do projeto (`amavs-v2`) | Relacional (SQL) |
+| **MongoDB** | Um banco de dados de documentos | Não relacional (NoSQL) |
+| **Supabase** | Uma **plataforma** construída em cima de um PostgreSQL | Backend como serviço (BaaS) |
+
+**O ponto mais importante: o Supabase não é um banco. O banco é o PostgreSQL.** Quando você usa o Supabase, você usa um PostgreSQL de verdade, com SQL de verdade (o `schema.sql` e as migrations deste projeto são PostgreSQL puro). O Supabase coloca em volta dele:
+
+- uma **API REST gerada automaticamente** (PostgREST): cada tabela vira uma URL;
+- **autenticação** (login, JWT, 2FA) integrada ao banco, com `auth.uid()` disponível dentro das policies;
+- **storage** de arquivos (os buckets `portfolio` e `company-docs`);
+- o **painel** com SQL Editor.
+
+Na entrevista, a frase certa é: *"uso PostgreSQL, hospedado no Supabase"*. Tudo o que você sabe de tabelas, `JOIN`, índices, constraints, transações e RLS vale em qualquer PostgreSQL: no RDS da AWS, num servidor próprio ou num container. O que é **específico do Supabase** é pouco: o SDK (`supabase.from(…)`), o Auth e o Storage.
+
+**Relacional (SQL) × documentos (NoSQL) [Jr]**
+
+| Relacional (PostgreSQL) | Documentos (MongoDB) |
+|---|---|
+| Banco → **tabelas** → **linhas** → **colunas** | Banco → **coleções** → **documentos** → **campos** |
+| Formato fixo: toda linha de `bids` tem as mesmas colunas | Formato flexível: cada documento pode ter campos diferentes |
+| Relaciona tabelas com **chave estrangeira** e `JOIN` | Guarda os dados relacionados **dentro** do documento, ou referencia o `_id` de outro |
+| Linguagem SQL | Métodos e objetos JSON (`find`, `aggregate`) |
+| Chave primária que você define (aqui, `uuid`) | `_id` gerado automaticamente (`ObjectId`) |
+| Regras no banco: `CHECK`, `NOT NULL`, `UNIQUE`, `FOREIGN KEY` | Validação de schema opcional; a maior parte das regras fica no código |
+
+**A mesma consulta nos três jeitos.** "Licitações ganhas, da mais recente para a mais antiga":
+
+```sql
+-- SQL (PostgreSQL)
+select organization, awarded_value
+from bids
+where status = 'ganha'
+order by session_at desc;
+```
+
+```ts
+// SDK do Supabase (como o painel faz)
+await supabase
+  .from('bids')
+  .select('organization, awarded_value')
+  .eq('status', 'ganha')
+  .order('session_at', { ascending: false })
+// por baixo: GET /rest/v1/bids?select=organization,awarded_value&status=eq.ganha&order=session_at.desc
+// o PostgREST traduz isso para o SQL acima, e o Postgres aplica a RLS
+```
+
+```js
+// MongoDB (driver oficial ou mongosh)
+db.bids
+  .find({ status: 'ganha' }, { organization: 1, awarded_value: 1 })
+  .sort({ session_at: -1 })
+```
+
+**Como este projeto ficaria no MongoDB [Pl].** É um bom exercício para responder "você conhece NoSQL?" com profundidade:
+
+- `portfolio_items.photos` já é um array (`text[]`). Num documento do Mongo, as fotos ficariam naturalmente dentro do item, igual.
+- `bids.portfolio_id` é uma chave estrangeira com `on delete set null`. No Mongo, seria só um campo com o `_id` do portfólio, **sem garantia** do banco: se o item fosse apagado, a licitação continuaria apontando para algo que não existe, e o código teria de cuidar disso.
+- O `CHECK (status in (…))` sumiria do banco e passaria para o código (Mongoose ou o Zod).
+- **A RLS não existe no MongoDB.** Toda a autorização deste projeto (seção 4.2) teria de ir para a camada da aplicação. É o argumento mais forte para o PostgreSQL aqui: um sistema com dinheiro, contratos e permissões se beneficia de regras garantidas pelo próprio banco.
+
+**Postgres também guarda documentos.** A coluna `details jsonb` do `audit_log` guarda um JSON livre, como faria um documento do Mongo, e o Postgres permite consultar e indexar campos dentro dele. Muita empresa usa Postgres com `jsonb` justamente para ter as duas coisas.
+
+**Quando o MongoDB é a melhor escolha [Pl]:** dados com formato muito variável (catálogo de produtos com atributos diferentes por categoria), documentos que são lidos sempre inteiros, volume altíssimo de escrita que precisa ser distribuído entre vários servidores (*sharding*), eventos e logs. Quando há muitas relações, regras de integridade e transações envolvendo dinheiro, o relacional costuma ganhar.
+
+**Termos que caem em entrevista**
+
+- **ACID** [Jr → Pl]: Atomicidade (tudo ou nada), Consistência (as regras do banco valem sempre), Isolamento (transações simultâneas não se atrapalham), Durabilidade (gravou, não se perde). As migrations deste projeto rodam entre `begin` e `commit`: se uma linha falhar, nada é aplicado. O MongoDB tem transações com vários documentos desde a versão 4.0, mas o modelo dele incentiva a evitar precisar delas.
+- **Normalização × desnormalização** [Pl]: normalizar é não repetir dados (o nome do órgão fica em uma tabela, e as outras apontam para ela). Desnormalizar é repetir de propósito para ler mais rápido. O relacional tende ao primeiro; o Mongo, ao segundo.
+- **ORM e ODM** [Jr]: bibliotecas que mapeiam tabelas para objetos do código. Para SQL no Node: Prisma, Drizzle, TypeORM, Sequelize, ou o driver `pg` direto. Para Mongo: Mongoose, ou o driver `mongodb`. Este projeto não usa ORM: o SDK do Supabase gera as consultas.
+- **Pool de conexões em serverless** [Pl]: cada função da Vercel que abre uma conexão direta com o Postgres consome uma das poucas conexões que ele aceita (na casa das centenas). Com muitas instâncias ao mesmo tempo, elas acabam. As soluções são um *pooler* (PgBouncer; o Supabase oferece o Supavisor) ou acessar o banco por HTTP, que é o que este projeto faz via PostgREST. Na AWS, o equivalente é o RDS Proxy.
+- **Escala vertical × horizontal** [Pl]: vertical é uma máquina maior; horizontal é mais máquinas. O Postgres escala bem na vertical e com réplicas de leitura; o Mongo foi desenhado para dividir os dados entre máquinas (*sharding*).
+
+**Perguntas**
+
+- *[Jr] Qual a diferença entre SQL e NoSQL?* Tabelas com formato fixo e relações garantidas pelo banco × documentos flexíveis com relações tratadas no código.
+- *[Jr] O Supabase é um banco de dados?* Não: é uma plataforma em cima do PostgreSQL. O banco é o Postgres.
+- *[Pl] Por que Postgres e não Mongo neste projeto?* Dados relacionados (licitação ↔ portfólio, veículo ↔ reservas), regras de integridade (`CHECK`, chave estrangeira) e, principalmente, autorização no banco com RLS.
+- *[Pl] Como você migraria do Supabase para o RDS?* Exportar com `pg_dump` e importar com `pg_restore`; as tabelas, policies e funções vêm junto, porque é Postgres nos dois lados. Trocar o Supabase Auth exigiria adaptar `auth.uid()` nas policies para ler o usuário do JWT do novo provedor (por exemplo, Cognito), e o Storage iria para o S3.
+
+### 4.4 Docker [Jr]
+
+O Docker aparece em quase toda vaga de back-end, junto com o banco.
+
+- **Imagem:** um pacote com tudo o que um programa precisa para rodar (sistema, dependências, código). Exemplo: a imagem oficial `postgres:16`.
+- **Container:** uma imagem em execução, isolada do resto da máquina.
+- **Dockerfile:** a receita para montar a imagem da sua aplicação.
+- **Docker Compose:** um arquivo (`compose.yaml`) que sobe vários containers juntos, por exemplo a API e o banco.
+
+Subir um PostgreSQL local para estudar leva uma linha:
+
+```bash
+docker run --name pg-estudo -e POSTGRES_PASSWORD=estudo -p 5432:5432 -d postgres:16
+```
+
+**No projeto:** a aplicação não usa Docker, porque a Vercel faz o build e roda as funções sem você gerenciar servidor. Mas o Docker entra em dois pontos:
+
+- a **CLI do Supabase** (`supabase start`) sobe uma cópia completa do Supabase na sua máquina usando containers;
+- os **testes de integração das policies** (seção 4.2) precisariam de um Postgres em container no CI, para rodar as migrations do zero e testar o acesso de `anon` e de admin.
+
+**[Pl] Pergunta:** *por que usar container no CI em vez de um banco de teste compartilhado?* Cada execução começa de um banco limpo e idêntico, os testes não interferem uns nos outros, e o ambiente é o mesmo na sua máquina e no GitHub Actions.
 
 ---
 
@@ -678,3 +785,191 @@ Ser pleno não depende do tamanho do projeto, e sim de tempo resolvendo problema
 - explique cada decisão das seções 4 a 7 sem olhar o código;
 - tenha feito pelo menos um exercício [Pl] da seção 12 sozinho;
 - fale com honestidade sobre como o projeto foi feito. Se usou IA como ferramenta, diga isso e mostre que entende e consegue mudar o código. Entrevistador experiente percebe em duas perguntas quando alguém não entende o próprio projeto, e honestidade com domínio técnico pesa mais que parecer ter feito tudo sozinho.
+
+---
+
+## 14. Como achar e corrigir um bug: o caso da mensagem do WhatsApp [Jr → Pl]
+
+Este capítulo segue, passo a passo, um bug real que está no ar. Use o mesmo roteiro em qualquer bug, e conte a história na entrevista quando perguntarem "como você depura um problema?".
+
+### 14.1 O sintoma
+
+Quem pede orçamento pelo site é levado ao WhatsApp com uma mensagem pronta. A mensagem deveria ter os blocos separados por uma linha em branco (título; nome e telefone; trajeto e datas). Ela chega toda grudada:
+
+```
+*Solicitação de Orçamento - Amav's Turismo*
+👤 *Nome:* Ana
+📞 *Telefone:* 61999990000
+🗺️ *Origem:* Brasília
+…
+```
+
+**Como alguém perceberia isso:** testando o formulário de ponta a ponta e olhando a mensagem que chegou, que é o teste que mais pega bug visível. Ou lendo o código com atenção ao `filter(Boolean)` (seção 1.4).
+
+### 14.2 O roteiro
+
+**1. Reproduzir.** Antes de mexer em qualquer coisa, faça o bug acontecer de propósito, do jeito mais curto possível. Não precisa abrir o site: chame a função direto, num terminal dentro de `amavs-next/`:
+
+```bash
+npx tsx -e "import { buildWhatsAppMessage } from './lib/utils'; console.log(JSON.stringify(buildWhatsAppMessage({ name: 'Ana', phone: '61999990000', origin: 'Brasília', destination: 'Goiânia', travelDate: '10/11/2026', passengers: 20 })))"
+```
+
+O `JSON.stringify` mostra os `\n` de forma visível. Aparece `…Turismo*\n👤 *Nome:*…`: só **um** `\n` entre o título e o nome. Deveriam ser dois (`\n\n`).
+
+**2. Localizar.** Procure quem monta a mensagem: na busca do VS Code (`Ctrl+Shift+F`), procure por `Solicitação de Orçamento`. O resultado leva a `buildWhatsAppMessage`, em [`lib/utils.ts:120`](../amavs-next/lib/utils.ts#L120). Leia a função inteira antes de concluir qualquer coisa:
+
+```ts
+const lines = [
+  `*Solicitação de Orçamento - Amav's Turismo*`,
+  ``,                                                  // ← linha em branco desejada
+  `👤 *Nome:* ${params.name}`,
+  …
+  params.returnDate ? `📅 *Data de Volta:* …` : null,  // ← null quando não há volta
+  …
+]
+return lines.filter(Boolean).join('\n')
+```
+
+**3. Levantar uma hipótese e testá-la isolada.** A hipótese é que o `filter(Boolean)` está removendo as linhas vazias junto com os `null`. Teste só essa parte, no console do navegador (F12) ou com `node -e`:
+
+```js
+['título', '', 'nome', null, 'fim'].filter(Boolean)
+// ['título', 'nome', 'fim']  ← o '' sumiu junto com o null
+```
+
+Hipótese confirmada: `''` é falsy, então o `filter(Boolean)` o descarta. O autor queria tirar só os `null` dos campos opcionais.
+
+**4. Escrever o teste que falha, antes de corrigir.** Crie `lib/__tests__/whatsapp.test.ts`:
+
+```ts
+import { describe, expect, it } from 'vitest'
+import { buildWhatsAppMessage } from '../utils'
+
+describe('buildWhatsAppMessage', () => {
+  const pedido = { name: 'Ana', phone: '61999990000', origin: 'Brasília', destination: 'Goiânia', travelDate: '10/11/2026', passengers: 20 }
+
+  it('separa o título dos dados com uma linha em branco', () => {
+    const linhas = buildWhatsAppMessage(pedido).split('\n')
+    expect(linhas[1]).toBe('')
+  })
+
+  it('não inclui campos opcionais que não foram preenchidos', () => {
+    expect(buildWhatsAppMessage(pedido)).not.toContain('Data de Volta')
+  })
+})
+```
+
+Rode `npm test`. O primeiro teste deve **falhar**. Se passar, o teste está errado ou a hipótese está errada. Um teste que nunca falhou não prova nada.
+
+**5. Corrigir com a menor mudança possível.**
+
+```ts
+return lines.filter((linha) => linha !== null).join('\n')
+```
+
+Duas armadilhas que valem conhecer:
+
+- **Tirar o filtro inteiro não funciona.** `['a', null, 'b'].join('\n')` vira `'a\n\nb'`: o `join` transforma `null` em texto vazio, e cada campo opcional não preenchido viraria uma linha em branco a mais. O segundo teste existe para pegar isso.
+- **[Pl] Tipo correto.** O array é `(string | null)[]`. Com `filter((linha): linha is string => linha !== null)`, o TypeScript passa a saber que o resultado é `string[]`. Esse `linha is string` se chama *type guard* (proteção de tipo).
+
+**6. Verificar.** Os dois testes passam, `npm run typecheck` passa, e o teste de ponta a ponta também: abra o site, peça um orçamento e confira a mensagem no WhatsApp. Teste unitário verde não substitui olhar o resultado real.
+
+**7. Registrar.** Um commit pequeno, com mensagem que explica o porquê:
+
+```
+fix: mantém as linhas em branco da mensagem de orçamento no WhatsApp
+
+filter(Boolean) removia as linhas vazias junto com os campos opcionais nulos.
+```
+
+### 14.3 Ferramentas de depuração que vale dominar
+
+| Ferramenta | Quando usar |
+|---|---|
+| `console.log(JSON.stringify(x, null, 2))` | Ver o valor exato, inclusive `''`, `null` e espaços que o log normal esconde |
+| Breakpoint no VS Code ou no navegador (F12 → Sources) | Parar o código numa linha e inspecionar as variáveis daquele momento |
+| Aba Network (F12) | Ver o que o navegador mandou para `/api/leads` e o que voltou (status, corpo) |
+| Logs da Vercel (projeto → Logs) | Ver erros que acontecem no servidor em produção, como o `console.error` das rotas |
+| *Stack trace* | Ler o erro **de baixo para cima** até achar a primeira linha que é do seu código |
+| `git log -p -- lib/utils.ts` e `git blame` | Descobrir quando e por que uma linha mudou |
+| `git bisect` [Pl] | Algo funcionava e parou: o git faz uma busca binária nos commits até achar o que quebrou |
+
+### 14.4 Como contar na entrevista
+
+> "Testando o fluxo de orçamento de ponta a ponta, vi que a mensagem chegava sem as quebras de linha. Reproduzi chamando a função direto no terminal, achei o `filter(Boolean)` que removia os textos vazios junto com os nulos, escrevi um teste que falhava, corrigi o filtro e confirmei no WhatsApp. Também vi que só tirar o filtro criaria outro bug, porque o `join` transforma `null` em linha vazia."
+
+Essa resposta mostra método (reproduzir → isolar → testar → corrigir → verificar) e domínio de um detalhe da linguagem. É exatamente o que o entrevistador procura.
+
+---
+
+## 15. Vitrine: a história do projeto, GitHub e LinkedIn
+
+### 15.1 Da versão PHP para a atual
+
+O repositório guarda as duas versões, e a evolução é uma boa história para contar.
+
+| | Versão antiga (`amavs-v2/`) | Versão atual (`amavs-next/`) |
+|---|---|---|
+| Linguagem | PHP no servidor, HTML e JavaScript no navegador | TypeScript nos dois lados |
+| Páginas | Arquivos `.html` estáticos | Next.js 14 (App Router), com páginas geradas no servidor |
+| Banco | MySQL, via PDO | PostgreSQL no Supabase |
+| Consultas | *Prepared statements* do PDO | SDK do Supabase (API REST do PostgREST) |
+| Login | `session_start` + `password_hash` / `password_verify` | Supabase Auth (JWT) + 2FA TOTP |
+| Autorização | Verificação no código PHP | Middleware + RLS no banco |
+| Hospedagem | Servidor compartilhado (Hostinger) | Vercel (serverless) |
+
+**Pergunta provável:** *por que reescrever?* Resposta honesta e boa: a versão PHP era um site com formulário; a empresa precisava de um sistema (licitações, certidões, frota, agenda) com controle de acesso. Com TypeScript dos dois lados, os tipos de `Bid` e `Vehicle` são os mesmos no banco, na API e na tela. E a autorização no banco protege os dados mesmo se o código tiver um bug. Evite dizer que a versão antiga era "ruim": diga o que ela não atendia.
+
+### 15.2 GitHub
+
+O repositório é público. Quem abrir vai olhar, nesta ordem: o README, a lista de commits e um ou dois arquivos. Então:
+
+- **README com imagens do painel.** O painel é a parte mais interessante e fica atrás do login. Três ou quatro prints (licitações, certidões vencendo, agenda) ou um GIF curto resolvem.
+- **Descrição e tópicos do repositório** (engrenagem ao lado de "About"): uma frase em português e os tópicos `nextjs`, `typescript`, `postgresql`, `supabase`, `row-level-security`, `vitest`.
+- **Link do site no "About"**, de preferência já no domínio oficial.
+- **Commits pequenos e com mensagem clara** continuam valendo mais que qualquer texto.
+
+### 15.3 LinkedIn
+
+Escreva só o que você consegue explicar numa entrevista técnica. Todo item do perfil vira pergunta.
+
+**Título:**
+
+```
+Desenvolvedor Back-end | JavaScript • TypeScript • Node.js • PostgreSQL • Next.js
+```
+
+**Seção "Projetos": Amav's Turismo, sistema de gestão de licitações e frota**
+
+```
+Sistema em produção para uma empresa de transporte de passageiros de Brasília
+que atua com licitações públicas.
+
+• Painel interno: licitações disputadas (sessões, propostas, resultado),
+  certidões de habilitação com alerta de vencimento, frota e agenda.
+• Site público com o portfólio de serviços prestados e atestados técnicos.
+• PostgreSQL (Supabase) com Row Level Security: a autorização é garantida
+  pelo próprio banco, e não só pela aplicação.
+• Rotas de API em Next.js com validação (Zod), limite de requisições e
+  checagem de origem; 2FA (TOTP) no painel.
+• Testes com Vitest e CI no GitHub Actions (typecheck, testes e build).
+
+Stack: TypeScript, Next.js 14, PostgreSQL, Supabase, Tailwind, Vitest.
+```
+
+**Post de divulgação (curto e verificável):**
+
+```
+Coloquei no ar o novo sistema da Amav's Turismo, empresa de transporte de
+Brasília que vive de licitações públicas.
+
+A parte que mais me ensinou foi segurança: descobri que qualquer pessoa podia
+criar uma conta e acessar os dados do painel. Corrigi movendo a autorização
+para o banco, com Row Level Security no PostgreSQL, e expondo ao público só o
+que ele precisa ver.
+
+Código aberto no GitHub: [link]
+Stack: TypeScript, Next.js, PostgreSQL (Supabase), Vitest.
+```
+
+**Evite** colocar no perfil o que o projeto não usa (por exemplo Express, Docker ou AWS) e números de desempenho que você não mediu. Se o entrevistador perguntar e você não souber responder, a impressão é pior do que não ter citado.
