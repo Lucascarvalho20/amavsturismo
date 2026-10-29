@@ -7,6 +7,8 @@ Marcação de nível:
 - **[Jr]** é o que se espera de uma pessoa júnior: saber explicar o que o código faz e por quê.
 - **[Pl]** é o que diferencia uma pessoa pleno: trade-offs, o que quebra em escala e como você mudaria.
 
+Se você está começando em JavaScript, comece pela seção 1: ela mostra cada fundamento da linguagem (variáveis, operadores, condições, laços, funções, arrays e objetos) no código real do projeto.
+
 Não decore as respostas. Em entrevista, o que convence é você abrir o código e explicar com as suas palavras.
 
 ---
@@ -23,11 +25,377 @@ Depois do pitch, o entrevistador vai puxar um fio. Os capítulos abaixo preparam
 
 ---
 
-## 1. O caminho de uma requisição [Jr]
+## 1. Fundamentos de JavaScript no código do projeto [Jr → Pl]
+
+O projeto é escrito em TypeScript, que é JavaScript com tipos. Tudo o que vale para JavaScript vale aqui; os tipos (`: string`, `: number[]`) somem quando o código é compilado. Cada tópico abaixo mostra **onde o conceito aparece de verdade no projeto**. Em entrevista, explicar um conceito com um exemplo do seu próprio código convence muito mais do que a definição decorada.
+
+### 1.1 `var`, `let` e `const`
+
+| | Escopo | Pode reatribuir? | Pode declarar de novo? | Antes da declaração |
+|---|---|---|---|---|
+| `var` | função | sim | sim | existe, vale `undefined` (*hoisting*) |
+| `let` | bloco `{ }` | sim | não | erro (*TDZ*) |
+| `const` | bloco `{ }` | não | não | erro (*TDZ*) |
+
+**No projeto:**
+
+- **Não existe nenhum `var`.** É a prática atual: `const` por padrão, `let` só quando o valor muda.
+- **`const`** na maior parte das variáveis. Exemplo: `const in7 = now.getTime() + 7 * 86_400_000` em [`lib/licitacoes.ts:84`](../amavs-next/lib/licitacoes.ts#L84).
+- **`let` para acumular:** em [`lib/licitacoes.ts:86`](../amavs-next/lib/licitacoes.ts#L86), `let open = 0, won = 0, lost = 0…` são contadores que sobem dentro do laço.
+- **`let` para montar uma consulta em etapas:** em [`app/api/disponibilidade/route.ts:35`](../amavs-next/app/api/disponibilidade/route.ts#L35), `let blocksQ = supabase.from(…)` começa genérica e, se veio um veículo na URL, é reatribuída com mais um filtro (`blocksQ = blocksQ.eq('vehicle_id', vehicleId)`).
+- **`let` no nível do módulo (*singleton*):** em [`lib/supabase-admin.ts:9`](../amavs-next/lib/supabase-admin.ts#L9), `let cached = null` guarda o cliente do banco. Na primeira chamada ele é criado; nas seguintes, reaproveitado.
+
+**[Jr] `const` não significa imutável.** Em [`lib/availability.ts:44`](../amavs-next/lib/availability.ts#L44), `const conflicts: Conflict[] = []` e logo depois `conflicts.push(…)`. Funciona, porque `const` impede **reatribuir a variável** (`conflicts = []` daria erro), não impede **alterar o conteúdo** do array ou do objeto. Para congelar de verdade existe `Object.freeze`, e no TypeScript, `as const` (ver 1.10).
+
+**[Pl] O problema clássico do `var` em laço:**
+
+```js
+for (var i = 0; i < 3; i++) setTimeout(() => console.log(i))  // 3, 3, 3
+for (let i = 0; i < 3; i++) setTimeout(() => console.log(i))  // 0, 1, 2
+```
+
+Com `var` existe **uma** variável `i` para a função inteira; quando os `setTimeout` rodam, o laço já terminou e `i` vale 3. Com `let`, cada volta do laço cria um `i` novo, e cada função guarda o seu. Isso junta três assuntos que caem em entrevista: escopo, *closure* (1.9) e assincronia.
+
+**[Pl] TDZ (*Temporal Dead Zone*):** usar um `let`/`const` antes da linha em que ele é declarado lança `ReferenceError`. Com `var`, o mesmo código roda e devolve `undefined`, escondendo o erro. Por isso `let`/`const` são mais seguros.
+
+### 1.2 Operadores, prefixo e sufixo (`++i` e `i++`)
+
+- `i++` (**sufixo**, *postfix*): soma 1 e devolve o valor **antigo**.
+- `++i` (**prefixo**, *prefix*): soma 1 e devolve o valor **novo**.
+
+```js
+let a = 5
+const b = a++  // b = 5, a = 6
+const c = ++a  // c = 7, a = 7
+```
+
+**No projeto:** em [`lib/licitacoes.ts:90-101`](../amavs-next/lib/licitacoes.ts#L90-L101) aparecem `open++`, `won++`, `lost++` e `sessionsNext7Days++`. E nos laços do calendário, em [`components/ui/MonthCalendar.tsx:72-73`](../amavs-next/components/ui/MonthCalendar.tsx#L72-L73): `for (let i = 0; i < firstDay; i++)`.
+
+**[Jr] Aqui tanto faz `i++` ou `++i`**, porque o valor devolvido não é usado: a linha só incrementa. A diferença só aparece quando o incremento está **dentro de outra expressão** (`const b = a++`).
+
+**[Pl]** Muitos guias de estilo (regra `no-plusplus` do ESLint) preferem `i += 1`, porque `a++` dentro de expressões é fácil de ler errado. Saiba dizer que conhece a regra e por que ela existe.
+
+Outros operadores do projeto: `*` e `+` em `7 * 86_400_000` (o `_` é só separador visual de milhar), `-` e `/` em `(exp - now) / 86_400_000` para contar dias em [`lib/documents.ts:55`](../amavs-next/lib/documents.ts#L55), e `+=` em `score += 1000` em [`lib/availability.ts:122`](../amavs-next/lib/availability.ts#L122).
+
+### 1.3 Operadores lógicos: `&&` (E), `||` (OU), `!` (NÃO) e `??`
+
+**`&&` (E):** verdadeiro só se os dois lados forem verdadeiros.
+
+- Sobreposição de datas em [`lib/availability.ts:29`](../amavs-next/lib/availability.ts#L29): `return aS <= bE && aE >= bS`.
+- Sessão nos próximos 7 dias em [`lib/licitacoes.ts:93`](../amavs-next/lib/licitacoes.ts#L93): `t >= now.getTime() && t <= in7`.
+- Três condições de segurança em [`lib/validation.ts:32`](../amavs-next/lib/validation.ts#L32): o caminho começa com `/` **e** não começa com `//` **e** não tem `\`. Se qualquer uma falhar, o redirecionamento é recusado.
+
+**`||` (OU):** verdadeiro se pelo menos um lado for verdadeiro.
+
+- Em [`lib/supabase-admin.ts:14`](../amavs-next/lib/supabase-admin.ts#L14): `if (!url || !key) return null`. Falta a URL **ou** falta a chave → não dá para criar o cliente.
+
+**`!` (NÃO):** inverte. `!availability.available` é "não está disponível". `!raw.startsWith('//')` é "não começa com `//`".
+
+**Curto-circuito [Jr]:** o JavaScript para de avaliar assim que sabe o resultado. Em `a && b`, se `a` é falso, `b` nem é executado. Em `a || b`, se `a` é verdadeiro, `b` nem é executado. É por isso que `if (!url || !key)` é seguro: se não há URL, a segunda parte nem é olhada.
+
+**`||` e `&&` devolvem um dos valores, não só `true`/`false` [Jr → Pl]:**
+
+```ts
+const end = returnDate || travelDate   // availability.ts:42 — sem volta, a viagem termina no mesmo dia
+email: d.email || null                 // app/api/leads/route.ts:39 — '' vira null no banco
+```
+
+**`??` (*nullish coalescing*) [Pl]:** parecido com `||`, mas só troca o valor se ele for `null` ou `undefined`. O `||` troca qualquer valor *falsy* (inclusive `0` e `''`, ver 1.4). O projeto usa os dois de propósito:
+
+- Em [`components/sections/StatsSection.tsx:86`](../amavs-next/components/sections/StatsSection.tsx#L86): `value: row.value_override ?? computeAuto(row.key)`. Se o admin quiser mostrar **0** num indicador, o `??` respeita o 0. Com `||`, o 0 seria ignorado e o site mostraria o valor calculado: um bug silencioso.
+- Em `email: d.email || null`, o `||` é o certo, porque um e-mail vazio (`''`) também deve virar `null`.
+
+Saber explicar **por que** cada linha usa um operador diferente é resposta de pleno.
+
+**`?.` (*optional chaining*):** `v?.category` devolve `undefined` em vez de dar erro quando `v` é `null`. Exemplo em [`app/api/leads/route.ts`](../amavs-next/app/api/leads/route.ts): `vehicleCategory = v?.category ?? null`.
+
+**`===` em vez de `==` [Jr]:** o projeto só usa `===` (igualdade estrita, sem conversão de tipo). Com `==`, `'0' == 0` e `null == undefined` dão `true`, o que esconde bugs.
+
+**Precedência [Pl]:** `&&` é avaliado antes de `||`. `a || b && c` é `a || (b && c)`. Na dúvida, use parênteses. Misturar `??` com `||` sem parênteses é erro de sintaxe, justamente para evitar essa confusão.
+
+### 1.4 Valores *truthy* e *falsy*
+
+Em um `if`, `&&`, `||` ou `!`, qualquer valor é convertido para verdadeiro ou falso. Os **falsy** são só estes:
+
+`false`, `0`, `-0`, `0n`, `''` (texto vazio), `null`, `undefined` e `NaN`.
+
+**Todo o resto é truthy**, inclusive `'0'`, `'false'`, `[]` (array vazio) e `{}` (objeto vazio).
+
+**No projeto:**
+
+- `if (b.session_at)` em [`lib/licitacoes.ts:91`](../amavs-next/lib/licitacoes.ts#L91): só calcula se a licitação tem data de sessão (`null` é falsy).
+- `if (!travelDate) return …` em [`lib/availability.ts:40`](../amavs-next/lib/availability.ts#L40): sem data, não há o que verificar.
+- `if (!files?.length) return` em [`app/admin/portfolio/page.tsx`](../amavs-next/app/admin/portfolio/page.tsx): cobre dois casos de uma vez, `files` nulo (`undefined`) e lista vazia (`length` = `0`).
+- `.filter(Boolean)` em [`lib/supabase-admin.ts:29-33`](../amavs-next/lib/supabase-admin.ts#L29-L33): `'a@x.com,'.split(',')` gera `['a@x.com', '']`; o `filter(Boolean)` joga fora o texto vazio.
+
+**[Pl] O mesmo `filter(Boolean)` com bug.** Em [`lib/utils.ts:120-138`](../amavs-next/lib/utils.ts#L120-L138), a mensagem do WhatsApp é montada como um array de linhas, com `null` nas linhas opcionais e textos vazios (`''`) para criar linhas em branco entre os blocos. No fim, `lines.filter(Boolean)` remove os `null`, mas também remove os `''`, porque texto vazio é falsy. Resultado: as linhas em branco nunca aparecem e a mensagem chega toda junta. É um bug real, que está no ar. A correção e o teste estão no exercício 1 da seção 1.12.
+
+**[Pl] Array vazio é truthy.** `if (data)` passa mesmo quando a consulta devolveu `[]`. Por isso o projeto testa o tamanho: `if (clients.length === 0) return null` em [`components/sections/ClientsSection.tsx`](../amavs-next/components/sections/ClientsSection.tsx). No JSX, `{lista.length && <Componente />}` mostra um **"0"** na tela quando a lista está vazia. O certo é `{lista.length > 0 && …}`.
+
+### 1.5 Condições: `if`, `else if`, `else` e ternário
+
+**Cadeia de `if` com `return` antecipado (*guard clause*).** Em [`lib/documents.ts:51-58`](../amavs-next/lib/documents.ts#L51-L58):
+
+```ts
+if (!expiresAt) return { status: 'sem_validade', daysLeft: null }
+// …calcula daysLeft…
+if (daysLeft < 0) return { status: 'vencido', daysLeft }
+if (daysLeft <= warnDays) return { status: 'vencendo', daysLeft }
+return { status: 'valido', daysLeft }
+```
+
+- Como cada `if` termina em `return`, não precisa de `else`: se chegou na linha seguinte, a condição anterior era falsa. Isso evita `if` dentro de `if` e deixa o caminho principal sem recuo.
+- **[Jr] A ordem importa.** Um documento com `daysLeft = -3` também é `<= 15`. Se o teste de "vencendo" viesse antes, um documento vencido apareceria como "vence em breve". Em licitação, isso é inabilitação.
+
+**`if / else if` com tipos diferentes:** `statusLabel` em [`lib/utils.ts:62`](../amavs-next/lib/utils.ts#L62) escolhe a tabela de rótulos conforme `type` (`'vehicle'`, `'contract'`, `'lead'`).
+
+**Ternário `condição ? valorSeSim : valorSeNão`:** é um `if/else` que **devolve um valor**, então cabe dentro de uma expressão.
+
+- Em [`lib/validation.ts:32`](../amavs-next/lib/validation.ts#L32): `return caminhoSeguro ? raw : fallback`.
+- Em [`lib/licitacoes.ts:109`](../amavs-next/lib/licitacoes.ts#L109): `winRate: won + lost > 0 ? won / (won + lost) : null`, para não dividir por zero.
+
+**[Pl] Ternário encadeado.** Em [`lib/utils.ts:198`](../amavs-next/lib/utils.ts#L198), `validateFileType` usa `a ? x : b ? y : z`. Funciona, mas fica difícil de ler a partir de três opções. A alternativa é um objeto de consulta (ver 1.6): `const typeSets = { images: …, pdf: …, images_or_pdf: … }; const typeSet = typeSets[allowed]`.
+
+### 1.6 `switch` e quando trocar por um objeto
+
+Em [`components/sections/StatsSection.tsx:63-74`](../amavs-next/components/sections/StatsSection.tsx#L63-L74):
+
+```ts
+const computeAuto = (key: string): number => {
+  switch (key) {
+    case 'fleet_size': return fleetSize
+    case 'total_capacity': return totalCapacity
+    // …
+    default: return 0
+  }
+}
+```
+
+- **[Jr]** O `switch` compara com `===`. Cada `case` aqui termina em `return`, então não precisa de `break`. Sem `return` nem `break`, a execução **continua no próximo `case`** (*fall-through*), o bug mais comum com `switch`.
+- **[Jr]** `default` é o "nenhum dos anteriores": uma chave desconhecida devolve 0 em vez de `undefined`.
+
+**[Pl] Objeto no lugar de `switch`.** O projeto usa muito outra forma: um objeto que mapeia chave → valor. Em [`lib/licitacoes.ts:37`](../amavs-next/lib/licitacoes.ts#L37):
+
+```ts
+export const bidStatusLabel: Record<BidStatus, string> = {
+  prospeccao: 'Prospecção',
+  em_analise: 'Analisando edital',
+  // …
+}
+bidStatusLabel[bid.status]  // 'Prospecção'
+```
+
+A vantagem é do TypeScript: `Record<BidStatus, string>` **obriga** a existir um rótulo para cada status. Se alguém criar um status novo e esquecer o rótulo, o código não compila. Um `switch` com `default` aceitaria o esquecimento calado. Regra prática: para **mapear valor → valor**, prefira o objeto; para **executar lógicas diferentes** em cada caso, `switch` ou `if`.
+
+**[Pl] `switch` exaustivo:** quando o `switch` é necessário, dá para fazer o compilador cobrar todos os casos com `default: { const _exaustivo: never = key; … }`. Se faltar um caso, `key` não é `never` e o build quebra. Ver o exercício 4 da seção 1.12.
+
+### 1.7 Laços: `for`, `for…of`, `while`, `break` e `continue`
+
+**`for` clássico (contador):** em [`components/ui/MonthCalendar.tsx:72-73`](../amavs-next/components/ui/MonthCalendar.tsx#L72-L73), o calendário põe células vazias até o dia da semana em que o mês começa e depois um `Date` para cada dia:
+
+```ts
+for (let i = 0; i < firstDay; i++) result.push(null)
+for (let d = 1; d <= daysInMonth; d++) result.push(new Date(year, month, d))
+```
+
+**`for…of` (percorre os itens):** é o laço mais usado no projeto. Em [`lib/availability.ts:74-86`](../amavs-next/lib/availability.ts#L74-L86):
+
+```ts
+for (const r of reservations) {
+  if (r.vehicle_id !== vehicle.id) continue   // outra van: pula
+  if (r.status === 'cancelada') continue      // reserva cancelada não bloqueia
+  if (rangesOverlap(…)) conflicts.push(…)
+}
+```
+
+- **`continue`** pula para o próximo item. Funciona como *guard clause* dentro do laço.
+- **`return` dentro do laço** encerra a função na hora. Em [`MonthCalendar.tsx:34`](../amavs-next/components/ui/MonthCalendar.tsx#L34), `isDateBlocked` devolve o primeiro bloqueio que encontrar, sem olhar os outros.
+- **`break`** sai só do laço e continua a função. Não aparece no projeto, mas é o equivalente para quando não se quer sair da função.
+
+**`while`:** repete enquanto a condição for verdadeira, para quando não se sabe quantas voltas serão. O projeto não usa, mas o monitor de editais do PNCP (exercício 4 da seção 12) precisaria de um: `while (temMaisPaginas) { buscar a próxima página }`. O `do…while` garante pelo menos uma volta.
+
+**`for…in` [Jr]:** percorre as **chaves** de um objeto. Não use em array: devolve os índices como texto (`'0'`, `'1'`) e pode trazer propriedades herdadas. Para array, `for…of` ou métodos como `.map`.
+
+**[Pl] `await` dentro de laço.** Em [`app/admin/portfolio/page.tsx:176`](../amavs-next/app/admin/portfolio/page.tsx#L176), as fotos são enviadas **uma de cada vez**:
+
+```ts
+for (const file of Array.from(files)) {
+  if (file.size > 8 * 1024 * 1024) { toast.error(…); continue }
+  const { error } = await supabase.storage.from('portfolio').upload(path, file)
+  if (error) { toast.error(…); continue }
+  added.push(…)
+}
+```
+
+- **Sequencial** (como está): mais lento, mas simples. Cada erro é tratado sem derrubar as outras fotos (`continue`), e não sobrecarrega a conexão.
+- **Paralelo** (`Promise.all(files.map(upload))`): mais rápido, mas um erro rejeita tudo. `Promise.allSettled` resolve isso e devolve o resultado de cada uma.
+- **Armadilha:** `files.forEach(async (f) => await upload(f))` **não espera** nada. O `forEach` ignora a Promise devolvida, e a função segue antes de os envios terminarem. Para esperar, use `for…of` ou `Promise.all`.
+
+### 1.8 Funções
+
+**Declaração de função** (o estilo do `lib/`), em [`lib/documents.ts:46-50`](../amavs-next/lib/documents.ts#L46-L50):
+
+```ts
+export function documentStatus(
+  expiresAt: string | null | undefined,
+  today: Date = new Date(),
+  warnDays = 15,
+): { status: DocStatus; daysLeft: number | null } { … }
+```
+
+- **Parâmetros com valor padrão:** quem chama pode passar só a data (`documentStatus('2026-12-01')`); o teste passa também o "hoje" para ter resultado previsível.
+- **Retorno:** a função devolve um objeto com dois campos. Sem `return`, uma função devolve `undefined`.
+- **[Jr] Função pura:** mesma entrada, mesma saída, sem efeito colateral (não lê relógio, banco nem variável de fora). `documentStatus`, `bidStats` e `checkVehicleAvailability` são puras. Por isso os testes em `lib/__tests__/` não precisam de banco.
+
+**Função que devolve função (*factory*):** em [`lib/validation.ts:7`](../amavs-next/lib/validation.ts#L7), `optionalText(120)` devolve uma regra de validação nova para cada tamanho. Funções são **valores** em JavaScript: podem ser guardadas em variável, passadas como argumento e devolvidas por outra função (*first-class functions*). Quem recebe ou devolve função é chamada de **função de ordem superior**: `.map`, `.filter` e `.sort` são exemplos.
+
+**`async function`:** sempre devolve uma Promise. `export async function middleware(request)` em [`middleware.ts`](../amavs-next/middleware.ts) pode usar `await` lá dentro.
+
+**[Pl] *Hoisting* de função.** Uma declaração `function allowlist()` pode ser chamada **antes** da linha em que foi escrita, porque o JavaScript a "iça" para o topo. Uma arrow guardada em `const` (`const loginUrl = () => …`) não pode: cai na TDZ (1.1).
+
+### 1.9 Arrow functions
+
+Sintaxe mais curta: `(parâmetros) => corpo`.
+
+| Forma | Exemplo no projeto |
+|---|---|
+| Um parâmetro, retorno implícito | `.map((e) => e.trim().toLowerCase())`, em [`middleware.ts:14-19`](../amavs-next/middleware.ts#L14-L19) |
+| Sem parâmetro | `const prevMonth = () => setCurrentMonth(new Date(year, month - 1, 1))`, em [`MonthCalendar.tsx`](../amavs-next/components/ui/MonthCalendar.tsx) |
+| Corpo com `{ }` e `return` | `const computeAuto = (key: string): number => { switch … }` |
+| Comparador de ordenação | `.sort((a, b) => a.score - b.score)`, em [`lib/availability.ts:126`](../amavs-next/lib/availability.ts#L126) |
+| Devolvendo um objeto | `setF((p) => ({ ...p, [k]: v }))`, em [`app/admin/portfolio/page.tsx:170`](../amavs-next/app/admin/portfolio/page.tsx#L170) |
+
+- **[Jr] Retorno implícito:** sem `{ }`, a expressão é devolvida sozinha. Com `{ }`, precisa de `return`.
+- **[Jr] Pegadinha do objeto:** para devolver um objeto direto, use parênteses: `() => ({ a: 1 })`. Sem eles, `() => { a: 1 }` é lido como um bloco de código e devolve `undefined`.
+
+**[Jr → Pl] *Closure*.** Uma função "lembra" as variáveis do lugar onde foi criada, mesmo depois que esse lugar terminou de executar.
+
+- Em [`middleware.ts:35`](../amavs-next/middleware.ts#L35), `loginUrl` monta `new URL('/admin/login', request.url)` usando `request`, que não é parâmetro dela: veio do escopo de fora.
+- Em [`StatsSection.tsx:63`](../amavs-next/components/sections/StatsSection.tsx#L63), `computeAuto` lê `fleetSize`, `tripsYear` etc., calculados antes.
+- Em [`lib/rate-limit.ts:5`](../amavs-next/lib/rate-limit.ts#L5), o `Map` `buckets` fica no escopo do módulo e é lembrado entre uma requisição e outra **na mesma instância** do servidor. É exatamente por isso que o rate limit não é global na Vercel (seção 3).
+
+**[Pl] Arrow × `function`:**
+
+- A arrow **não tem `this` próprio**: usa o `this` de onde foi escrita. Isso resolve o problema clássico de perder o `this` em *callbacks*. Também não tem `arguments` e não pode ser usada com `new`.
+- A declaração `function` sofre *hoisting* e tem nome, o que aparece melhor no *stack trace* de um erro.
+- O projeto usa `function` para as funções exportadas do `lib/` (contrato público, testável) e arrow para *callbacks* e funções internas de componentes. É uma convenção; saiba dizer qual e por quê.
+
+### 1.10 Arrays
+
+**Criação e tipos derivados [Jr → Pl].** Em [`lib/licitacoes.ts:25-35`](../amavs-next/lib/licitacoes.ts#L25-L35):
+
+```ts
+export const BID_STATUSES = ['prospeccao', 'em_analise', /* … */] as const
+export type BidStatus = (typeof BID_STATUSES)[number]
+```
+
+`as const` deixa o array somente leitura e faz o TypeScript guardar os textos exatos. A segunda linha cria o tipo `'prospeccao' | 'em_analise' | …` a partir do array. A lista de status existe **num lugar só** no código e alimenta o tipo e os selects do painel (o `CHECK` do banco repete a mesma lista em SQL).
+
+**Métodos que aparecem no projeto:**
+
+| Método | O que faz | Onde |
+|---|---|---|
+| `includes` | o item está na lista? | `OPEN_STATUSES.includes(b.status)` em [`lib/licitacoes.ts:89`](../amavs-next/lib/licitacoes.ts#L89) |
+| `push` | adiciona no fim (altera o array) | `conflicts.push(…)` em `availability.ts` |
+| `map` | transforma cada item, devolve array novo | `vehicles.map((v) => ({ vehicle: v, score }))` em [`availability.ts:112`](../amavs-next/lib/availability.ts#L112) |
+| `filter` | mantém os itens que passam no teste | janela do rate limit em [`lib/rate-limit.ts:9`](../amavs-next/lib/rate-limit.ts#L9) |
+| `every` | todos passam no teste? | limpeza do rate limit em [`lib/rate-limit.ts:15`](../amavs-next/lib/rate-limit.ts#L15) |
+| `sort` | ordena (altera o array) | ranking de veículos em [`availability.ts:126`](../amavs-next/lib/availability.ts#L126) |
+| `split` / `join` | texto ↔ array | `ADMIN_EMAILS.split(',')`; `lines.join('\n')` |
+| `Array.from` | converte "parecido com array" em array | `Array.from(files)`: `FileList` não tem `.map` |
+
+**Encadeamento:** em [`middleware.ts:14-19`](../amavs-next/middleware.ts#L14-L19), `'A@x.com, b@y.com,'` vira `['a@x.com', 'b@y.com']` com `.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean)`. Cada método devolve um array novo para o próximo.
+
+**Desestruturação de array:**
+
+- `const [y, m, d] = expiresAt.split('-').map(Number)`, em [`lib/documents.ts:52`](../amavs-next/lib/documents.ts#L52): `'2026-12-01'` vira `y = 2026`, `m = 12`, `d = 1`.
+- `const [vehiclesRes, blocksRes, resRes] = await Promise.all([…])`, em [`app/api/disponibilidade/route.ts:49`](../amavs-next/app/api/disponibilidade/route.ts#L49): três consultas em paralelo, cada resultado na sua variável.
+
+**Spread `...`:** `setPhotos((p) => [...p, ...added])`, em [`app/admin/portfolio/page.tsx:186`](../amavs-next/app/admin/portfolio/page.tsx#L186), cria um array **novo** com as fotos antigas mais as enviadas.
+
+**[Pl] Mutação × imutabilidade.** `push` e `sort` **alteram** o array original; `map`, `filter` e o spread **criam outro**.
+
+- No React, o estado precisa de um array novo. Com `p.push(…)`, a referência seria a mesma, e o React não perceberia a mudança nem redesenharia a tela. Por isso o spread.
+- Em `rankVehicles`, o `sort` altera um array, mas um que acabou de ser criado pelo `map`, então a lista que veio de fora não é afetada. Se fosse `vehicles.sort(…)` direto, a função deixaria de ser pura. Hoje também existe `toSorted()`, que ordena sem alterar.
+- O comparador `(a, b) => a.score - b.score` devolve negativo (a vem antes), zero ou positivo (b vem antes). Sem comparador, `sort` ordena como **texto**: `[10, 9, 1].sort()` dá `[1, 10, 9]`.
+
+**[Pl] Pegadinha do `map(Number)`.** `'2026-12-01'.split('-').map(Number)` funciona. Já `.map(parseInt)` não: o `map` passa `(valor, índice)`, e o `parseInt` entende o índice como **base numérica**. `['10', '10', '10'].map(parseInt)` dá `[10, NaN, 2]`.
+
+### 1.11 Objetos
+
+**Objeto literal, array de objetos:** a lista de certidões sugeridas em [`lib/documents.ts:18-30`](../amavs-next/lib/documents.ts#L18-L30):
+
+```ts
+{ name: 'CND Federal (Receita/PGFN)', category: 'fiscal', issuer: 'Receita Federal' }
+```
+
+**Propriedade abreviada (*shorthand*):** em [`lib/licitacoes.ts:104-111`](../amavs-next/lib/licitacoes.ts#L104-L111), `return { open, won, lost, … }` é o mesmo que `{ open: open, won: won, … }`.
+
+**Desestruturação de objeto:**
+
+- `const { pathname } = request.nextUrl`, em [`middleware.ts:22`](../amavs-next/middleware.ts#L22).
+- `const { error } = await supabase.storage.from('portfolio').upload(…)`: pega só o campo que interessa da resposta.
+- Renomeando: `const { data: v } = await …` em [`app/api/leads/route.ts`](../amavs-next/app/api/leads/route.ts) guarda `data` na variável `v`.
+- Nos parâmetros, com valor padrão: `function MonthCalendar({ blocks, showNavigation = true, … })`.
+
+**Spread e propriedade computada:** em [`app/admin/portfolio/page.tsx:170`](../amavs-next/app/admin/portfolio/page.tsx#L170):
+
+```ts
+const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
+```
+
+`...p` copia todos os campos do formulário; `[k]: v` sobrescreve o campo cujo **nome está na variável** `k`. Uma única função atualiza qualquer campo: `set('organization', 'CFC')`.
+
+**Objeto como dicionário:** `bidStatusLabel[status]` (seção 1.6) e `ALLOWED_EXTENSIONS[allowed]` em `validateFileType`.
+
+**[Pl] `Map` e `Set` no lugar de objeto.**
+
+- O rate limit usa `new Map<string, number[]>()` em [`lib/rate-limit.ts:5`](../amavs-next/lib/rate-limit.ts#L5), não `{}`. O `Map` aceita qualquer texto como chave sem colidir com nomes herdados (`'constructor'`, `'__proto__'`) e tem `.size` e `.delete`, que a limpeza usa.
+- Os tipos de arquivo aceitos são um `Set`, em [`lib/utils.ts:176`](../amavs-next/lib/utils.ts#L176): `ALLOWED_IMAGE_TYPES.has(file.type)` responde se está na lista sem percorrê-la.
+
+**[Pl] Referência × valor.** Números e textos são copiados; objetos e arrays são passados por **referência**. `const b = a` com objeto não cria uma cópia: `a` e `b` são o mesmo objeto. O spread `{ ...p }` faz uma cópia **rasa**: os campos de primeiro nível são novos, mas um array dentro dele (como `photos`) continua compartilhado. Para cópia profunda existe `structuredClone`. Isso explica por que o React exige objetos novos no estado e por que funções puras não devem alterar o que recebem.
+
+**[Pl] JSON.** O que as rotas devolvem (`NextResponse.json({ ok: true, code })`) é um objeto convertido em texto JSON. `Date`, `Map`, `Set`, `undefined` e funções não sobrevivem a essa conversão. Por isso datas trafegam como texto `'YYYY-MM-DD'` e são convertidas com `parseDbDate` (seção 7.4).
+
+### 1.12 Exercícios de fundamentos
+
+1. **[Jr] Corrigir o bug do WhatsApp.** Em [`lib/utils.ts:138`](../amavs-next/lib/utils.ts#L138), troque `lines.filter(Boolean)` por um filtro que remova só `null` (`.filter((l) => l !== null)`). Escreva antes um teste em `lib/__tests__/` que falhe ("a mensagem tem uma linha em branco depois do título") e depois passe. Em entrevista, isso vira: "achei um bug de truthy/falsy no meu próprio código e escrevi o teste primeiro".
+2. **[Jr] Reescrever `bidStats` de outros jeitos.** Uma versão com `filter(…).length` para cada contador e outra com `reduce`. Compare: qual é mais legível? Quantas vezes cada uma percorre a lista?
+3. **[Jr] Trocar o `switch` por objeto.** Reescreva `computeAuto` em `StatsSection.tsx` como `const autoValues: Record<string, number> = { fleet_size: fleetSize, … }` e `autoValues[key] ?? 0`.
+4. **[Pl] `switch` exaustivo.** Crie uma função `bidStatusColor(status: BidStatus)` com `switch` e `default` usando `never`. Apague um `case` e veja o `npm run typecheck` falhar.
+5. **[Pl] Upload em paralelo.** Reescreva o laço de upload do portfólio com `Promise.allSettled`, mantendo a mensagem de erro por arquivo. Meça a diferença com 10 fotos e explique quando o sequencial ainda é melhor.
+
+### 1.13 Perguntas de entrevista sobre fundamentos
+
+**Júnior**
+
+1. *Diferença entre `var`, `let` e `const`?* Escopo de função × bloco, reatribuição e TDZ. Exemplo: `let open = 0` em `bidStats` porque o contador muda; `const conflicts = []` porque o array é o mesmo, só recebe itens.
+2. *`const` com array pode receber `push`?* Pode. `const` protege a variável, não o conteúdo.
+3. *Diferença entre `i++` e `++i`?* O valor devolvido: antigo × novo. Numa linha sozinha, nenhuma.
+4. *Quais valores são falsy?* `false`, `0`, `''`, `null`, `undefined`, `NaN` (e `-0`, `0n`). `[]` e `{}` são truthy.
+5. *Diferença entre `==` e `===`?* `===` não converte tipo. O projeto só usa `===`.
+6. *O que é arrow function e qual a diferença para `function`?* Sintaxe curta, sem `this` próprio, sem *hoisting*.
+7. *Diferença entre `map`, `filter` e `forEach`?* `map` transforma e devolve array novo; `filter` seleciona; `forEach` só executa e devolve `undefined`.
+8. *Quando usar `for…of` e quando `for…in`?* `for…of` para os valores de um array; `for…in` para as chaves de um objeto.
+
+**Pleno**
+
+1. *Por que o projeto usa `??` num lugar e `||` em outro?* `??` preserva `0` e `''` (override de indicador igual a 0); `||` troca todo falsy (e-mail vazio vira `null`).
+2. *O que é closure? Exemplo no seu código?* `loginUrl` no middleware usa `request`; o `Map` do rate limit sobrevive entre requisições na mesma instância.
+3. *O que acontece com `await` dentro de `forEach`?* Nada espera. Use `for…of` (sequencial) ou `Promise.all` / `allSettled` (paralelo).
+4. *Por que o React exige um array novo no estado?* Ele compara referências. `push` muda o conteúdo, mas a referência continua a mesma.
+5. *`sort` altera o array original?* Sim. Em `rankVehicles` não é problema porque ordena o array criado pelo `map`; para não alterar, `toSorted` ou `[...arr].sort()`.
+6. *Por que `['10','10','10'].map(parseInt)` dá `[10, NaN, 2]`?* O `map` passa o índice como segundo argumento, e o `parseInt` o usa como base.
+7. *`switch` ou objeto de consulta?* Objeto para mapear valor → valor, com `Record` garantindo todas as chaves; `switch` para lógicas diferentes, de preferência exaustivo com `never`.
+8. *Cópia rasa × profunda?* Spread copia só o primeiro nível; `structuredClone` copia tudo.
+
+---
+
+## 2. O caminho de uma requisição [Jr]
 
 Entender por onde uma requisição passa é a base de qualquer conversa de back-end. São três cenários.
 
-### 1.1 Visitante abre `/licitacoes`
+### 2.1 Visitante abre `/licitacoes`
 
 1. O navegador pede `GET /licitacoes` para a Vercel.
 2. O [`middleware.ts`](../amavs-next/middleware.ts) roda primeiro. Como a rota não começa com `/admin`, ele só repassa.
@@ -40,7 +408,7 @@ Entender por onde uma requisição passa é a base de qualquer conversa de back-
 - *O que é SSR? Por que usar aqui?* O HTML é gerado no servidor a cada requisição. Para um site que precisa aparecer no Google para "transporte licitação Brasília", o robô recebe o conteúdo pronto.
 - *Qual a diferença entre Server Component e Client Component?* O Server roda só no servidor, pode acessar segredos e banco, e não manda JavaScript para o navegador. O Client (`'use client'`) roda no navegador e é necessário para estado e interação (`useState`, `onClick`). Exemplo no projeto: `AtestadosSection.tsx` (server, busca dados) renderiza `AtestadosClient.tsx` (client, animações).
 
-### 1.2 Visitante envia o formulário de orçamento
+### 2.2 Visitante envia o formulário de orçamento
 
 1. [`OrcamentoForm.tsx`](../amavs-next/app/(public)/orcamento/OrcamentoForm.tsx) faz `fetch('/api/leads', { method: 'POST', body: JSON })`.
 2. O Route Handler [`app/api/leads/route.ts`](../amavs-next/app/api/leads/route.ts) executa, nesta ordem:
@@ -50,7 +418,7 @@ Entender por onde uma requisição passa é a base de qualquer conversa de back-
    - insere com `service_role` e devolve **201** com o código do pedido.
 3. O formulário abre o WhatsApp **sem esperar** a resposta (`keepalive: true`). Se esperasse, o navegador bloquearia o pop-up, porque `window.open` só é permitido logo após um clique.
 
-### 1.3 Admin entra no painel
+### 2.3 Admin entra no painel
 
 1. `POST /api/admin/check-rate-limit`: o e-mail está bloqueado por tentativas?
 2. `supabase.auth.signInWithPassword`: o Supabase confere a senha e grava cookies de sessão (JWT).
@@ -62,7 +430,7 @@ Entender por onde uma requisição passa é a base de qualquer conversa de back-
 
 ---
 
-## 2. HTTP e APIs [Jr]
+## 3. HTTP e APIs [Jr]
 
 | Código | Onde aparece no projeto | Significado |
 |---|---|---|
@@ -83,18 +451,18 @@ Entender por onde uma requisição passa é a base de qualquer conversa de back-
 
 ---
 
-## 3. Banco de dados [Jr → Pl]
+## 4. Banco de dados [Jr → Pl]
 
 Arquivos: [`supabase/schema.sql`](../amavs-next/supabase/schema.sql) e [`supabase/migrations/`](../amavs-next/supabase/migrations).
 
-### 3.1 Básico [Jr]
+### 4.1 Básico [Jr]
 
 - **Chave primária** `uuid default gen_random_uuid()`. *Por que UUID e não número sequencial?* Não revela quantos registros existem e não deixa adivinhar o próximo id (`/contratos/124`). O custo é ocupar mais espaço e ter índice menos compacto.
 - **Chave estrangeira** `bids.portfolio_id → portfolio_items(id) on delete set null`: se o item do portfólio for apagado, a licitação continua existindo, só perde o vínculo.
 - **CHECK** `status in ('prospeccao', …)`: o banco recusa um status inválido mesmo que o front-end tenha bug. Regra importante no banco não depende do código da aplicação.
 - **Índices** `bids_session_idx (session_at)`: o painel ordena e filtra por data de sessão. Sem índice, o Postgres leria a tabela inteira.
 
-### 3.2 Row Level Security (RLS) [Jr → Pl]
+### 4.2 Row Level Security (RLS) [Jr → Pl]
 
 Este é o conceito mais importante do projeto. O Supabase expõe o banco por uma API REST, e a chave `anon` fica no navegador **de propósito**. Quem decide o que cada um vê são as **policies** no Postgres.
 
@@ -140,7 +508,7 @@ RLS filtra **linhas**; `GRANT` por coluna filtra **colunas**. Juntos, o visitant
 
 ---
 
-## 4. Autenticação e autorização [Jr → Pl]
+## 5. Autenticação e autorização [Jr → Pl]
 
 | Conceito | No projeto |
 |---|---|
@@ -159,7 +527,7 @@ RLS filtra **linhas**; `GRANT` por coluna filtra **colunas**. Juntos, o visitant
 
 ---
 
-## 5. Segurança: os achados como histórias de entrevista [Jr → Pl]
+## 6. Segurança: os achados como histórias de entrevista [Jr → Pl]
 
 Use o formato **Situação → Problema → Ação → Resultado**. Cada achado abaixo dá uma resposta para "conte um problema difícil que você resolveu".
 
@@ -181,9 +549,9 @@ Use o formato **Situação → Problema → Ação → Resultado**. Cada achado 
 
 ---
 
-## 6. Regras de negócio [Jr → Pl]
+## 7. Regras de negócio [Jr → Pl]
 
-### 6.1 Disponibilidade da frota — [`lib/availability.ts`](../amavs-next/lib/availability.ts)
+### 7.1 Disponibilidade da frota — [`lib/availability.ts`](../amavs-next/lib/availability.ts)
 
 Dois intervalos `[aS, aE]` e `[bS, bE]` se sobrepõem quando:
 
@@ -195,25 +563,25 @@ Desenhe numa folha os 4 casos (b antes, b depois, b dentro, b cruzando) e confir
 
 O ranking dá uma pontuação: +1000 se indisponível, +500 se pequeno demais, + o número de lugares sobrando. Menor pontuação ganha. **[Pl]** *Por que essa regra roda no navegador?* Para a resposta ser instantânea enquanto a pessoa digita. Os dados que ela usa, porém, chegam já filtrados pela API (só datas, sem nomes).
 
-### 6.2 Indicadores de licitação — [`lib/licitacoes.ts`](../amavs-next/lib/licitacoes.ts)
+### 7.2 Indicadores de licitação — [`lib/licitacoes.ts`](../amavs-next/lib/licitacoes.ts)
 
 `bidStats` é uma **função pura**: recebe uma lista e uma data "agora" e devolve números, sem acessar banco nem relógio. Por isso é fácil de testar. Passar `now` como parâmetro em vez de usar `new Date()` lá dentro é **injeção de dependência** na forma mais simples.
 
-### 6.3 Validade de certidões — [`lib/documents.ts`](../amavs-next/lib/documents.ts)
+### 7.3 Validade de certidões — [`lib/documents.ts`](../amavs-next/lib/documents.ts)
 
 Compara só **datas de calendário** (`Date.UTC(ano, mês, dia)`), não horários, para "vence hoje" não virar "vencido" às 21h por causa de fuso.
 
-### 6.4 O bug de fuso horário [Pl]
+### 7.4 O bug de fuso horário [Pl]
 
 `new Date('2016-10-24')` é interpretado como meia-noite **UTC**. Exibido em Brasília (UTC-3), vira 23/10. Toda data pura do sistema aparecia um dia antes. A correção em [`lib/utils.ts`](../amavs-next/lib/utils.ts) (`parseDbDate`) trata `YYYY-MM-DD` como data local. O teste roda com `TZ=America/Sao_Paulo` fixo no [`vitest.config.mts`](../amavs-next/vitest.config.mts), porque no CI (UTC) o bug simplesmente não aparece. Esse é o tipo de detalhe que mostra maturidade: o teste precisa reproduzir o ambiente onde o bug acontece.
 
-### 6.5 QR Code permanente
+### 7.5 QR Code permanente
 
 Os QR Codes colados nos ônibus apontam para `/frota/{slug}`, e não para o UUID. O slug é gerado uma vez e não muda, então o adesivo continua funcionando mesmo se o banco for migrado. **Pergunta [Pl]:** *por que não usar o id?* Porque o id é detalhe de implementação do banco, e o QR é um contrato público de longa duração com o mundo físico.
 
 ---
 
-## 7. Testes e CI [Jr → Pl]
+## 8. Testes e CI [Jr → Pl]
 
 ```bash
 cd amavs-next
@@ -233,7 +601,7 @@ npm run typecheck   # tsc --noEmit
 
 ---
 
-## 8. Git e trabalho em equipe [Jr]
+## 9. Git e trabalho em equipe [Jr]
 
 - **Commit pequeno e com mensagem que explica o porquê.** Veja `git log`: `security: fecha vazamentos de dados e restringe o painel a admins`.
 - **Fluxo de empresa:** tarefa no Jira/Issues → `git switch -c feat/minha-tarefa` → commits → `git push` → abrir Pull Request → CI roda → colega revisa → merge na `main` → deploy automático.
@@ -242,7 +610,7 @@ npm run typecheck   # tsc --noEmit
 
 ---
 
-## 9. Ponte para vagas com AWS [Pl]
+## 10. Ponte para vagas com AWS [Pl]
 
 O projeto não usa AWS, e você não deve dizer que usa. Mas saber traduzir cada peça mostra que você entende os conceitos e não só a ferramenta:
 
@@ -257,11 +625,11 @@ O projeto não usa AWS, e você não deve dizer que usa. Mas saber traduzir cada
 | Cron de alertas (a fazer) | EventBridge Scheduler + Lambda | Job agendado diário |
 | Logs | CloudWatch | Logs estruturados + alarmes |
 
-**Exercício que vale ouro:** implementar o monitor de editais do PNCP (seção 11) como uma Lambda agendada pelo EventBridge, gravando no mesmo Postgres. Isso dá uma experiência real de AWS para colocar no currículo.
+**Exercício que vale ouro:** implementar o monitor de editais do PNCP (seção 12) como uma Lambda agendada pelo EventBridge, gravando no mesmo Postgres. Isso dá uma experiência real de AWS para colocar no currículo.
 
 ---
 
-## 10. Perguntas de entrevista
+## 11. Perguntas de entrevista
 
 ### Júnior
 
@@ -271,8 +639,8 @@ O projeto não usa AWS, e você não deve dizer que usa. Mas saber traduzir cada
 4. **O que é uma variável de ambiente e por que usar?** Configuração fora do código: segredos e valores que mudam entre local e produção.
 5. **SQL injection: o projeto corre risco?** As consultas usam o SDK, que parametriza os valores, e os campos que viram filtro (como `vehicle_id`) são validados como UUID antes.
 6. **O que é `async/await`?** Forma de escrever código assíncrono como se fosse sequencial. `Promise.all` roda várias consultas em paralelo, como em `licitacoes/page.tsx`.
-7. **Server Component vs Client Component?** Ver seção 1.1.
-8. **O que o middleware faz?** Ver seção 1.3.
+7. **Server Component vs Client Component?** Ver seção 2.1.
+8. **O que o middleware faz?** Ver seção 2.3.
 9. **Por que TypeScript?** Erros de tipo aparecem antes de rodar. Ex.: o `Record<BidStatus, string>` obriga a ter rótulo para cada status; se um status novo for criado, o compilador avisa.
 10. **Como você testa uma função que depende da data de hoje?** Recebendo a data como parâmetro (`bidStats(bids, now)`).
 
@@ -291,7 +659,7 @@ O projeto não usa AWS, e você não deve dizer que usa. Mas saber traduzir cada
 
 ---
 
-## 11. Exercícios para fixar (e para contar na entrevista)
+## 12. Exercícios para fixar (e para contar na entrevista)
 
 Fazer **um** destes sozinho vale mais que ler o guia inteiro duas vezes.
 
@@ -303,10 +671,10 @@ Fazer **um** destes sozinho vale mais que ler o guia inteiro duas vezes.
 
 ---
 
-## 12. Júnior ou pleno?
+## 13. Júnior ou pleno?
 
 Ser pleno não depende do tamanho do projeto, e sim de tempo resolvendo problemas em produção e de autonomia. Este projeto te coloca em boa posição para vagas **júnior** e ajuda a disputar vagas **pleno** de empresas menores, desde que você:
 
-- explique cada decisão das seções 3 a 6 sem olhar o código;
-- tenha feito pelo menos um exercício [Pl] da seção 11 sozinho;
+- explique cada decisão das seções 4 a 7 sem olhar o código;
+- tenha feito pelo menos um exercício [Pl] da seção 12 sozinho;
 - fale com honestidade sobre como o projeto foi feito. Se usou IA como ferramenta, diga isso e mostre que entende e consegue mudar o código. Entrevistador experiente percebe em duas perguntas quando alguém não entende o próprio projeto, e honestidade com domínio técnico pesa mais que parecer ter feito tudo sozinho.
