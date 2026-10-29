@@ -1,10 +1,10 @@
 'use client'
 
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
+  BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
 } from 'recharts'
-import { demandChartData, revenueChartData, vehicleMixData } from '@/lib/data'
+import type { BidMonth } from '@/lib/dashboard'
 import { formatCurrency } from '@/lib/utils'
 
 const tooltipStyle = {
@@ -16,119 +16,92 @@ const tooltipStyle = {
   boxShadow: '0 4px 20px rgba(0,0,0,0.5)',
 }
 
-const PIE_COLORS = ['#D4AF37', '#507594', '#BB1E1E']
+const axisTick = { fill: 'rgba(255,255,255,0.4)', fontSize: 11 }
+const legendStyle = { color: 'rgba(255,255,255,0.5)', fontSize: 11, paddingTop: 12 }
+const PIE_COLORS = ['#D4AF37', '#507594', '#3d6e52']
 
-export function DemandChart() {
+function EmptyChart({ height, message }: { height: number; message: string }) {
+  return (
+    <div className="flex items-center justify-center text-center text-gray-500 text-sm px-6" style={{ height }}>
+      {message}
+    </div>
+  )
+}
+
+export function BidsByMonthChart({ data }: { data: BidMonth[] }) {
+  const total = data.reduce((sum, m) => sum + m.ganhas + m.perdidas + m.emAndamento + m.semDisputa, 0)
+  if (total === 0) {
+    return <EmptyChart height={220} message="Nenhuma licitação nos últimos 12 meses. Cadastre as disputas em Licitações." />
+  }
+
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <BarChart data={demandChartData.slice(0, 7)} barSize={8} barGap={3}>
+      <BarChart data={data} barSize={14}>
         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-        <XAxis
-          dataKey="name"
-          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-          axisLine={false}
-          tickLine={false}
-        />
-        <YAxis
-          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-          axisLine={false}
-          tickLine={false}
-        />
+        <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
+        <YAxis tick={axisTick} axisLine={false} tickLine={false} allowDecimals={false} />
         <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
-        <Legend
-          wrapperStyle={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, paddingTop: 12 }}
-          iconType="circle"
-          iconSize={8}
-        />
-        <Bar dataKey="onibus" name="Ônibus"       fill="#D4AF37" radius={[3, 3, 0, 0]} />
-        <Bar dataKey="micro"  name="Micro-ônibus" fill="#507594" radius={[3, 3, 0, 0]} />
-        <Bar dataKey="van"    name="Van"          fill="#3d6e52" radius={[3, 3, 0, 0]} />
+        <Legend wrapperStyle={legendStyle} iconType="circle" iconSize={8} />
+        <Bar dataKey="ganhas" name="Ganhas" stackId="resultado" fill="#D4AF37" />
+        <Bar dataKey="perdidas" name="Perdidas" stackId="resultado" fill="#9b3b3b" />
+        <Bar dataKey="emAndamento" name="Em andamento" stackId="resultado" fill="#507594" />
+        <Bar dataKey="semDisputa" name="Desistência / cancelada" stackId="resultado" fill="#4b5563" radius={[3, 3, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   )
 }
 
-export function RevenueChart() {
+export function WonValueChart({ data }: { data: { label: string; valor: number }[] }) {
+  if (data.every((m) => m.valor === 0)) {
+    return <EmptyChart height={220} message="Nenhuma licitação ganha nos últimos 12 meses." />
+  }
+
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <LineChart data={revenueChartData.slice(0, 7)}>
+      <BarChart data={data} barSize={18}>
         <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-        <XAxis
-          dataKey="name"
-          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
-          axisLine={false}
-          tickLine={false}
-        />
+        <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
         <YAxis
-          tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11 }}
+          tick={axisTick}
           axisLine={false}
           tickLine={false}
-          tickFormatter={(v: number) => `R$${Math.round(v / 1000)}k`}
+          tickFormatter={(v: number) => (v >= 1000 ? `R$${Math.round(v / 1000)}k` : `R$${v}`)}
         />
         <Tooltip
           contentStyle={tooltipStyle}
-          formatter={(v: number, name: string) => [formatCurrency(v), name === 'previsto' ? 'Meta' : 'Realizado']}
+          cursor={{ fill: 'rgba(255,255,255,0.03)' }}
+          formatter={(v: number) => [formatCurrency(v), 'Valor ganho']}
         />
-        <Legend
-          wrapperStyle={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, paddingTop: 12 }}
-          iconType="circle"
-          iconSize={8}
-        />
-        <Line
-          dataKey="previsto"
-          name="Meta"
-          stroke="rgba(212,175,55,0.4)"
-          strokeWidth={2}
-          strokeDasharray="5 5"
-          dot={false}
-          activeDot={{ r: 4, fill: '#D4AF37' }}
-        />
-        <Line
-          dataKey="realizado"
-          name="Realizado"
-          stroke="#D4AF37"
-          strokeWidth={2.5}
-          dot={false}
-          activeDot={{ r: 5, fill: '#D4AF37' }}
-        />
-      </LineChart>
+        <Bar dataKey="valor" name="Valor ganho" fill="#D4AF37" radius={[3, 3, 0, 0]} />
+      </BarChart>
     </ResponsiveContainer>
   )
 }
 
-export function VehicleMixChart() {
+export function FleetMixChart({ data }: { data: { name: string; veiculos: number; lugares: number }[] }) {
+  if (data.length === 0) {
+    return <EmptyChart height={140} message="Nenhum veículo cadastrado." />
+  }
+
   return (
     <div className="flex items-center gap-4">
       <ResponsiveContainer width={140} height={140}>
         <PieChart>
-          <Pie
-            data={vehicleMixData}
-            cx="50%"
-            cy="50%"
-            innerRadius={42}
-            outerRadius={62}
-            paddingAngle={3}
-            dataKey="value"
-          >
-            {vehicleMixData.map((_entry, index) => (
-              <Cell key={`cell-${index}`} fill={PIE_COLORS[index]} />
+          <Pie data={data} cx="50%" cy="50%" innerRadius={42} outerRadius={62} paddingAngle={3} dataKey="veiculos">
+            {data.map((entry, index) => (
+              <Cell key={entry.name} fill={PIE_COLORS[index % PIE_COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip
-            contentStyle={tooltipStyle}
-            formatter={(v: number) => [`${v}%`, '']}
-          />
+          <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`${v} veículo(s)`, '']} />
         </PieChart>
       </ResponsiveContainer>
-      <div className="flex flex-col gap-2">
-        {vehicleMixData.map((entry, index) => (
+      <div className="flex flex-col gap-2 min-w-0">
+        {data.map((entry, index) => (
           <div key={entry.name} className="flex items-center gap-2 text-sm">
-            <span
-              className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-              style={{ backgroundColor: PIE_COLORS[index] }}
-            />
+            <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }} />
             <span className="text-gray-400">{entry.name}</span>
-            <span className="text-white font-semibold ml-auto pl-4">{entry.value}%</span>
+            <span className="text-white font-semibold ml-auto pl-4">{entry.veiculos}</span>
+            <span className="text-gray-500 text-xs">{entry.lugares} lugares</span>
           </div>
         ))}
       </div>

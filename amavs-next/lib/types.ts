@@ -108,9 +108,3 @@ export interface TripGallery {
   created_at: string
   updated_at: string
 }
-
-export interface ChartDataPoint {
-  name: string
-  value?: number
-  [key: string]: string | number | undefined
-}

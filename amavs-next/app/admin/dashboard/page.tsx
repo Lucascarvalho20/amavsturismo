@@ -1,100 +1,87 @@
 import { Suspense } from 'react'
-import { MessageSquare, FileText, Bus, TrendingUp, ArrowUpRight, ChevronRight } from 'lucide-react'
+import { MessageSquare, FileText, Bus, Gavel, ArrowUpRight, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase-server'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { bidStats } from '@/lib/licitacoes'
+import { bidsByMonth, fleetByCategory, wonValueByMonth } from '@/lib/dashboard'
 import { LeadStatusBadge, ContractStatusBadge } from '@/components/ui/Badge'
-import { DemandChart, RevenueChart, VehicleMixChart } from './DashboardCharts'
+import { BidsByMonthChart, FleetMixChart, WonValueChart } from './DashboardCharts'
 import LicitacoesAlerts from './LicitacoesAlerts'
 
-async function getStats() {
-  try {
-    const supabase = createClient()
-    const [leads, contracts, vehicles] = await Promise.all([
-      supabase.from('leads').select('id, status').order('created_at', { ascending: false }),
-      supabase.from('contracts').select('id, value, status'),
-      supabase.from('vehicles').select('id, status'),
-    ])
-
-    const pendingLeads       = leads.data?.filter((l) => l.status === 'pendente').length ?? 0
-    const activeContracts    = contracts.data?.filter((c) => c.status === 'ativo') ?? []
-    const activeValue        = activeContracts.reduce((s, c) => s + (Number(c.value) || 0), 0)
-    const availableVehicles  = vehicles.data?.filter((v) => v.status === 'disponivel').length ?? 0
-    const totalVehicles      = vehicles.data?.length ?? 0
-
-    return { pendingLeads, activeContracts: activeContracts.length, activeValue, availableVehicles, totalVehicles, hasData: true }
-  } catch {
-    return { pendingLeads: 0, activeContracts: 0, activeValue: 0, availableVehicles: 0, totalVehicles: 0, hasData: false }
-  }
-}
-
-async function getRecentLeads() {
-  try {
-    const supabase = createClient()
-    const { data } = await supabase
-      .from('leads')
-      .select('id, code, name, origin, destination, travel_date, status, created_at')
-      .order('created_at', { ascending: false })
-      .limit(6)
-    return data ?? []
-  } catch { return [] }
-}
-
-async function getActiveContracts() {
-  try {
-    const supabase = createClient()
-    const { data } = await supabase
+async function loadDashboard() {
+  const supabase = createClient()
+  const [pending, contracts, vehicles, bids, recentLeads] = await Promise.all([
+    // head: true conta no banco sem baixar as linhas
+    supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status', 'pendente'),
+    supabase
       .from('contracts')
       .select('id, code, client, value, status, end_date')
       .eq('status', 'ativo')
+      .order('created_at', { ascending: false }),
+    supabase.from('vehicles').select('status, category, capacity'),
+    supabase.from('bids').select('status, session_at, created_at, awarded_value, proposed_value'),
+    supabase
+      .from('leads')
+      .select('id, code, name, origin, destination, travel_date, status, created_at')
       .order('created_at', { ascending: false })
-      .limit(5)
-    return data ?? []
-  } catch { return [] }
+      .limit(6),
+  ])
+
+  // Se uma tabela ainda não existir (migration não rodada), o painel abre com aquele bloco vazio
+  return {
+    pendingLeads: pending.count ?? 0,
+    activeContracts: contracts.data ?? [],
+    vehicles: vehicles.data ?? [],
+    bids: bids.data ?? [],
+    recentLeads: recentLeads.data ?? [],
+  }
 }
 
 export default async function DashboardPage() {
-  const [stats, recentLeads, activeContracts] = await Promise.all([
-    getStats(),
-    getRecentLeads(),
-    getActiveContracts(),
-  ])
+  const { pendingLeads, activeContracts, vehicles, bids, recentLeads } = await loadDashboard()
+  const now = new Date()
+
+  const activeValue = activeContracts.reduce((sum, c) => sum + (Number(c.value) || 0), 0)
+  const availableVehicles = vehicles.filter((v) => v.status === 'disponivel').length
+  const bidSummary = bidStats(bids, now)
+  const decided = bidSummary.won + bidSummary.lost
 
   const kpis = [
     {
       label: 'Orçamentos Pendentes',
-      value: stats.pendingLeads === 0 ? '—' : stats.pendingLeads.toString(),
-      sub:   stats.pendingLeads === 0 ? 'Nenhum pendente' : 'Aguardando resposta',
-      icon:  MessageSquare,
+      value: pendingLeads === 0 ? '—' : pendingLeads.toString(),
+      sub: pendingLeads === 0 ? 'Nenhum pendente' : 'Aguardando resposta',
+      icon: MessageSquare,
       color: 'text-amber-400',
-      bg:    'bg-amber-500/10 border-amber-500/20',
-      href:  '/admin/orcamentos?status=pendente',
+      bg: 'bg-amber-500/10 border-amber-500/20',
+      href: '/admin/orcamentos?status=pendente',
     },
     {
       label: 'Contratos Ativos',
-      value: stats.activeContracts === 0 ? '—' : stats.activeContracts.toString(),
-      sub:   stats.activeContracts === 0 ? 'Nenhum ativo' : `${formatCurrency(stats.activeValue)} em vigor`,
-      icon:  FileText,
+      value: activeContracts.length === 0 ? '—' : activeContracts.length.toString(),
+      sub: activeContracts.length === 0 ? 'Nenhum ativo' : `${formatCurrency(activeValue)} em vigor`,
+      icon: FileText,
       color: 'text-emerald-400',
-      bg:    'bg-emerald-500/10 border-emerald-500/20',
-      href:  '/admin/contratos',
+      bg: 'bg-emerald-500/10 border-emerald-500/20',
+      href: '/admin/contratos',
     },
     {
       label: 'Frota Disponível',
-      value: stats.totalVehicles === 0 ? '—' : `${stats.availableVehicles}/${stats.totalVehicles}`,
-      sub:   stats.totalVehicles === 0 ? 'Nenhum veículo cadastrado' : `${stats.totalVehicles - stats.availableVehicles} em uso/manutenção`,
-      icon:  Bus,
+      value: vehicles.length === 0 ? '—' : `${availableVehicles}/${vehicles.length}`,
+      sub: vehicles.length === 0 ? 'Nenhum veículo cadastrado' : `${vehicles.length - availableVehicles} em uso/manutenção`,
+      icon: Bus,
       color: 'text-gold',
-      bg:    'bg-gold/10 border-gold/20',
-      href:  '/admin/frota',
+      bg: 'bg-gold/10 border-gold/20',
+      href: '/admin/frota',
     },
     {
-      label: 'Receita Contratos',
-      value: stats.activeValue === 0 ? '—' : formatCurrency(stats.activeValue),
-      sub:   stats.activeValue === 0 ? 'Sem contratos ativos' : 'Total contratos vigentes',
-      icon:  TrendingUp,
+      label: 'Taxa de Sucesso',
+      value: bidSummary.winRate === null ? '—' : `${Math.round(bidSummary.winRate * 100)}%`,
+      sub: decided === 0 ? 'Nenhuma licitação com resultado' : `${bidSummary.won} ganha(s) de ${decided} com resultado`,
+      icon: Gavel,
       color: 'text-blue-400',
-      bg:    'bg-blue-500/10 border-blue-500/20',
-      href:  '/admin/relatorios',
+      bg: 'bg-blue-500/10 border-blue-500/20',
+      href: '/admin/licitacoes',
     },
   ]
 
@@ -127,34 +114,28 @@ export default async function DashboardPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
         <div className="xl:col-span-3 glass-dark rounded-2xl p-5">
-          <h3 className="font-heading font-semibold text-white text-sm mb-1">Demanda por Veículo</h3>
-          <p className="text-gray-500 text-xs mb-4">Jan – Jul (dados de exemplo até o sistema ter histórico)</p>
-          <Suspense fallback={<div className="h-[220px] animate-pulse bg-white/5 rounded-xl" />}>
-            <DemandChart />
-          </Suspense>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-heading font-semibold text-white text-sm">Licitações por mês</h3>
+              <p className="text-gray-500 text-xs mt-0.5">Últimos 12 meses, pelo mês da sessão</p>
+            </div>
+            <a href="/admin/licitacoes" className="text-gold text-xs hover:underline flex items-center gap-1">
+              Ver todas <ChevronRight size={12} />
+            </a>
+          </div>
+          <BidsByMonthChart data={bidsByMonth(bids, now)} />
         </div>
         <div className="xl:col-span-2 glass-dark rounded-2xl p-5">
-          <h3 className="font-heading font-semibold text-white text-sm mb-1">Mix da Frota</h3>
-          <p className="text-gray-500 text-xs mb-4">% por categoria (dados de exemplo)</p>
-          <Suspense fallback={<div className="h-[140px] animate-pulse bg-white/5 rounded-xl" />}>
-            <VehicleMixChart />
-          </Suspense>
+          <h3 className="font-heading font-semibold text-white text-sm mb-1">Frota por categoria</h3>
+          <p className="text-gray-500 text-xs mb-4">Veículos cadastrados e lugares</p>
+          <FleetMixChart data={fleetByCategory(vehicles)} />
         </div>
       </div>
 
       <div className="glass-dark rounded-2xl p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="font-heading font-semibold text-white text-sm">Faturamento — Meta vs Realizado</h3>
-            <p className="text-gray-500 text-xs mt-0.5">Dados de exemplo — atualiza conforme contratos forem lançados</p>
-          </div>
-          <a href="/admin/relatorios" className="text-gold text-xs hover:underline flex items-center gap-1">
-            Ver mais <ChevronRight size={12} />
-          </a>
-        </div>
-        <Suspense fallback={<div className="h-[220px] animate-pulse bg-white/5 rounded-xl" />}>
-          <RevenueChart />
-        </Suspense>
+        <h3 className="font-heading font-semibold text-white text-sm">Valor ganho em licitações</h3>
+        <p className="text-gray-500 text-xs mt-0.5 mb-4">Valor homologado (ou proposto, se ainda não informado), por mês da sessão</p>
+        <WonValueChart data={wonValueByMonth(bids, now)} />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
@@ -204,7 +185,7 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {activeContracts.map((c) => (
+              {activeContracts.slice(0, 5).map((c) => (
                 <div key={c.id} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
                   <div className="min-w-0">
                     <p className="text-white text-sm font-medium truncate">{c.client}</p>

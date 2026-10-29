@@ -31,6 +31,17 @@ export function formatDate(dateString: string): string {
   }).format(parseDbDate(dateString))
 }
 
+const dateTimeFormat = new Intl.DateTimeFormat('pt-BR', {
+  dateStyle: 'short',
+  timeStyle: 'short',
+  timeZone: 'America/Sao_Paulo',
+})
+
+/** Data e hora de Brasília. O fuso fixo faz o servidor (UTC) e o navegador mostrarem a mesma hora. */
+export function formatDateTime(value: string): string {
+  return dateTimeFormat.format(new Date(value))
+}
+
 const CATEGORY_LABEL: Record<VehicleCategory, string> = {
   onibus: 'Ônibus',
   micro: 'Micro-ônibus',
