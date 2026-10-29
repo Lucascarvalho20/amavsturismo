@@ -7,7 +7,7 @@ Marcação de nível:
 - **[Jr]** é o que se espera de uma pessoa júnior: saber explicar o que o código faz e por quê.
 - **[Pl]** é o que diferencia uma pessoa pleno: trade-offs, o que quebra em escala e como você mudaria.
 
-Este é o único guia do projeto: tudo o que serve para estudo e entrevista fica aqui. Se você está começando em JavaScript, comece pela seção 1: ela mostra cada fundamento da linguagem (variáveis, operadores, condições, laços, funções, arrays e objetos) no código real do projeto.
+Este é o único guia do projeto: tudo o que serve para estudo e entrevista fica aqui. Se a dúvida for "o que é Node, React ou API neste projeto", vá direto à seção 16; IA (LLM, RAG, agentes) está na 17, e ideias de APIs externas na 18. Se você está começando em JavaScript, comece pela seção 1: ela mostra cada fundamento da linguagem (variáveis, operadores, condições, laços, funções, arrays e objetos) no código real do projeto.
 
 Não decore as respostas. Em entrevista, o que convence é você abrir o código e explicar com as suas palavras.
 
@@ -128,7 +128,7 @@ Em um `if`, `&&`, `||` ou `!`, qualquer valor é convertido para verdadeiro ou f
 - `if (!files?.length) return` em [`app/admin/portfolio/page.tsx`](../amavs-next/app/admin/portfolio/page.tsx): cobre dois casos de uma vez, `files` nulo (`undefined`) e lista vazia (`length` = `0`).
 - `.filter(Boolean)` em [`middleware.ts:14-19`](../amavs-next/middleware.ts#L14-L19): `'a@x.com,'.split(',')` gera `['a@x.com', '']`; o `filter(Boolean)` joga fora o texto vazio.
 
-**[Pl] O mesmo `filter(Boolean)` com bug.** Em [`lib/utils.ts:69-87`](../amavs-next/lib/utils.ts#L69-L87), a mensagem do WhatsApp é montada como um array de linhas, com `null` nas linhas opcionais e textos vazios (`''`) para criar linhas em branco entre os blocos. No fim, `lines.filter(Boolean)` remove os `null`, mas também remove os `''`, porque texto vazio é falsy. Resultado: as linhas em branco nunca aparecem e a mensagem chega toda junta. É um bug real, que está no ar. A seção 14 mostra, passo a passo, como achar e corrigir esse bug.
+**[Pl] O mesmo `filter(Boolean)` com bug.** Em [`lib/utils.ts:80-98`](../amavs-next/lib/utils.ts#L80-L98), a mensagem do WhatsApp é montada como um array de linhas, com `null` nas linhas opcionais e textos vazios (`''`) para criar linhas em branco entre os blocos. No fim, `lines.filter(Boolean)` remove os `null`, mas também remove os `''`, porque texto vazio é falsy. Resultado: as linhas em branco nunca aparecem e a mensagem chega toda junta. É um bug real, que está no ar. A seção 14 mostra, passo a passo, como achar e corrigir esse bug.
 
 **[Pl] Array vazio é truthy.** `if (data)` passa mesmo quando a consulta devolveu `[]`. Por isso o projeto testa o tamanho: `if (clients.length === 0) return null` em [`components/sections/ClientsSection.tsx`](../amavs-next/components/sections/ClientsSection.tsx). No JSX, `{lista.length && <Componente />}` mostra um **"0"** na tela quando a lista está vazia. O certo é `{lista.length > 0 && …}`.
 
@@ -172,7 +172,7 @@ const typeSet = allowed === 'images' ? IMAGE_TYPES : allowed === 'pdf' ? PDF_TYP
 const expected = allowed === 'images' ? 'JPG, PNG…' : allowed === 'pdf' ? 'PDF' : 'JPG, PNG… ou PDF'
 ```
 
-Funcionava, mas a cada tipo novo seria preciso mexer nos dois ternários sem esquecer nenhum. Hoje as regras ficam numa tabela, em [`lib/utils.ts:108`](../amavs-next/lib/utils.ts#L108), e a função só consulta: `const rule = UPLOAD_RULES[allowed]`. O `Record<UploadKind, …>` obriga cada tipo a ter tipos de arquivo, extensões e texto da mensagem. É a mesma ideia da seção 1.6, e um bom exemplo de "o que você refatoraria": um ternário com mais de duas saídas costuma pedir um objeto de consulta.
+Funcionava, mas a cada tipo novo seria preciso mexer nos dois ternários sem esquecer nenhum. Hoje as regras ficam numa tabela, em [`lib/utils.ts:119`](../amavs-next/lib/utils.ts#L119), e a função só consulta: `const rule = UPLOAD_RULES[allowed]`. O `Record<UploadKind, …>` obriga cada tipo a ter tipos de arquivo, extensões e texto da mensagem. É a mesma ideia da seção 1.6, e um bom exemplo de "o que você refatoraria": um ternário com mais de duas saídas costuma pedir um objeto de consulta.
 
 ### 1.6 `switch` e quando trocar por um objeto
 
@@ -371,7 +371,7 @@ const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
 **[Pl] `Map` e `Set` no lugar de objeto.**
 
 - O rate limit usa `new Map<string, number[]>()` em [`lib/rate-limit.ts:5`](../amavs-next/lib/rate-limit.ts#L5), não `{}`. O `Map` aceita qualquer texto como chave sem colidir com nomes herdados (`'constructor'`, `'__proto__'`) e tem `.size` e `.delete`, que a limpeza usa.
-- Os tipos de arquivo aceitos são `Set`s, em [`lib/utils.ts:108`](../amavs-next/lib/utils.ts#L108): `rule.types.has(file.type)` responde se o tipo está na lista sem percorrê-la, como faria um `array.includes`.
+- Os tipos de arquivo aceitos são `Set`s, em [`lib/utils.ts:119`](../amavs-next/lib/utils.ts#L119): `rule.types.has(file.type)` responde se o tipo está na lista sem percorrê-la, como faria um `array.includes`.
 
 **[Pl] Referência × valor.** Números e textos são copiados; objetos e arrays são passados por **referência**. `const b = a` com objeto não cria uma cópia: `a` e `b` são o mesmo objeto. O spread `{ ...p }` faz uma cópia **rasa**: os campos de primeiro nível são novos, mas um array dentro dele (como `photos`) continua compartilhado. Para cópia profunda existe `structuredClone`. Isso explica por que o React exige objetos novos no estado e por que funções puras não devem alterar o que recebem.
 
@@ -379,7 +379,7 @@ const set = (k, v) => setF((p) => ({ ...p, [k]: v }))
 
 ### 1.12 Exercícios de fundamentos
 
-1. **[Jr] Corrigir o bug do WhatsApp.** Em [`lib/utils.ts:87`](../amavs-next/lib/utils.ts#L87), o `filter(Boolean)` apaga as linhas em branco da mensagem. Tente achar e corrigir sozinho; o roteiro completo, com o teste, está na seção 14.
+1. **[Jr] Corrigir o bug do WhatsApp.** Em [`lib/utils.ts:98`](../amavs-next/lib/utils.ts#L98), o `filter(Boolean)` apaga as linhas em branco da mensagem. Tente achar e corrigir sozinho; o roteiro completo, com o teste, está na seção 14.
 2. **[Jr] Reescrever `bidStats` de outros jeitos.** Uma versão com `filter(…).length` para cada contador e outra com `reduce`. Compare: qual é mais legível? Quantas vezes cada uma percorre a lista?
 3. **[Jr] Trocar o `switch` por objeto.** Reescreva `computeAuto` em `StatsSection.tsx` como `const autoValues: Record<string, number> = { fleet_size: fleetSize, … }` e `autoValues[key] ?? 0`.
 4. **[Pl] `switch` exaustivo.** Crie uma função `bidStatusColor(status: BidStatus)` com `switch` e `default` usando `never`. Apague um `case` e veja o `npm run typecheck` falhar.
@@ -651,6 +651,8 @@ docker run --name pg-estudo -e POSTGRES_PASSWORD=estudo -p 5432:5432 -d postgres
 - **AAL** [Pl]: *Authenticator Assurance Level*. AAL1 = provou um fator (senha). AAL2 = provou dois. O bug original: o 2FA podia ser cadastrado, mas como ninguém conferia o AAL, a senha sozinha bastava.
 - **Bloqueio de força bruta** [Pl]: o bloqueio era só por e-mail, e a rota que registra falhas era pública. Um script mandando 5 falhas a cada 15 minutos deixava o dono trancado para sempre: o mecanismo de defesa virou ataque (negação de serviço). A correção conta por **e-mail + IP** (5 falhas) e tem um teto global por e-mail (20), para pegar ataque distribuído. Ver [`check-rate-limit/route.ts`](../amavs-next/app/api/admin/check-rate-limit/route.ts).
 - **Log de auditoria confiável** [Pl]: a rota `log-attempt` só grava "login com sucesso" se a própria requisição trouxer uma sessão válida do mesmo e-mail. Senão, qualquer um forjaria entradas no log.
+- **Tela de perfil** [Jr → Pl]: em [`app/admin/perfil/`](../amavs-next/app/admin/perfil/page.tsx), o admin vê se o 2FA está ativo (lido com `mfa.listFactors()` no servidor), as últimas tentativas de login com o próprio e-mail (a tabela `login_attempts` só é legível por admin, pela policy da seção 4.2) e pode **sair de todos os aparelhos**.
+- **"Sair de todos os aparelhos" e JWT** [Pl]: `signOut({ scope: 'global' })` revoga os *refresh tokens* de todas as sessões. O *access token* (JWT) de um aparelho já logado, porém, continua válido até expirar (cerca de 1 hora), porque o JWT não é consultado no servidor a cada uso: ele é verificado pela assinatura. Esse é o preço de um token sem estado. Para cortar na hora, seria preciso um tempo de expiração menor ou uma lista de tokens revogados consultada a cada requisição.
 
 ---
 
@@ -706,13 +708,24 @@ Compara só **datas de calendário** (`Date.UTC(ano, mês, dia)`), não horário
 
 Os QR Codes colados nos ônibus apontam para `/frota/{slug}`, e não para o UUID. O slug é gerado uma vez e não muda, então o adesivo continua funcionando mesmo se o banco for migrado. **Pergunta [Pl]:** *por que não usar o id?* Porque o id é detalhe de implementação do banco, e o QR é um contrato público de longa duração com o mundo físico.
 
+### 7.6 Dashboard com dados reais [Jr → Pl]
+
+Os gráficos do painel mostravam números inventados, fixos num arquivo. Hoje saem do banco, e o desenho segue as regras do projeto:
+
+- **Regra de negócio em função pura:** [`lib/dashboard.ts`](../amavs-next/lib/dashboard.ts) tem `bidsByMonth`, `wonValueByMonth` e `fleetByCategory`. Recebem as linhas e o "agora" e devolvem os números do gráfico, com testes em `lib/__tests__/dashboard.test.ts`.
+- **O servidor calcula, o navegador desenha:** a página (Server Component) busca as licitações e chama as funções; o componente de gráfico (Client Component, por causa do Recharts) recebe só os 12 pontos de cada série. As linhas do banco não vão para o navegador.
+- **Contar no banco:** os orçamentos pendentes usam `select('id', { count: 'exact', head: true })`. O Postgres faz um `count(*)` e devolve só o número, em vez de baixar todos os orçamentos para contar no JavaScript.
+- **[Pl] O fuso de novo:** `monthKey` usa `Intl.DateTimeFormat` com `timeZone: 'America/Sao_Paulo'`. Com `getMonth()`, o servidor da Vercel (em UTC) colocaria uma sessão de 31/10 às 22h em novembro. É o mesmo problema da seção 7.4, agora com mês em vez de dia.
+- **Estado vazio:** sem licitações cadastradas, o gráfico mostra uma frase dizendo o que fazer, em vez de um gráfico zerado. Detalhe de produto que entrevistador nota.
+- **Indicador que faltava:** o card "Receita Contratos" repetia o valor de "Contratos Ativos"; virou **Taxa de sucesso** em licitações, reaproveitando `bidStats` (seção 7.2).
+
 ---
 
 ## 8. Testes e CI [Jr → Pl]
 
 ```bash
 cd amavs-next
-npm test            # 37 testes, Vitest
+npm test            # 43 testes, Vitest
 npm run typecheck   # tsc --noEmit
 ```
 
@@ -721,6 +734,7 @@ npm run typecheck   # tsc --noEmit
 | `availability.test.ts` | sobreposição de datas, bloqueio indefinido, reserva cancelada, ranking |
 | `licitacoes.test.ts` | indicadores, validade de certidões, slugs |
 | `validation.test.ts` | Zod, redirect seguro, rate limit, data em fuso de Brasília |
+| `dashboard.test.ts` | mês no fuso de Brasília, virada de ano, agregações dos gráficos |
 
 - **Pirâmide de testes** [Jr]: muitos testes unitários (rápidos, lógica pura), alguns de integração (rota + banco) e poucos end-to-end (navegador). O projeto hoje tem a base unitária.
 - **CI** [Jr]: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) roda `npm ci`, typecheck, testes e build a cada push e Pull Request. `npm ci` (e não `npm install`) instala exatamente o que está no `package-lock.json`.
@@ -836,7 +850,7 @@ npx tsx -e "import { buildWhatsAppMessage } from './lib/utils'; console.log(JSON
 
 O `JSON.stringify` mostra os `\n` de forma visível. Aparece `…Turismo*\n👤 *Nome:*…`: só **um** `\n` entre o título e o nome. Deveriam ser dois (`\n\n`).
 
-**2. Localizar.** Procure quem monta a mensagem: na busca do VS Code (`Ctrl+Shift+F`), procure por `Solicitação de Orçamento`. O resultado leva a `buildWhatsAppMessage`, em [`lib/utils.ts:69`](../amavs-next/lib/utils.ts#L69). Leia a função inteira antes de concluir qualquer coisa:
+**2. Localizar.** Procure quem monta a mensagem: na busca do VS Code (`Ctrl+Shift+F`), procure por `Solicitação de Orçamento`. O resultado leva a `buildWhatsAppMessage`, em [`lib/utils.ts:80`](../amavs-next/lib/utils.ts#L80). Leia a função inteira antes de concluir qualquer coisa:
 
 ```ts
 const lines = [
@@ -993,3 +1007,219 @@ Stack: TypeScript, Next.js, PostgreSQL (Supabase), Vitest.
 ```
 
 **Evite** colocar no perfil o que o projeto não usa (por exemplo Express, Docker ou AWS) e números de desempenho que você não mediu. Se o entrevistador perguntar e você não souber responder, a impressão é pior do que não ter citado.
+
+---
+
+## 16. Mapa da stack: Node.js, React e APIs no projeto [Jr → Pl]
+
+Em entrevista, a pergunta "você usa Node? e React?" pede uma resposta precisa. Esta seção diz exatamente **onde** cada coisa entra no projeto e o que **não** é usado. Não diga que usa o que não usa: uma pergunta de acompanhamento desmonta.
+
+### 16.1 Node.js
+
+**O que é:** o Node.js executa JavaScript **fora do navegador**, no servidor ou na sua máquina. Ele não é linguagem nem framework: é o ambiente de execução (*runtime*). A linguagem é JavaScript/TypeScript; o framework, aqui, é o Next.js.
+
+**Onde o Node roda neste projeto:**
+
+| Onde | O que o Node faz |
+|---|---|
+| Sua máquina | `npm run dev`, `npm run build`, `npm test`: o servidor de desenvolvimento, o compilador e o Vitest rodam no Node |
+| GitHub Actions | O CI instala o Node 20 (`node-version: 20` em [`ci.yml`](../.github/workflows/ci.yml)) e roda typecheck, testes e build |
+| Vercel (produção) | Os **Server Components** (páginas que buscam dados) e os **Route Handlers** (`app/api/*/route.ts`) rodam em funções serverless com Node.js |
+| Middleware | **Não é Node:** o [`middleware.ts`](../amavs-next/middleware.ts) roda no *Edge Runtime*, um ambiente mais leve com só as APIs da Web (`fetch`, `Request`, `URL`), sem os módulos do Node como `fs` e `crypto` |
+
+**Um módulo nativo do Node no projeto:** em [`app/api/admin/clear-rate-limit/route.ts`](../amavs-next/app/api/admin/clear-rate-limit/route.ts), `import { timingSafeEqual } from 'crypto'` compara a chave recebida com a esperada **em tempo constante**. Uma comparação comum (`===`) para no primeiro caractere diferente; medindo o tempo de resposta, um atacante conseguiria descobrir a chave aos poucos (*timing attack*). É um ótimo detalhe para citar.
+
+**O que o projeto não usa: Express, Fastify ou NestJS.** Os Route Handlers do Next.js fazem o mesmo papel. Compare:
+
+```ts
+// Express
+app.post('/api/leads', async (req, res) => {
+  const parsed = leadSchema.safeParse(req.body)
+  if (!parsed.success) return res.status(400).json({ error: 'Dados inválidos' })
+  // …grava no banco…
+  res.status(201).json({ ok: true, code })
+})
+
+// Next.js (app/api/leads/route.ts)
+export async function POST(request: NextRequest) {
+  const parsed = leadSchema.safeParse(await request.json())
+  if (!parsed.success) return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
+  // …grava no banco…
+  return NextResponse.json({ ok: true, code }, { status: 201 })
+}
+```
+
+O modelo é o mesmo: recebe a requisição, valida, consulta o banco e devolve uma resposta com status HTTP. A diferença é que no Next.js a rota é definida pelo **caminho do arquivo**, e a função exportada tem o nome do **método HTTP**.
+
+**Como dizer na entrevista:**
+
+> "O back-end é Node.js com TypeScript. Em vez de Express, uso os Route Handlers do Next.js, que rodam como funções serverless na Vercel; o fluxo é o mesmo de uma API Express: validação com Zod, rate limit, checagem de origem e resposta com o status certo."
+
+**Conceitos de Node que caem em entrevista**
+
+- **[Jr] Assíncrono e `await`:** ler o banco leva milissegundos; o Node não fica parado esperando. O dashboard faz cinco consultas ao mesmo tempo com `Promise.all` em [`app/admin/dashboard/page.tsx`](../amavs-next/app/admin/dashboard/page.tsx): o tempo total é o da consulta mais lenta, não a soma das cinco.
+- **[Jr] `process.env`:** as variáveis de ambiente (`ADMIN_EMAILS`, `SUPABASE_SERVICE_ROLE_KEY`) são lidas pelo Node no servidor. As que começam com `NEXT_PUBLIC_` também vão para o navegador; as outras, nunca.
+- **[Jr] npm, `package.json` e `package-lock.json`:** o primeiro lista as dependências com faixas de versão (`^18.3.1`); o *lock* grava a versão exata instalada. `npm ci` instala exatamente o *lock*, por isso o CI usa ele.
+- **[Pl] Event loop:** o JavaScript do Node roda numa **única thread**. Enquanto espera o banco, ela atende outras requisições, o que faz o Node ser ótimo para I/O (rede, banco, arquivos). Uma conta pesada de CPU (redimensionar foto, gerar PDF grande), porém, trava todas as requisições daquela instância. As saídas são `worker_threads`, uma fila com um serviço separado ou uma função serverless dedicada.
+- **[Pl] Serverless × servidor sempre ligado:** na Vercel cada requisição pode cair numa instância nova (*cold start*), e nada fica na memória com garantia. Por isso o rate limit em memória não é global (seção 3), e o cliente do banco é guardado num `let cached` por instância ([`lib/supabase-admin.ts`](../amavs-next/lib/supabase-admin.ts)).
+- **[Pl] Edge × Node runtime:** o Edge inicia mais rápido e roda perto do usuário, mas não tem as APIs do Node. Serve para o middleware, que só confere a sessão e redireciona. Rotas que usam `crypto` do Node ou bibliotecas pesadas precisam do runtime Node.
+
+**Exercício [Jr] que ajuda em vaga que pede Express:** reescreva `POST /api/leads` num servidor Express separado (`npm i express`), com os mesmos status (400, 403, 429, 201). Em seguida, escreva um teste com `supertest`. Assim você fala de Express por experiência própria.
+
+### 16.2 React
+
+**O que é:** uma biblioteca para montar interfaces a partir de **componentes**: funções que recebem dados (*props*) e devolvem o que aparece na tela (JSX). O projeto usa **React 18**, através do Next.js 14.
+
+**O que você usa de React neste projeto, com exemplos:**
+
+| Conceito | Onde |
+|---|---|
+| Componente e *props* | `<PortfolioCard item={…} />`; os gráficos recebem `data` pronta: `<BidsByMonthChart data={…} />` |
+| Estado com `useState` (mais de 100 usos) | Formulário de senha em [`app/admin/perfil/ProfileClient.tsx`](../amavs-next/app/admin/perfil/ProfileClient.tsx): `newPw`, `confirmPw`, `pwLoading` |
+| Input controlado | `value={newPw}` + `onChange={(e) => setNewPw(e.target.value)}`: o React é a fonte da verdade do campo |
+| Renderização condicional | `{mfaSince ? <Ativo /> : <Configurar />}` no card de 2FA do perfil |
+| Lista com `key` | `recentLogins.map((login, index) => <li key={…}>)` |
+| Efeito com limpeza (`useEffect`) | [`components/admin/SessionGuard.tsx`](../amavs-next/components/admin/SessionGuard.tsx) registra os eventos de atividade e, no `return`, remove os *listeners* (`removeEventListener`) para não vazar memória |
+| Valor memorizado (`useMemo`) | O ranking de veículos no [`OrcamentoForm.tsx`](../amavs-next/app/(public)/orcamento/OrcamentoForm.tsx) só é recalculado quando passageiros, datas ou veículos mudam |
+| Formulário com validação | `react-hook-form` + `zodResolver` no login e no orçamento: um schema Zod valida no navegador, e o servidor valida de novo com o `leadSchema` |
+| Navegação | `useRouter` e `usePathname` do Next.js |
+| Bibliotecas de componentes | Recharts (gráficos), Framer Motion (animações), react-hot-toast (avisos), lucide-react (ícones) |
+
+**Server Component × Client Component** (o ponto mais importante do React moderno, seção 2.1):
+
+- Os **Server Components** rodam só no servidor, podem consultar o banco direto e não mandam JavaScript para o navegador. Exemplo: [`app/admin/dashboard/page.tsx`](../amavs-next/app/admin/dashboard/page.tsx) busca as licitações e **calcula** as agregações.
+- Os **Client Components** (`'use client'`) rodam no navegador e são necessários para estado, eventos e bibliotecas que mexem no DOM. Exemplo: [`DashboardCharts.tsx`](../amavs-next/app/admin/dashboard/DashboardCharts.tsx), porque o Recharts desenha no navegador.
+- O dashboard combina os dois: o servidor manda para o navegador só os 12 números de cada gráfico, não as linhas do banco.
+
+**O que o projeto não usa:** Redux, Zustand ou React Query. O estado é local de cada tela (`useState`), e os dados vêm do servidor. Para o tamanho do painel, isso basta, e é uma boa resposta para "por que não Redux?": não havia estado compartilhado entre muitas telas que justificasse.
+
+**Como dizer na entrevista:**
+
+> "No front uso React 18 com Next.js. As páginas que buscam dados são Server Components, então o banco é consultado no servidor e o navegador recebe HTML pronto. Só o que precisa de interação é Client Component: formulários com react-hook-form e Zod, os gráficos e o calendário da frota."
+
+**[Pl] Pontos de aprofundamento**
+
+- **Hidratação:** o servidor gera o HTML, e o React no navegador "assume" aquele HTML. Se o conteúdo gerado nos dois lados for diferente, há erro de hidratação. Foi por isso que `formatDateTime` em [`lib/utils.ts`](../amavs-next/lib/utils.ts) fixa `timeZone: 'America/Sao_Paulo'`: o servidor da Vercel está em UTC, o navegador em Brasília, e sem o fuso fixo a hora mostrada seria diferente nos dois.
+- **Dependências do `useEffect` e do `useMemo`:** esquecer uma dependência deixa o valor desatualizado; colocar um objeto recriado a cada render faz o efeito rodar sempre.
+- **Proporção de Client Components:** hoje 45 dos 71 arquivos `.tsx` são Client Components. Várias telas do painel poderiam buscar dados no servidor e deixar no cliente só os formulários. É um bom "o que eu melhoraria".
+
+### 16.3 APIs
+
+"API" é qualquer contrato para um programa conversar com outro. No projeto aparecem três tipos.
+
+**APIs que o projeto oferece** (Route Handlers, todos REST + JSON):
+
+| Rota | Método | Para quê | Proteção |
+|---|---|---|---|
+| `/api/leads` | POST | Formulário de orçamento | Origem, rate limit, Zod, honeypot |
+| `/api/disponibilidade` | GET | Períodos ocupados da frota, sem dados de clientes | Validação do parâmetro, cache de 60 s na CDN |
+| `/api/admin/check-rate-limit` | POST | O e-mail está bloqueado por tentativas? | Origem |
+| `/api/admin/log-attempt` | POST | Registra tentativa de login | Origem; sucesso só com sessão válida |
+| `/api/admin/clear-rate-limit` | POST | Desbloqueia um e-mail | Origem + chave no cabeçalho, comparada em tempo constante |
+| `/auth/callback` | GET | Retorno dos links de e-mail do Supabase (recuperação de senha) | Redirecionamento só para caminho interno |
+
+**APIs que o projeto consome:**
+
+- **Supabase**: o banco via **API REST** gerada pelo PostgREST (seção 4.3), o **Auth** (login, 2FA, sessões) e o **Storage** (fotos e certidões, com URL assinada de 60 s para as privadas). O SDK `@supabase/supabase-js` transforma `supabase.from('bids').select(…)` em chamadas HTTP.
+- **WhatsApp**: o projeto **não** usa a API do WhatsApp. Ele monta um link `https://wa.me/<número>?text=<mensagem>` (*deep link*), e quem envia é o próprio cliente. É grátis e não precisa de aprovação da Meta; a API oficial (WhatsApp Business Cloud API) seria necessária para a empresa **mandar** mensagens automaticamente.
+- **Google Fonts** (fontes) e o script de métricas da Vercel, liberados no CSP.
+
+**O que não é usado:** GraphQL, WebSocket (o Supabase Realtime existe, mas o projeto não usa), webhooks e gRPC. Saiba dizer em uma frase o que é cada um: **GraphQL** deixa o cliente escolher os campos numa única rota; **WebSocket** mantém uma conexão aberta para o servidor empurrar dados; **webhook** é o outro sistema chamar a sua API quando algo acontece; **gRPC** é chamada entre serviços com contrato binário (Protobuf).
+
+**[Pl] Perguntas sobre desenho de API**
+
+- *Como você paginaria `GET /api/licitacoes`?* `?limit=20&cursor=<id da última>` (paginação por cursor) é estável quando entram registros novos; `?page=3` (por *offset*) é mais simples, mas pula ou repete itens se a lista mudar entre as páginas.
+- *O que é idempotência?* Repetir a mesma requisição produz o mesmo efeito. `GET`, `PUT` e `DELETE` devem ser idempotentes; `POST /api/leads` não é, e por isso um clique duplo criaria dois pedidos. A solução é uma `Idempotency-Key` enviada pelo cliente e guardada no banco.
+- *Como versionar?* `/api/v1/…` na URL ou um cabeçalho. O projeto não versiona porque o único cliente é o próprio site, publicado junto com a API.
+
+---
+
+## 17. Inteligência artificial: LLM, RAG e agentes [Jr → Pl]
+
+### 17.1 Vale a pena colocar IA no projeto?
+
+**Sim, se resolver um problema real da empresa, e não como enfeite.** Em 2026, muitas vagas de back-end perguntam se você já integrou um LLM. O que impressiona não é ter um chat genérico. É mostrar que você trata a IA como uma dependência **não confiável**: valida a saída, controla custo e tempo de resposta, guarda o que foi gerado e mantém uma pessoa decidindo no fim.
+
+Neste projeto existe um problema que encaixa perfeitamente: **ler edital**. Um edital de transporte tem dezenas de páginas, e a equipe precisa achar sempre as mesmas coisas: objeto, data da sessão, quantidade e tipo de veículos, documentos de habilitação exigidos, prazo de vigência e critério de julgamento.
+
+### 17.2 Os termos
+
+- **LLM** (*Large Language Model*): modelo treinado em muito texto, que recebe um texto (*prompt*) e gera a continuação. Exemplos de fornecedores: Anthropic (Claude), OpenAI (GPT), Google (Gemini).
+- **Token:** o pedaço de texto que o modelo processa (mais ou menos ¾ de uma palavra). Preço e limite de tamanho são contados em tokens.
+- **Janela de contexto:** quanto texto cabe numa única chamada. Editais grandes podem não caber, ou ficar caros.
+- **Saída estruturada:** pedir ao modelo um JSON com um formato definido, em vez de texto livre, e validar esse JSON no código (aqui, com Zod).
+- **Alucinação:** o modelo afirma algo que não está no documento. Mitigação: pedir a **citação** do item do edital, validar e deixar uma pessoa conferir.
+- **Embedding:** um vetor de números que representa o sentido de um trecho de texto. Trechos parecidos têm vetores próximos.
+- **Banco vetorial:** guarda embeddings e busca os mais próximos. O PostgreSQL faz isso com a extensão **pgvector**, que o Supabase já oferece. Não precisaria de outro banco.
+- **RAG** (*Retrieval-Augmented Generation*): antes de perguntar ao LLM, busca os trechos relevantes do documento e manda só eles junto com a pergunta. O modelo responde com base no seu documento, não só no que "lembra" do treino.
+- **Agente:** um LLM num laço que pode chamar **ferramentas** (funções do seu código), ver o resultado e decidir o próximo passo, até concluir a tarefa.
+
+### 17.3 Três ideias, da mais simples à mais avançada
+
+**1. Leitor de edital (extração estruturada). Recomendado para começar.**
+
+```
+Admin envia o PDF  →  Route Handler extrai o texto  →  LLM devolve JSON
+→  Zod valida  →  tela de revisão  →  admin confirma  →  vira licitação em "Analisando edital"
+```
+
+- O JSON tem `objeto`, `orgao`, `sessao_em`, `veiculos: [{ tipo, quantidade }]`, `documentos_exigidos: [{ nome, item_do_edital }]`.
+- **Cruzamento com o que já existe:** comparar `documentos_exigidos` com a tabela `company_documents` e avisar "a CND Federal vence antes da data da sessão". Isso usa a função `documentStatus` que já está testada. É aqui que a IA vira valor de negócio.
+- **Por que é a melhor primeira escolha:** uma chamada por edital, saída fácil de validar e de testar, e o edital é documento público, sem risco de LGPD.
+
+**2. Perguntas sobre o edital (RAG).**
+
+- Ao importar o edital: dividir o texto em trechos (*chunks*) de alguns parágrafos, gerar o embedding de cada um e guardar numa tabela `edital_chunks (bid_id, conteudo, embedding vector)`, com RLS de admin como todas as outras.
+- Ao perguntar ("aceita micro-ônibus no lote 2?"): gerar o embedding da pergunta, buscar os 5 trechos mais próximos (`order by embedding <=> $1 limit 5`) e pedir ao LLM que responda **só** com base neles, citando o item.
+
+**3. Agente de prospecção.**
+
+- Ferramentas: `buscar_pncp(filtros)`, `ler_edital(url)`, `consultar_frota()`, `criar_licitacao(dados)`.
+- O agente busca editais novos de transporte no DF, lê cada um, confere se a frota atende e cria licitações em `prospeccao` com um resumo.
+- **Limite importante:** o agente só cria registros para revisão humana, nunca envia proposta. E precisa de teto de chamadas e de custo por execução.
+
+### 17.4 Como implementar com qualidade (o que o entrevistador vai perguntar)
+
+- **Chave da API só no servidor**, como a `SUPABASE_SERVICE_ROLE_KEY`: a chamada ao LLM fica num Route Handler e nunca num `'use client'`.
+- **Validar a saída** com Zod. Se o JSON vier inválido, tentar de novo uma vez e, se falhar, mostrar "não foi possível ler este edital" em vez de gravar lixo.
+- **Tempo de resposta:** uma chamada pode levar dezenas de segundos, e funções serverless têm limite de tempo. Para editais grandes, processar em segundo plano (salvar o pedido, processar num job e avisar quando terminar).
+- **Custo:** guardar o resultado no banco e nunca processar o mesmo PDF duas vezes (comparar um hash do arquivo). Limitar por usuário e por dia, como o rate limit do formulário.
+- **Avaliação:** separar 10 editais reais e anotar à mão o resultado esperado. Rodar a extração contra eles a cada mudança de prompt e medir quantos campos acertou. É o "teste automatizado" de uma feature de IA.
+- **Registro:** guardar o prompt, a resposta, a versão do modelo e o tempo de cada chamada, para conseguir explicar um erro depois.
+
+**Como dizer na entrevista:**
+
+> "Integrei um LLM para ler editais: o modelo devolve um JSON validado com Zod, o sistema cruza os documentos exigidos com as certidões da empresa e avisa o que vence antes da sessão. O resultado passa por revisão humana antes de virar licitação, e cada edital é processado uma vez só, com o resultado guardado."
+
+**Perguntas**
+
+- *[Jr] O que é RAG e por que usar?* Buscar os trechos relevantes do seu documento e mandar junto com a pergunta, para o modelo responder com base nele e não inventar.
+- *[Pl] Como você lida com alucinação?* Saída estruturada validada, citação obrigatória do trecho, revisão humana e um conjunto de avaliação.
+- *[Pl] Onde você guardaria os embeddings?* No próprio Postgres, com pgvector: aproveita o backup, as policies de RLS e os `JOIN`s com as licitações.
+
+---
+
+## 18. APIs externas que valem integrar [Jr → Pl]
+
+Cada uma resolve um problema concreto da empresa e rende uma boa história de integração. As três primeiras são públicas e gratuitas; conferi que responderam em 29/10/2026.
+
+| API | O que resolve no projeto | Dificuldade |
+|---|---|---|
+| **PNCP** (Portal Nacional de Contratações Públicas) | Monitor de editais: buscar contratações de transporte de passageiros e criar licitações em `prospeccao` (exercício 4 da seção 12) | Média |
+| **BrasilAPI**: feriados (`/api/feriados/v1/{ano}`) | Prazos de licitação contam **dias úteis** (recurso, impugnação). Calcular "último dia para impugnar" no painel, sem contar feriados | Fácil |
+| **BrasilAPI**: CNPJ (`/api/cnpj/v1/{cnpj}`) | Ao cadastrar uma licitação ou contrato, digitar o CNPJ do órgão e preencher nome e endereço sozinho | Fácil |
+| **IBGE**: localidades (`/api/v1/localidades/estados/{UF}/municipios`) | O [`CityAutocomplete`](../amavs-next/components/ui/CityAutocomplete.tsx) tem uma lista de cidades escrita à mão; trocaria pela lista oficial de municípios, guardada em cache | Fácil |
+| **E-mail transacional** (Amazon SES ou Resend) | Alerta diário de certidões vencendo e de sessões nos próximos dias. Com o SES, vira experiência de AWS | Média |
+| **Rotas e distância** (OpenRouteService ou Google Distance Matrix) | Estimar o orçamento: distância da viagem × `price_km` do veículo, que já existe na tabela `vehicles` | Média |
+
+**Como integrar uma API externa direito [Pl]** (vale para todas):
+
+- **A chamada sai do servidor**, num Route Handler ou num cron, nunca do navegador: protege a chave, permite cache e evita bloqueio de CORS.
+- **Tempo limite:** `fetch(url, { signal: AbortSignal.timeout(5000) })`. Sem isso, uma API lenta prende a sua função até o limite da Vercel.
+- **Tentar de novo com espera crescente** (*retry com backoff*: 1 s, 2 s, 4 s), só para erros temporários (`503`, `429`, *timeout*), nunca para `400`. Durante os testes deste guia, o PNCP respondeu **503**; o monitor de editais precisa sobreviver a isso sem quebrar.
+- **Cache:** feriados de um ano e a lista de municípios quase nunca mudam; buscar uma vez e guardar (no banco ou com `revalidate` do Next.js) poupa a API e deixa a tela instantânea.
+- **Validar a resposta** com Zod, como qualquer dado de fora. Uma API externa pode mudar o formato sem avisar.
+- **Deduplicar** no monitor de editais: o PNCP tem um número de controle para cada contratação; uma coluna `unique` no banco impede criar a mesma licitação duas vezes se o cron rodar de novo (idempotência).
+- **Testar sem rede:** a função que transforma a resposta da API em linha do banco deve ser pura e testada com um JSON de exemplo salvo no repositório, como as outras regras em `lib/`.
+
+**Exercício [Jr] para começar:** implementar `proximoDiaUtil(data, feriados)` e `somarDiasUteis(data, n, feriados)` em `lib/prazos.ts`, com testes, recebendo os feriados como parâmetro (função pura). Só depois buscar os feriados na BrasilAPI. É pequeno, útil para a empresa e mostra a separação entre regra de negócio e integração.

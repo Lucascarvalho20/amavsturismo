@@ -48,4 +48,4 @@ O CI (`.github/workflows/ci.yml`) roda typecheck, testes e build. Push na `main`
 - Bug conhecido, deixado como exercício no guia (seções 1.12 e 14): `buildWhatsAppMessage` em `lib/utils.ts` usa `filter(Boolean)` e apaga as linhas em branco da mensagem. Não corrigir sem o Lucas pedir.
 - Os 6 veículos do banco são dados de demonstração (placas fictícias); a empresa vai cadastrar os reais. Vans ficam sem foto até haver fotos reais.
 - Domínio oficial `www.amavsturismo.com` ainda aponta para o WordPress antigo.
-- Ideias priorizadas: monitor de editais via API do PNCP (cron), alertas por e-mail de sessões e certidões, testes de integração das policies RLS.
+- Ideias priorizadas (detalhadas no guia, seções 17 e 18): monitor de editais via API do PNCP (cron), leitor de editais com LLM cruzando documentos exigidos com `company_documents`, prazos em dias úteis com feriados da BrasilAPI, alertas por e-mail de sessões e certidões, testes de integração das policies RLS.
